@@ -1,11 +1,11 @@
 {
-	"id": "obsidian-sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
+	"id": "obsidian-onedrive-sync",
+	"name": "OneDrive Sync",
+	"version": "0.0.1-beta",
 	"minAppVersion": "0.15.0",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "This is a plugin for synchronizing your vault with OneDrive. This plugin is not affiliated with Microsoft.",
+	"author": "Mathis URIEN (LBF38)",
+	"authorUrl": "https://github.com/LBF38",
+	"fundingUrl": "https://github.com/sponsors/LBF38",
 	"isDesktopOnly": false
 }
