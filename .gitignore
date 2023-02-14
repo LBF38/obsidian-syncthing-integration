@@ -23,3 +23,7 @@ data.json
 
 # tests
 coverage
+
+# others
+*.lock
+*.log

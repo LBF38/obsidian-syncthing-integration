@@ -1,11 +1,7 @@
-import { SyncFile } from "./sync_algorithm";
+import { TFile } from "obsidian";
 
-describe("Sync algorithm", () => {
-	it("should sync", () => {
-		SyncFile;
+describe("testing the test framework", () => {
+	it("should be able to import TFile", () => {
+		expect(TFile).toBeDefined();
 	});
-});
-
-test("should sync", () => {
-	SyncFile;
 });
