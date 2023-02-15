@@ -1,5 +1,17 @@
-import { syncAlgorithm } from "../src/sync_algorithm";
+import { syncAlgorithm, syncChoice } from "../src/sync_algorithm";
 import { TFile } from "obsidian";
+
+jest.mock("obsidian", () => {
+	return {
+		TFile: jest.fn().mockImplementation(() => {
+			return {
+				stat: {
+					mtime: 0,
+				},
+			};
+		}),
+	};
+});
 
 describe("Sync algorithm", () => {
 	beforeEach(() => {});
@@ -15,6 +27,7 @@ describe("Sync algorithm", () => {
 		const choice = sync_algorithm.compareFiles(localFile, remoteFile);
 
 		// assert
-		expect(choice).toBe("localToRemote");
+		expect(choice.localToRemote).toBe(syncChoice.upload);
+		expect(choice.remoteToLocal).toBe(syncChoice.ignore);
 	});
 });

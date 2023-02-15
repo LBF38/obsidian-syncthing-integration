@@ -1,12 +1,12 @@
 import { TFile } from "obsidian";
 
-enum syncChoice {
+export enum syncChoice {
 	upload,
 	download,
 	ignore,
 }
 
-interface syncFile {
+export interface syncFile {
 	localToRemote: syncChoice.upload | syncChoice.ignore;
 	remoteToLocal: syncChoice.download | syncChoice.ignore;
 }
@@ -14,7 +14,10 @@ interface syncFile {
 export class syncAlgorithm {
 	localFile: string;
 	remoteFile: string;
-	syncFiles: syncFile;
+	syncFiles: syncFile = {
+		localToRemote: syncChoice.ignore,
+		remoteToLocal: syncChoice.ignore,
+	};
 
 	compareFiles(localFile: TFile, remoteFile: TFile): syncFile {
 		if (localFile.stat.mtime > remoteFile.stat.mtime) {
