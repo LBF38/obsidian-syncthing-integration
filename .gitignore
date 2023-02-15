@@ -25,5 +25,4 @@ data.json
 coverage
 
 # others
-*.lock
 *.log

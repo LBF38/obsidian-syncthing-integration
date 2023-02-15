@@ -2,7 +2,7 @@
   "name": "obsidian-onedrive-sync",
   "version": "0.0.1-beta",
   "description": "This is a plugin for synchronizing your vault with OneDrive. This plugin is not affiliated with Microsoft.",
-  "main": "main.js",
+  "main": "build/main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
