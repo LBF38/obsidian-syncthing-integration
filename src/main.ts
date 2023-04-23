@@ -1,26 +1,35 @@
 import {
 	App,
 	Editor,
+	ItemView,
+	MarkdownFileInfo,
 	MarkdownView,
 	Modal,
 	Notice,
 	Plugin,
 	PluginSettingTab,
 	Setting,
+	TAbstractFile,
+	TFile,
+	WorkspaceLeaf,
 } from "obsidian";
 
-// Remember to rename these classes and interfaces!
+//! Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {
 	mySetting: string;
+	myToggleSetting: boolean;
+	excludedFolders: boolean[];
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
 	mySetting: "default",
+	myToggleSetting: false,
+	excludedFolders: [false],
 };
 
 export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+	settings: MyPluginSettings = DEFAULT_SETTINGS;
 
 	async onload() {
 		await this.loadSettings();
@@ -56,7 +65,10 @@ export default class MyPlugin extends Plugin {
 		this.addCommand({
 			id: "sample-editor-command",
 			name: "Sample editor command",
-			editorCallback: (editor: Editor, view: MarkdownView) => {
+			editorCallback: (
+				editor: Editor,
+				ctx: MarkdownView | MarkdownFileInfo
+			) => {
 				console.log(editor.getSelection());
 				editor.replaceSelection("Sample Editor Command");
 			},
@@ -95,9 +107,22 @@ export default class MyPlugin extends Plugin {
 		this.registerInterval(
 			window.setInterval(() => console.log("setInterval"), 5 * 60 * 1000)
 		);
+
+		// Example of a custom view
+		this.registerView(
+			VIEW_TYPE_EXAMPLE,
+			(leaf) => new ExampleView(leaf)
+		);
+
+		this.addRibbonIcon("dice", "Activate view", () => {
+			const file = this.app.vault.getFiles()[0];
+			this.activateView(file);
+		});
 	}
 
-	onunload() {}
+	onunload() {
+		this.app.workspace.detachLeavesOfType(VIEW_TYPE_EXAMPLE);
+	}
 
 	async loadSettings() {
 		this.settings = Object.assign(
@@ -109,6 +134,20 @@ export default class MyPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	async activateView(file: TFile) {
+		this.app.workspace.detachLeavesOfType(VIEW_TYPE_EXAMPLE);
+
+		await this.app.workspace.getLeaf("split").setViewState({
+			type: VIEW_TYPE_EXAMPLE,
+			state: this.app.vault.read(file),
+			active: true,
+		});
+
+		this.app.workspace.revealLeaf(
+			this.app.workspace.getLeavesOfType(VIEW_TYPE_EXAMPLE)[0]
+		);
 	}
 }
 
@@ -156,5 +195,103 @@ class SampleSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
+
+		containerEl.createEl("h3", { text: "SyncThing" });
+		new Setting(containerEl)
+			.setName("Connecting to SyncThing")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.myToggleSetting)
+					.onChange(async (value) => {
+						console.log("Toggle: " + value);
+						this.plugin.settings.myToggleSetting = value;
+						await this.plugin.saveSettings();
+					})
+			);
+		new Setting(containerEl)
+			.setName("Exclude files")
+			.setDesc("Files to exclude from sync")
+			.addButton((button) =>
+				button.setButtonText("Add").onClick(() => {
+					new Notice("Button pressed");
+					console.log("Button pressed");
+				})
+			);
+		const all_files: TAbstractFile[] = this.app.vault.getAllLoadedFiles();
+		for (let k = 0; k < all_files.length; k++) {
+			const abstract_files = all_files[k];
+			if (abstract_files.name === "") continue;
+			const input = containerEl.createEl("input", {
+				type: "checkbox",
+				attr: { id: abstract_files.name, name: abstract_files.name },
+				title: abstract_files.name,
+			});
+			const label = containerEl
+				.createEl("label", {
+					text: abstract_files.name,
+					value: abstract_files.name,
+					attr: { for: abstract_files.name },
+				})
+				.appendChild(containerEl.createEl("br"));
+			if (abstract_files instanceof TFile) {
+				input.style.textIndent = "50px";
+			}
+		}
+	}
+}
+
+export const VIEW_TYPE_EXAMPLE = "example-view";
+
+export class ExampleView extends ItemView {
+	constructor(leaf: WorkspaceLeaf) {
+		super(leaf);
+	}
+
+	getViewType() {
+		return VIEW_TYPE_EXAMPLE;
+	}
+
+	getDisplayText() {
+		return "Example view";
+	}
+
+	async onOpen() {
+		const container = this.containerEl.children[1];
+		container.empty();
+		container.createEl("h4", { text: "Example view" });
+	}
+
+	async onClose() {
+		// Nothing to clean up.
+	}
+}
+
+export class ExampleMarkdownView extends MarkdownView {
+	constructor(leaf: WorkspaceLeaf) {
+		super(leaf);
+	}
+
+	getViewType() {
+		return VIEW_TYPE_EXAMPLE;
+	}
+
+	getDisplayText() {
+		return "Example markdown view";
+	}
+
+	async onOpen() {
+		const file = this.app.vault.getMarkdownFiles()[0];
+		this.contentEl.setText(await this.app.vault.read(file));
+		this.leaf
+			.getContainer()
+			.doc.createElement("h4")
+			.setText("Example markdown view");
+		// const container = this.containerEl.children[1];
+		// container.empty();
+		// container.createEl("h4", { text: "Example markdown view" });
+	}
+
+	async onClose() {
+		// Nothing to clean up.
 	}
 }
