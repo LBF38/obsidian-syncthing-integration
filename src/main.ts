@@ -8,7 +8,7 @@ import {
 	PluginSettingTab,
 	Setting,
 } from "obsidian";
-import { SyncThingAPI } from "./data/syncthing_remote_datasource";
+import { SyncThingAPI } from "./data/datasources/syncthing_remote_datasource";
 
 //! Remember to rename these classes and interfaces!
 
