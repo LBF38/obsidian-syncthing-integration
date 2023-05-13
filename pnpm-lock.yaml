@@ -3,7 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@codemirror/state': ^6.2.0
   '@codemirror/view': ^6.8.1
-  '@types/node': ^16.11.6
+  '@types/node': ^18.0.0
   '@typescript-eslint/eslint-plugin': 5.29.0
   '@typescript-eslint/parser': 5.29.0
   builtin-modules: 3.3.0
@@ -16,7 +16,7 @@ specifiers:
 devDependencies:
   '@codemirror/state': 6.2.0
   '@codemirror/view': 6.8.1
-  '@types/node': 16.18.12
+  '@types/node': 18.13.0
   '@typescript-eslint/eslint-plugin': 5.29.0_xkhkum6ugb7jhgmjn2hzvjt5wy
   '@typescript-eslint/parser': 5.29.0_r4nhl7oghl6mgx4ukbxrwoekle
   builtin-modules: 3.3.0
@@ -310,8 +310,8 @@ packages:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
     dev: true
 
-  /@types/node/16.18.12:
-    resolution: {integrity: sha512-vzLe5NaNMjIE3mcddFVGlAXN1LEWueUsMsOJWaT6wWMJGyljHAWHznqfnKUQWGzu7TLPrGvWdNAsvQYW+C0xtw==}
+  /@types/node/18.13.0:
+    resolution: {integrity: sha512-gC3TazRzGoOnoKAhUx+Q0t8S9Tzs74z7m0ipwGpSqQrleP14hKxP4/JUeEQcD3W1/aIpnWl8pHowI7WokuZpXg==}
     dev: true
 
   /@types/tern/0.23.4:
