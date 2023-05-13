@@ -13,6 +13,8 @@ import {
 	TFile,
 	WorkspaceLeaf,
 } from "obsidian";
+import { createTwoFilesPatch } from "diff";
+import { defaultDiff2HtmlConfig, html } from "diff2html";
 
 //! Remember to rename these classes and interfaces!
 
@@ -109,10 +111,7 @@ export default class MyPlugin extends Plugin {
 		);
 
 		// Example of a custom view
-		this.registerView(
-			VIEW_TYPE_EXAMPLE,
-			(leaf) => new ExampleView(leaf)
-		);
+		this.registerView(VIEW_TYPE_EXAMPLE, (leaf) => new ExampleView(leaf));
 
 		this.addRibbonIcon("dice", "Activate view", () => {
 			const file = this.app.vault.getFiles()[0];
@@ -152,13 +151,16 @@ export default class MyPlugin extends Plugin {
 }
 
 class SampleModal extends Modal {
-	constructor(app: App) {
+	text2display: string;
+	constructor(app: App, text2display?: string) {
 		super(app);
+		this.text2display = text2display ? text2display : "";
 	}
 
 	onOpen() {
 		const { contentEl } = this;
 		contentEl.setText("Welcome to OneDrive Sync!");
+		contentEl.innerHTML += this.text2display;
 	}
 
 	onClose() {
@@ -226,7 +228,7 @@ class SampleSettingTab extends PluginSettingTab {
 				attr: { id: abstract_files.name, name: abstract_files.name },
 				title: abstract_files.name,
 			});
-			const label = containerEl
+			containerEl
 				.createEl("label", {
 					text: abstract_files.name,
 					value: abstract_files.name,
@@ -259,6 +261,47 @@ export class ExampleView extends ItemView {
 		const container = this.containerEl.children[1];
 		container.empty();
 		container.createEl("h4", { text: "Example view" });
+		this.contentEl.setText("Hello world!");
+		this.contentEl.createEl("h1", { text: "Hello world!" });
+		const file1 = {
+			tfile: this.app.vault.getMarkdownFiles()[0],
+			content: await this.app.vault.read(
+				this.app.vault.getMarkdownFiles()[0]
+			),
+		};
+		const file2 = {
+			tfile: this.app.vault.getMarkdownFiles()[1],
+			content: await this.app.vault.read(
+				this.app.vault.getMarkdownFiles()[1]
+			),
+		};
+		this.contentEl.createEl("h1", { text: file1.tfile.basename });
+		this.contentEl.createDiv({ text: file1.content });
+		this.contentEl.createEl("h1", { text: file2.tfile.basename });
+		this.contentEl.createDiv({ text: file2.content });
+		this.containerEl
+			.createEl("button", { text: "Diff" })
+			.addEventListener("click", () => {
+				createTwoFilesPatch(
+					file1.tfile.basename,
+					file2.tfile.basename,
+					file1.content,
+					file2.content
+				);
+			});
+		const difference = createTwoFilesPatch(
+			file1.tfile.basename,
+			file2.tfile.basename,
+			file1.content,
+			file2.content
+		);
+		this.contentEl.createEl("h1", { text: "Difference" });
+		this.contentEl.createDiv({ text: difference });
+		this.contentEl
+			.createEl("button", { text: "Open diff between files" })
+			.addEventListener("click", () => {
+				new SampleModal(app, html(difference, defaultDiff2HtmlConfig)).open();
+			});
 	}
 
 	async onClose() {
