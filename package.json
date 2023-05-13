@@ -21,7 +21,7 @@
 		"esbuild": "0.17.19",
 		"eslint": "^8.34.0",
 		"obsidian": "latest",
-		"tslib": "2.4.0",
+		"tslib": "2.5.0",
 		"typescript": "5.0.4"
 	}
 }
