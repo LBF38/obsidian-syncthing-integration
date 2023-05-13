@@ -10,7 +10,7 @@ specifiers:
   esbuild: 0.17.19
   eslint: ^8.34.0
   obsidian: latest
-  tslib: 2.4.0
+  tslib: 2.5.0
   typescript: 5.0.4
 
 devDependencies:
@@ -23,7 +23,7 @@ devDependencies:
   esbuild: 0.17.19
   eslint: 8.34.0
   obsidian: 1.2.8_cknrwgf45skglbt6g7kref4zeq
-  tslib: 2.4.0
+  tslib: 2.5.0
   typescript: 5.0.4
 
 packages:
@@ -1196,8 +1196,8 @@ packages:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: true
 
-  /tslib/2.4.0:
-    resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
+  /tslib/2.5.0:
+    resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
     dev: true
 
   /tsutils/3.21.0_typescript@5.0.4:
