@@ -1,54 +1,90 @@
-/* Style pour la modal */
-.modal.conflict-modal {
-	max-width: 1000px;
-	margin: auto;
+/* Diff2Html styles */
+
+.d2h-wrapper {
+	font-family: "Source Code Pro", monospace;
 }
 
-.modal-content h2 {
-	text-align: center;
-	margin-top: 0;
+.d2h-file-header {
+	background-color: #f8f8f8;
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 5px 10px;
 }
 
-/* Style pour les trois colonnes */
-.conflict-view {
-	display: flex;
-}
-
-.diff-view {
-	flex: 1;
-	overflow: auto;
-	margin-right: 20px;
-}
-
-.file-view {
-	flex: 2;
-	overflow: auto;
-}
-
-.files-list {
-	flex: 1;
-	max-height: 500px;
-	overflow: auto;
-}
-
-/* Style pour la liste de fichiers en conflit */
-.sync-thing-conflicting-files {
+.d2h-file-diff {
 	margin: 0;
 	padding: 0;
-	list-style-type: none;
+	font-size: 12px;
 }
 
-.sync-thing-conflicting-file {
-	margin: 0;
-	padding: 5px 0;
-	border-bottom: 1px solid #ccc;
+.d2h-code-line {
+	padding: 2px 5px;
+	font-size: 12px;
+	line-height: 1.5em;
+	white-space: pre-wrap;
+	word-wrap: break-word;
 }
 
-.sync-thing-conflicting-file a {
-	color: #333;
-	text-decoration: none;
+.d2h-code-line.ins {
+	background-color: #c8f7c5;
 }
 
-.sync-thing-conflicting-file a:hover {
+.d2h-code-line.del {
+	background-color: #f7c5c5;
+}
+
+.d2h-code-line.ctx {
+	background-color: #fff;
+}
+
+.d2h-code-line:not(.empty) {
+	border-left: 2px solid transparent;
+	transition: border-color 0.1s ease-in-out;
+}
+
+.d2h-code-line:hover:not(.empty) {
+	border-left-color: #888;
+}
+
+.d2h-code-line-num {
+	display: inline-block;
+	width: 45px;
+	color: #777;
+	text-align: right;
+	font-size: 12px;
+	font-family: "Source Code Pro", monospace;
+}
+
+.d2h-code-line-num.diff-del {
+	background-color: #f7c5c5;
+}
+
+.d2h-code-line-num.diff-ins {
+	background-color: #c8f7c5;
+}
+
+.d2h-code-line-num.diff-empty {
+	background-color: #eee;
+}
+
+.d2h-code-linenumber {
+	margin-right: 5px;
+	color: #999;
+}
+
+.d2h-code-linenumber:hover {
+	cursor: pointer;
 	text-decoration: underline;
+}
+
+.d2h-ins {
+	background-color: #c8f7c5;
+	color: #007d26;
+}
+
+.d2h-del {
+	background-color: #f7c5c5;
+	color: #a50000;
 }
