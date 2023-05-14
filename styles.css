@@ -1,0 +1,54 @@
+/* Style pour la modal */
+.modal.conflict-modal {
+	max-width: 1000px;
+	margin: auto;
+}
+
+.modal-content h2 {
+	text-align: center;
+	margin-top: 0;
+}
+
+/* Style pour les trois colonnes */
+.conflict-view {
+	display: flex;
+}
+
+.diff-view {
+	flex: 1;
+	overflow: auto;
+	margin-right: 20px;
+}
+
+.file-view {
+	flex: 2;
+	overflow: auto;
+}
+
+.files-list {
+	flex: 1;
+	max-height: 500px;
+	overflow: auto;
+}
+
+/* Style pour la liste de fichiers en conflit */
+.sync-thing-conflicting-files {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+.sync-thing-conflicting-file {
+	margin: 0;
+	padding: 5px 0;
+	border-bottom: 1px solid #ccc;
+}
+
+.sync-thing-conflicting-file a {
+	color: #333;
+	text-decoration: none;
+}
+
+.sync-thing-conflicting-file a:hover {
+	text-decoration: underline;
+}
