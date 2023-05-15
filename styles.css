@@ -88,3 +88,40 @@
 	background-color: #f7c5c5;
 	color: #a50000;
 }
+
+.container {
+	/* display: flex;
+	flex-direction: row;
+	align-items: flex-start; */
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr; /* Définit 3 colonnes de largeur égale */
+	grid-gap: 20px; /* Ajoute un espacement entre les colonnes */
+}
+
+.modal-title {
+	text-align: center;
+}
+
+.colonne {
+	flex: 1;
+	padding: 20px;
+	text-align: center;
+	color: #fff;
+	height: 100%;
+}
+
+#diff-view {
+	background-color: #FF0000;
+	/* Couleur de la colonne 1 */
+}
+
+#file-view {
+	background-color: #00FF00;
+	/* Couleur de la colonne 2 */
+	flex: 2;
+}
+
+#files-list {
+	background-color: #0000FF;
+	/* Couleur de la colonne 3 */
+}

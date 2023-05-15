@@ -73,19 +73,33 @@ class ConflictFilesModal extends Modal {
 
 	onOpen() {
 		const { contentEl } = this;
+		this.modalEl.style.width = "100%";
+		contentEl
+			.createEl("h2", { text: "Conflict Files" })
+			.addClass("modal-title");
+		const mainViewContainer = contentEl.createDiv();
+		mainViewContainer.addClass("container");
+		// First column with list of files
+		const filesList = mainViewContainer.createEl("div", {
+			cls: "colonne",
+			attr: { id: "files-list" },
+		});
 
-		contentEl.createEl("h2", { text: "Conflict Files" }).addClass("modal-title");
-		contentEl.addClass("conflict-view");
 		// Second column with diff of selected file
-		const diffView = contentEl.createEl("div", { cls: "diff-view" });
+		const diffView = mainViewContainer.createEl("div", {
+			cls: "colonne",
+			attr: { id: "diff-view" },
+		});
 
 		// Third column with full content of selected file
-		const fileView = contentEl.createEl("div", { cls: "file-view" });
+		const fileView = mainViewContainer.createEl("div", {
+			cls: "colonne",
+			attr: { id: "file-view" },
+		});
 
-		// First column with list of files
-		const filesList = contentEl.createEl("div", { cls: "files-list" });
-		const originalFile = this.app.vault.getFiles()[0];
-		const files = this.app.vault.getFiles().slice(1, -1);
+		const allFiles = this.app.vault.getFiles();
+		const originalFile = allFiles[0];
+		const files = allFiles.slice(1, allFiles.length);
 		for (const file of files) {
 			const fileEl = filesList.createEl("div", { text: file.name });
 			fileEl.addEventListener("click", () => {
@@ -97,8 +111,8 @@ class ConflictFilesModal extends Modal {
 	private async showFileDiff(
 		originalFile: TFile,
 		conflictingFile: TFile,
-		diffView: HTMLElement,
-		fileView: HTMLElement
+		diffView: HTMLDivElement,
+		fileView: HTMLDivElement
 	) {
 		// Load the two versions of the file
 		const originalContent = await app.vault.read(originalFile);
@@ -116,7 +130,7 @@ class ConflictFilesModal extends Modal {
 		diffView.innerHTML = html(diff);
 
 		// Display the full content of the file in the third column
-		fileView.setText(originalContent);
+		fileView.innerHTML = originalContent;
 	}
 
 	onClose() {
