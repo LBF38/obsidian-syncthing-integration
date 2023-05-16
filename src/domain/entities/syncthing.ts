@@ -15,6 +15,12 @@ export class SyncThingConfiguration {
 	}
 }
 
+type SyncTypes =
+	| "sendreceive"
+	| "sendonly"
+	| "receiveonly"
+	| "receiveencrypted";
+
 /**
  * SyncThing folder object.
  *
@@ -22,27 +28,30 @@ export class SyncThingConfiguration {
  * @see https://docs.syncthing.net/users/config.html#folder-element
  */
 export class SyncThingFolder {
-	id: string;
-	path: string;
+	id: string; // unique
 	label: string;
+	path: string;
 	filesystemType: string;
-	type: string;
+	type: SyncTypes;
 	devices: SyncThingDevice[];
+	maxConflicts: number;
 
 	constructor(
 		id: string,
-		path: string,
 		label: string,
+		path: string,
 		filesystemType: string,
-		type: string,
-		devices: SyncThingDevice[]
+		type: SyncTypes,
+		devices: SyncThingDevice[],
+		maxConflicts: number
 	) {
 		this.id = id;
-		this.path = path;
 		this.label = label;
+		this.path = path;
 		this.filesystemType = filesystemType;
 		this.type = type;
 		this.devices = devices;
+		this.maxConflicts = maxConflicts;
 	}
 }
 
@@ -54,19 +63,28 @@ export class SyncThingFolder {
  */
 export class SyncThingDevice {
 	deviceID: string;
-	name: string;
+	name?: string;
 	introducedBy: string;
 	encryptionPassword: string;
+	address: string[]; // TODO: if necessary, change to a more specific type
+	paused: boolean;
+	ignoredFolders: string[]; // Should contain folder IDs
 
 	constructor(
 		deviceID: string,
-		name: string,
 		introducedBy: string,
-		encryptionPassword: string
+		encryptionPassword: string,
+		address: string[],
+		paused: boolean,
+		ignoredFolders: string[],
+		name?: string
 	) {
 		this.deviceID = deviceID;
 		this.name = name;
 		this.introducedBy = introducedBy;
 		this.encryptionPassword = encryptionPassword;
+		this.address = address;
+		this.paused = paused;
+		this.ignoredFolders = ignoredFolders;
 	}
 }
