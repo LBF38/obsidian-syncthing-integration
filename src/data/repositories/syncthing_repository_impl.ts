@@ -1,3 +1,4 @@
+import { Failure, RestFailure } from "src/core/errors/failures";
 import {
 	SyncThingConfiguration,
 	SyncThingDevice,
@@ -13,8 +14,14 @@ export class SyncThingRepositoryImpl implements SyncThingRepository {
 		public syncthingFromREST: SyncThingFromREST
 	) {}
 
-	getConfiguration(): Promise<SyncThingConfiguration> {
-		throw new Error("Method not implemented.");
+	async getConfiguration(): Promise<SyncThingConfiguration | Failure> {
+		try {
+			const config = await this.syncthingFromREST.getConfiguration();
+			return config;
+		} catch (error) {
+			console.error(error);
+			return new RestFailure();
+		}
 	}
 	getDevices(): Promise<SyncThingDevice[]> {
 		throw new Error("Method not implemented.");
