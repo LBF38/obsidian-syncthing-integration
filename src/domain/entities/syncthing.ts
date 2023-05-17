@@ -6,13 +6,10 @@
  * @see https://docs.syncthing.net/users/config.html#config-file-format
  */
 export class SyncThingConfiguration {
-	folders: SyncThingFolder[];
-	devices: SyncThingDevice[];
-
-	constructor(folders: SyncThingFolder[], devices: SyncThingDevice[]) {
-		this.folders = folders;
-		this.devices = devices;
-	}
+	constructor(
+		public folders: SyncThingFolder[],
+		public devices: SyncThingDevice[]
+	) {}
 }
 
 type SyncTypes =
@@ -28,31 +25,15 @@ type SyncTypes =
  * @see https://docs.syncthing.net/users/config.html#folder-element
  */
 export class SyncThingFolder {
-	id: string; // unique
-	label: string;
-	path: string;
-	filesystemType: string;
-	type: SyncTypes;
-	devices: SyncThingDevice[];
-	maxConflicts: number;
-
 	constructor(
-		id: string,
-		label: string,
-		path: string,
-		filesystemType: string,
-		type: SyncTypes,
-		devices: SyncThingDevice[],
-		maxConflicts: number
-	) {
-		this.id = id;
-		this.label = label;
-		this.path = path;
-		this.filesystemType = filesystemType;
-		this.type = type;
-		this.devices = devices;
-		this.maxConflicts = maxConflicts;
-	}
+		public id: string,
+		public label: string,
+		public path: string,
+		public filesystemType: string,
+		public type: SyncTypes,
+		public devices: ReducedSyncThingDevice[],
+		public maxConflicts: number
+	) {}
 }
 
 /**
@@ -62,29 +43,31 @@ export class SyncThingFolder {
  * @see https://docs.syncthing.net/users/config.html#device-element
  */
 export class SyncThingDevice {
-	deviceID: string;
-	name?: string;
-	introducedBy: string;
-	encryptionPassword: string;
-	address: string[]; // TODO: if necessary, change to a more specific type
-	paused: boolean;
-	ignoredFolders: string[]; // Should contain folder IDs
-
 	constructor(
-		deviceID: string,
-		introducedBy: string,
-		encryptionPassword: string,
-		address: string[],
-		paused: boolean,
-		ignoredFolders: string[],
-		name?: string
-	) {
-		this.deviceID = deviceID;
-		this.name = name;
-		this.introducedBy = introducedBy;
-		this.encryptionPassword = encryptionPassword;
-		this.address = address;
-		this.paused = paused;
-		this.ignoredFolders = ignoredFolders;
-	}
+		public deviceID: string,
+		public introducedBy: string,
+		public encryptionPassword: string,
+		public address: string[],
+		public paused: boolean,
+		public ignoredFolders: string[],
+		public name?: string
+	) {}
+}
+
+/**
+ * This is the devices' information that is stored in the folder object.
+ * {@link SyncThingFolder}
+ */
+export class ReducedSyncThingDevice
+	implements
+		Pick<
+			SyncThingDevice,
+			"deviceID" | "introducedBy" | "encryptionPassword"
+		>
+{
+	constructor(
+		public deviceID: string,
+		public introducedBy: string,
+		public encryptionPassword: string
+	) {}
 }
