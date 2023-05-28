@@ -25,6 +25,25 @@ The plugin should work out-of-the-box, but you can configure it by going to the 
 > **Warning**
 > The synchronization is done in real-time, using peer-to-peer connections. Therefore, all the devices you want to synchronize must be connected at the same time.
 
+## :heart: Contributing
+
+To contribute to this plugin, you can create issues and pull requests on GitHub. Moreover, you can discuss any new idea or suggestion in the Discussions tab.
+Please follow the [Code of Conduct](CODE_OF_CONDUCT.md) when contributing to this project.
+
+## :hammer_and_wrench: Development
+
+If you want to develop this plugin locally, please follow the instructions below.
+
+1. Clone the repository
+2. Install the dependencies using `pnpm install`
+3. Build the plugin using `pnpm dev`
+4. (Optional) Use the hot-reload plugin in Obsidian to reload the plugin automatically when you make changes
+
+> **Note**
+> When using the hot-reload plugin, you have to clone this plugin in the `.obsidian/plugins` folder of your vault.
+> And the plugin's files should be at the root of the folder. (`main.js`, `manifest.json` and `styles.css`)
+> It should be automatically set up.
+
 ## :busts_in_silhouette: Authors
 
 - [@LBF38](https://github.com/lbf38)
