@@ -4,4 +4,8 @@ function GetConfiguration(repository: SyncThingRepository) {
 	return repository.getConfiguration();
 }
 
-export { GetConfiguration };
+function GetAPIKey(repository: SyncThingRepository) {
+	return repository.getAPIKey();
+}
+
+export { GetConfiguration, GetAPIKey };

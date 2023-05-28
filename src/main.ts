@@ -1,7 +1,7 @@
-import { Editor, Modal, Notice, Plugin } from "obsidian";
-import { SyncThingAPI } from "./data/datasources/syncthing_remote_datasource";
-import { SampleSettingTab } from "./presentation/pages/syncthing_settings_page";
 import { exec } from "child_process";
+import { Editor, Modal, Notice, Plugin } from "obsidian";
+import { SyncThingFromRESTimpl } from "./data/datasources/syncthing_remote_datasource";
+import { SampleSettingTab } from "./presentation/pages/syncthing_settings_page";
 
 //! Remember to rename these classes and interfaces!
 
@@ -24,10 +24,7 @@ export default class MyPlugin extends Plugin {
 				new Notice("Please set the API key in the settings first.");
 				return;
 			}
-			const syncthingAPI = new SyncThingAPI(
-				"http://localhost:8384/",
-				this.settings.api_key // TODO: make it independent and securely stored
-			);
+			const syncthingAPI = new SyncThingFromRESTimpl();
 			syncthingAPI.getConfiguration().then((config) => {
 				console.log(config);
 				const modal = new Modal(this.app);
@@ -62,7 +59,8 @@ export default class MyPlugin extends Plugin {
 		this.addSettingTab(new SampleSettingTab(this.app, this));
 
 		// Exemple de commande Syncthing
-		const syncthingCommand = "syncthing --version && syncthing cli show system";
+		const syncthingCommand =
+			"syncthing --version && syncthing cli show system && syncthing cli config gui apikey get";
 
 		// Exemple d'appel à la commande dans le plugin Obsidian
 		this.addCommand({

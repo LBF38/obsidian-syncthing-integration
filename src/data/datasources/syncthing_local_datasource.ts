@@ -8,16 +8,16 @@ export interface SyncThingFromCLI {
 	/**
 	 * Get the API key of Syncthing installation using the CLI.
 	 */
-	getAPIkey(): string;
+	getAPIkey(): string | Error;
 }
 
 export class SyncThingFromCLIimpl implements SyncThingFromCLI {
-	getAPIkey(): string {
+	getAPIkey(): string | Error {
 		const { stdout, stderr } = exec("syncthing cli config gui apikey get");
 		if (stderr) {
 			console.error(stderr);
 			return "";
 		}
-		return stdout?.read() ?? "";
+		return stdout?.read() ?? Error("No API key found.");
 	}
 }

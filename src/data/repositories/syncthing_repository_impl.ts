@@ -14,6 +14,10 @@ export class SyncThingRepositoryImpl implements SyncThingRepository {
 		public syncthingFromREST: SyncThingFromREST
 	) {}
 
+	getAPIKey(): Promise<string | Failure> {
+		throw new Error("Method not implemented.");
+	}
+
 	async getConfiguration(): Promise<SyncThingConfiguration | Failure> {
 		try {
 			const config = await this.syncthingFromREST.getConfiguration();

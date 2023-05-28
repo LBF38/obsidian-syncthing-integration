@@ -10,7 +10,7 @@ export class SyncThingConfigurationModel extends SyncThingConfiguration {
 		super(folders, devices);
 	}
 
-	static fromJson(json: string): SyncThingConfigurationModel {
+	static fromJSON(json: string): SyncThingConfigurationModel {
 		const parsedJSON = JSON.parse(json);
 		const folders: SyncThingFolder[] = [];
 		for (const parsedFolder of parsedJSON["folders"]) {
@@ -38,7 +38,7 @@ export class SyncThingConfigurationModel extends SyncThingConfiguration {
 		return this.caller(parsedJSON["folders"], parsedJSON["devices"]);
 	}
 
-	toJson(): string {
+	toJSON(): string {
 		return JSON.stringify(this);
 	}
 }

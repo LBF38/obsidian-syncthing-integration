@@ -7,6 +7,7 @@ import {
 
 export interface SyncThingRepository {
 	getConfiguration(): Promise<SyncThingConfiguration | Failure>;
+	getAPIKey(): Promise<string | Failure>;
 	getDevices(): Promise<SyncThingDevice[] | Failure>;
 	getFolders(): Promise<SyncThingFolder[] | Failure>;
 	startSyncThing(): Promise<boolean | Failure>;
