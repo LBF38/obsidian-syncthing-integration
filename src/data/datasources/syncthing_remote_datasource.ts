@@ -30,7 +30,12 @@ export class SyncThingFromRESTimpl implements SyncThingFromREST {
 		const response = await requestUrl({
 			url: `${baseURL}/rest/system/config`,
 			method: "GET",
-			headers: { "X-API-Key": this.apikey },
+			headers: {
+				"X-API-Key": this.apikey,
+				Accept: "*/*",
+				"Content-Type": "application/json",
+				"Access-Control-Allow-Origin": "*",
+			},
 		}).then((response) => {
 			if (response.status >= 400) {
 				throw new Error(response.text);

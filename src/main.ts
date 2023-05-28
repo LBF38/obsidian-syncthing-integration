@@ -60,7 +60,7 @@ export default class MyPlugin extends Plugin {
 
 		// Exemple de commande Syncthing
 		const syncthingCommand =
-			"syncthing --version && syncthing cli show system && syncthing cli config gui apikey get";
+			"syncthing --version && syncthing cli show system && syncthing cli config gui apikey get && syncthing cli config dump-json";
 
 		// Exemple d'appel à la commande dans le plugin Obsidian
 		this.addCommand({

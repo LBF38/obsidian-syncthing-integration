@@ -6,8 +6,12 @@ import {
 } from "src/domain/entities/syncthing";
 
 export class SyncThingConfigurationModel extends SyncThingConfiguration {
-	constructor(folders: SyncThingFolder[], devices: SyncThingDevice[]) {
-		super(folders, devices);
+	constructor(
+		version: string,
+		folders: SyncThingFolder[],
+		devices: SyncThingDevice[]
+	) {
+		super(version, folders, devices);
 	}
 
 	static fromJSON(json: string): SyncThingConfigurationModel {
@@ -35,7 +39,25 @@ export class SyncThingConfigurationModel extends SyncThingConfiguration {
 			);
 			folders.push(folder);
 		}
-		return this.caller(parsedJSON["folders"], parsedJSON["devices"]);
+		const devices: SyncThingDevice[] = [];
+		for (const device of parsedJSON["devices"]) {
+			devices.push(
+				new SyncThingDevice(
+					device["deviceID"],
+					device["introducedBy"],
+					device["encryptionPassword"],
+					device["addresses"],
+					device["paused"],
+					device["ignoredFolders"],
+					device["name"] ?? ""
+				)
+			);
+		}
+		return new SyncThingConfigurationModel(
+			parsedJSON["version"],
+			folders,
+			devices
+		);
 	}
 
 	toJSON(): string {

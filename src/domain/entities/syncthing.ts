@@ -7,6 +7,7 @@
  */
 export class SyncThingConfiguration {
 	constructor(
+		public version: string,
 		public folders: SyncThingFolder[],
 		public devices: SyncThingDevice[]
 	) {}

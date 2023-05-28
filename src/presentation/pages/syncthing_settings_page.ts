@@ -1,5 +1,5 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import { SyncThingFromRESTimpl } from "src/data/datasources/syncthing_remote_datasource";
+import { SyncThingFromCLIimpl } from "src/data/datasources/syncthing_local_datasource";
 import MyPlugin from "src/main";
 
 export class SampleSettingTab extends PluginSettingTab {
@@ -44,11 +44,12 @@ export class SampleSettingTab extends PluginSettingTab {
 		// 	new Notice("Please set the API key in the settings first.");
 		// 	return;
 		// }
-		const syncthingAPI = new SyncThingFromRESTimpl();
+		const syncthingAPI = new SyncThingFromCLIimpl();
 		syncthingAPI
 			.getConfiguration()
 			.then((config) => {
-				console.log(config);
+				console.log("Settings Page : Configuration")
+				console.log(config.version);
 				containerEl.createEl("h2", "SyncThing configuration");
 				// modal.contentEl.setText(JSON.stringify(config));
 				for (const folder of config.folders) {
