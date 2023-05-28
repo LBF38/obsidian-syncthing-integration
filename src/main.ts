@@ -2,15 +2,18 @@ import { exec } from "child_process";
 import { Editor, Modal, Notice, Plugin } from "obsidian";
 import { SyncThingFromRESTimpl } from "./data/datasources/syncthing_remote_datasource";
 import { SampleSettingTab } from "./presentation/pages/syncthing_settings_page";
+import { SyncThingConfiguration } from "./domain/entities/syncthing";
 
 //! Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {
 	api_key: string | null;
+	configuration: SyncThingConfiguration | null;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
 	api_key: null,
+	configuration: null,
 };
 
 export default class MyPlugin extends Plugin {

@@ -18,13 +18,16 @@ export class SampleSettingTab extends PluginSettingTab {
 		containerEl.createEl("h1", {
 			text: "SyncThing Integration for Obsidian",
 		});
-		containerEl.createEl("p", {
-			text: "This plugin allows you to sync your vault with SyncThing.\nIt allows you to manage the sync process from within Obsidian.\nYou can only manage the folder you are in.\n\nTo use this plugin, you need to have SyncThing installed on your computer.\n\nYou can find more information about SyncThing here: ",
-		});
-		containerEl.createEl("a", {
-			text: "SyncThing Website",
-			href: "https://syncthing.net/",
-		});
+		containerEl
+			.createEl("p", {
+				text: "This plugin allows you to sync your vault with SyncThing.\nIt allows you to manage the sync process from within Obsidian.\nYou can only manage the folder you are in.\n\nTo use this plugin, you need to have SyncThing installed on your computer.\n\nYou can find more information about SyncThing here: ",
+			})
+			.appendChild(
+				containerEl.createEl("a", {
+					text: "https://syncthing.net/",
+					href: "https://syncthing.net/",
+				})
+			);
 
 		new Setting(containerEl)
 			.setName("SyncThing API Key")
@@ -40,23 +43,29 @@ export class SampleSettingTab extends PluginSettingTab {
 					})
 			);
 
-		// if (!this.plugin.settings.api_key) {
-		// 	new Notice("Please set the API key in the settings first.");
-		// 	return;
-		// }
 		const syncthingAPI = new SyncThingFromCLIimpl();
 		syncthingAPI
 			.getConfiguration()
 			.then((config) => {
-				console.log("Settings Page : Configuration")
+				console.log("Settings Page : Configuration");
 				console.log(config.version);
-				containerEl.createEl("h2", "SyncThing configuration");
-				// modal.contentEl.setText(JSON.stringify(config));
 				for (const folder of config.folders) {
-					containerEl.createEl("p", {
-						text: folder.label,
-					});
+					// containerEl.createEl("p", {
+					// 	text: folder.label,
+					// });
+					new Setting(containerEl)
+						.setName(folder.label)
+						.addToggle((button) => null);
 				}
+				for (const device of config.devices) {
+					// containerEl.createEl("p", {
+					// 	text: device.name,
+					// });
+					new Setting(containerEl)
+						.setName(device.name ?? device.deviceID)
+						.addToggle((button) => null);
+				}
+				this.plugin.settings.configuration = config;
 			})
 			.catch((err) => {
 				containerEl.createEl("h2", "SyncThing configuration");
@@ -64,5 +73,17 @@ export class SampleSettingTab extends PluginSettingTab {
 					text: "Could not connect to SyncThing. Please check your API key and make sure SyncThing is running.",
 				});
 			});
+		// new Setting(containerEl)
+		// 	.setName("Configuration")
+		// 	.setDesc("SyncThing configuration")
+		// 	.then((setting) => {
+		// 		for (const device of this.plugin.settings.configuration
+		// 			?.devices ?? []) {
+		// 			console.log(device);
+		// 			setting.settingEl.createEl("p", {
+		// 				text: device.name,
+		// 			});
+		// 		}
+		// 	});
 	}
 }
