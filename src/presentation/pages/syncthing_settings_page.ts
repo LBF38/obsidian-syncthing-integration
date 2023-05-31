@@ -10,8 +10,12 @@ export class SampleSettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
-	display(): void {
+	async display(): Promise<void> {
 		const { containerEl } = this;
+		const syncthingAPI = new SyncThingFromCLIimpl();
+		await syncthingAPI.getConfiguration().then((config) => {
+			return (this.plugin.settings.configuration = config);
+		});
 
 		containerEl.empty();
 
@@ -43,47 +47,46 @@ export class SampleSettingTab extends PluginSettingTab {
 					})
 			);
 
-		const syncthingAPI = new SyncThingFromCLIimpl();
-		syncthingAPI
-			.getConfiguration()
-			.then((config) => {
-				console.log("Settings Page : Configuration");
-				console.log(config.version);
-				for (const folder of config.folders) {
-					// containerEl.createEl("p", {
-					// 	text: folder.label,
-					// });
-					new Setting(containerEl)
-						.setName(folder.label)
-						.addToggle((button) => null);
-				}
-				for (const device of config.devices) {
-					// containerEl.createEl("p", {
-					// 	text: device.name,
-					// });
-					new Setting(containerEl)
-						.setName(device.name ?? device.deviceID)
-						.addToggle((button) => null);
-				}
-				this.plugin.settings.configuration = config;
+		containerEl.createEl("h1", { text: "Syncthing Configuration" });
+		containerEl.createEl("h2", { text: "This Device" });
+		const thisDeviceTable = containerEl
+			.createEl("table", {
+				text: "This table will show the folders and devices that are configured on this device.",
 			})
-			.catch((err) => {
-				containerEl.createEl("h2", "SyncThing configuration");
-				containerEl.createEl("p", {
-					text: "Could not connect to SyncThing. Please check your API key and make sure SyncThing is running.",
-				});
-			});
-		// new Setting(containerEl)
-		// 	.setName("Configuration")
-		// 	.setDesc("SyncThing configuration")
-		// 	.then((setting) => {
-		// 		for (const device of this.plugin.settings.configuration
-		// 			?.devices ?? []) {
-		// 			console.log(device);
-		// 			setting.settingEl.createEl("p", {
-		// 				text: device.name,
-		// 			});
+			.appendChild(containerEl.createEl("tbody"));
+		const thisDeviceConfig = this.plugin.settings.configuration?.devices[0];
+		if (thisDeviceConfig) {
+			thisDeviceTable
+				.appendChild(containerEl.createEl("tr"))
+				.appendChild(containerEl.createEl("td", { text: "Device ID" }))
+				.appendChild(
+					containerEl.createEl("td", {
+						text: thisDeviceConfig.deviceID.slice(0, 8),
+					})
+				);
+		}
+		// syncthingAPI
+		// 	.getConfiguration()
+		// 	.then((config) => {
+		// 		console.log("Settings Page : Configuration");
+		// 		console.log(config.version);
+		// 		for (const folder of config.folders) {
+		// 			new Setting(containerEl)
+		// 				.setName(folder.label)
+		// 				.addToggle((button) => null);
 		// 		}
+		// 		for (const device of config.devices) {
+		// 			new Setting(containerEl)
+		// 				.setName(device.name ?? device.deviceID)
+		// 				.addToggle((button) => null);
+		// 		}
+		// 		this.plugin.settings.configuration = config;
+		// 	})
+		// 	.catch((err) => {
+		// 		containerEl.createEl("h2", "SyncThing configuration");
+		// 		containerEl.createEl("p", {
+		// 			text: "Could not connect to SyncThing. Please check your API key and make sure SyncThing is running.",
+		// 		});
 		// 	});
 	}
 }
