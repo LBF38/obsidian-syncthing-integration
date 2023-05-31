@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Page avec colonnes cliquables</title>
+  <style>
+    .row {
+      display: flex;
+    }
+
+    .column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .col-1 {
+      background-color: red;
+    }
+
+    .col-2 {
+      background-color: blue;
+    }
+
+    .col-3 {
+      background-color: green;
+    }
+
+    .button-container {
+      margin-bottom: 10px;
+    }
+  </style>
+  <script>
+    function afficherContenu(contenu) {
+      var col2 = document.getElementById("col-2");
+      col2.innerHTML = contenu;
+    }
+
+    function genererBoutons(debut, fin, colonne) {
+      for (var i = debut; i <= fin; i++) {
+        var button = document.createElement('button');
+        button.innerHTML = 'Élément ' + i;
+        button.onclick = function() {
+          afficherContenu('Contenu de l\'élément ' + i);
+        };
+        colonne.appendChild(button);
+        colonne.appendChild(document.createElement('br'));
+      }
+    }
+
+    window.onload = function() {
+      var col1 = document.querySelector('.col-1');
+      var col2 = document.querySelector('.col-2');
+      var col3 = document.querySelector('.col-3');
+      genererBoutons(1, 9, col1);
+      genererBoutons(1, 9, col3);
+    };
+  </script>
+</head>
+<body>
+  <div class="row">
+    <div class="column col-1"></div>
+    <div class="column col-2" id="col-2">
+      <!-- Le contenu affiché ici sera remplacé par le JavaScript -->
+    </div>
+    <div class="column col-3"></div>
+	<table>
+		<tbody>
+			<td>test</td>
+			<td>test</td>
+			<td>test</td>
+			<td>test</td>
+			<tr>
+				<td>test</td>
+				<td>test</td>
+				<td>test</td>
+				<td>test</td>
+				<td>test</td>
+			</tr>
+			<tr>
+				<td>second row</td>
+				<td>third row</td>
+			</tr>
+		</tbody>
+	</table>
+  </div>
+</body>
+</html>
