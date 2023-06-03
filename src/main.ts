@@ -1,8 +1,14 @@
 import { exec } from "child_process";
-import { Editor, Modal, Notice, Plugin } from "obsidian";
+import { Editor, Modal, Notice, Plugin, TFile, Workspace } from "obsidian";
 import { SyncThingFromRESTimpl } from "./data/datasources/syncthing_remote_datasource";
 import { SampleSettingTab } from "./views/syncthing_settings_page";
 import { SyncThingConfiguration } from "./models/syncthing_entities";
+import {
+	MainDiffView,
+	MAIN_DIFF_VIEW,
+	RIGHT_DIFF_VIEW,
+	RightDiffView,
+} from "./views/syncthing_diff";
 
 //! Remember to rename these classes and interfaces!
 
@@ -73,6 +79,13 @@ export default class MyPlugin extends Plugin {
 				this.runSyncthingCommand(syncthingCommand);
 			},
 		});
+
+		this.registerView(MAIN_DIFF_VIEW, (leaf) => new MainDiffView(leaf));
+		this.registerView(RIGHT_DIFF_VIEW, (leaf) => new RightDiffView(leaf));
+		this.addRibbonIcon("dice", "Activate view", () => {
+			const file = this.app.vault.getFiles()[0];
+			this.activateView(file);
+		});
 	}
 
 	runSyncthingCommand(command: string) {
@@ -95,7 +108,10 @@ export default class MyPlugin extends Plugin {
 		});
 	}
 
-	onunload() {}
+	onunload() {
+		this.app.workspace.detachLeavesOfType(MAIN_DIFF_VIEW);
+		this.app.workspace.detachLeavesOfType(RIGHT_DIFF_VIEW);
+	}
 
 	async loadSettings() {
 		this.settings = Object.assign(
@@ -107,5 +123,20 @@ export default class MyPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	async activateView(file: TFile) {
+		this.app.workspace.detachLeavesOfType(MAIN_DIFF_VIEW);
+
+		const newWindow = this.app.workspace.getLeaf("window");
+		await newWindow.setViewState({
+			type: MAIN_DIFF_VIEW,
+			state: this.app.vault.read(file),
+			active: true,
+		});
+
+		this.app.workspace.revealLeaf(
+			this.app.workspace.getLeavesOfType(MAIN_DIFF_VIEW)[0]
+		);
 	}
 }
