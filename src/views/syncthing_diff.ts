@@ -1,4 +1,4 @@
-import { ItemView, Modal, WorkspaceLeaf } from "obsidian";
+import { App, ItemView, Modal, Setting, WorkspaceLeaf } from "obsidian";
 import { createTwoFilesPatch } from "diff";
 import { defaultDiff2HtmlConfig, html } from "diff2html";
 
@@ -73,28 +73,92 @@ export class MainDiffView extends ItemView {
 	}
 }
 
-export const RIGHT_DIFF_VIEW = "right-diff-view";
-
-export class RightDiffView extends ItemView {
-	constructor(leaf: WorkspaceLeaf) {
-		super(leaf);
+export class DiffModal extends Modal {
+	constructor(app: App, public content: string) {
+		super(app);
 	}
 
-	getViewType(): string {
-		return RIGHT_DIFF_VIEW;
+	onOpen() {
+		const { contentEl } = this;
+
+		// Left side : list of all conflicting files.
+		const leftSide = contentEl.createDiv({
+			cls: ["diff", "diff-modal-left-side"],
+		});
+		leftSide.createEl("h1", { text: "Conflicting files" });
+		const files = this.app.vault.getMarkdownFiles();
+		files.forEach((file) => {
+			new Setting(leftSide)
+				.setName(file.basename)
+				.setDesc(file.stat.mtime.toString())
+				.addButton((button) => {
+					button
+						.setButtonText("Resolve conflict")
+						.setCta()
+						.onClick(() => {
+							// TODO: add logic to resolve conflict.
+						});
+				});
+		});
+
+		// Middle : diff between the two files.
+		const middle = contentEl.createDiv({
+			cls: ["diff", "diff-modal-middle"],
+		});
+		middle.createEl("h1", { text: "Diff" });
+		middle.createDiv({ text: "This is the difference between two files." });
+
+		// Right side : Details about the original file.
+		const rightSide = contentEl.createDiv({
+			cls: ["diff", "diff-modal-right-side"],
+		});
+		rightSide.createEl("h1", { text: "Original file" });
+		rightSide.createDiv({ text: "Original file content & details" });
+		new Setting(rightSide)
+			.setName(files[1].basename)
+			.setDesc("Details")
+			.settingEl.createEl("ul")
+			.createEl("li", {
+				text: `Size : ${files[0].stat.size.toString()}`,
+			});
+
+		// Bottom : Buttons to resolve the conflict.
+		// const bottom = contentEl.createDiv({ cls: "diff-modal-bottom" });
+		// bottom.createEl("h1", { text: "Resolve conflict" });
+		// bottom.createDiv({ text: "Resolve conflict content" });
+
+		// CSS styling for the modal.
+		this.modalEl.setCssStyles({
+			width: "100%",
+			height: "100%",
+		});
+
+		contentEl.setCssStyles({
+			display: "flex",
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			padding: "1rem",
+		});
+
+		leftSide.setCssStyles({
+			height: "100%",
+			overflow: "auto",
+		});
+
+		middle.setCssStyles({
+			height: "100%",
+			overflow: "auto",
+		});
+
+		rightSide.setCssStyles({
+			height: "100%",
+			overflow: "auto",
+		});
 	}
 
-	getDisplayText(): string {
-		return "Right diff view";
-	}
-
-	async onOpen(): Promise<void> {
-		const { containerEl } = this;
-		containerEl.empty();
-		containerEl.createEl("h4", { text: "Right diff view" });
-	}
-
-	async onClose(): Promise<void> {
-		// Nothing to clean up.
+	onClose() {
+		const { contentEl } = this;
+		contentEl.empty();
 	}
 }

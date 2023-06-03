@@ -1,14 +1,13 @@
 import { exec } from "child_process";
-import { Editor, Modal, Notice, Plugin, TFile, Workspace } from "obsidian";
+import { Editor, Modal, Notice, Plugin, TFile } from "obsidian";
 import { SyncThingFromRESTimpl } from "./data/datasources/syncthing_remote_datasource";
-import { SampleSettingTab } from "./views/syncthing_settings_page";
 import { SyncThingConfiguration } from "./models/syncthing_entities";
 import {
-	MainDiffView,
+	DiffModal,
 	MAIN_DIFF_VIEW,
-	RIGHT_DIFF_VIEW,
-	RightDiffView,
+	MainDiffView,
 } from "./views/syncthing_diff";
+import { SampleSettingTab } from "./views/syncthing_settings_page";
 
 //! Remember to rename these classes and interfaces!
 
@@ -81,10 +80,13 @@ export default class MyPlugin extends Plugin {
 		});
 
 		this.registerView(MAIN_DIFF_VIEW, (leaf) => new MainDiffView(leaf));
-		this.registerView(RIGHT_DIFF_VIEW, (leaf) => new RightDiffView(leaf));
 		this.addRibbonIcon("dice", "Activate view", () => {
 			const file = this.app.vault.getFiles()[0];
 			this.activateView(file);
+		});
+
+		this.addRibbonIcon("construction", "Open Syncthing diff modal", () => {
+			new DiffModal(this.app, "Diff modal").open();
 		});
 	}
 
@@ -110,7 +112,6 @@ export default class MyPlugin extends Plugin {
 
 	onunload() {
 		this.app.workspace.detachLeavesOfType(MAIN_DIFF_VIEW);
-		this.app.workspace.detachLeavesOfType(RIGHT_DIFF_VIEW);
 	}
 
 	async loadSettings() {
