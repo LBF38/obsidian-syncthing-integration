@@ -1,14 +1,22 @@
-import { Failure, RestFailure } from "src/core/errors/failures";
+import { Failure, RestFailure } from "src/models/failures";
 import {
 	SyncThingConfiguration,
 	SyncThingDevice,
 	SyncThingFolder,
-} from "src/domain/entities/syncthing";
-import { SyncThingRepository } from "src/domain/repositories/syncthing_repository";
-import { SyncThingFromCLI } from "../datasources/syncthing_local_datasource";
-import { SyncThingFromREST } from "../datasources/syncthing_remote_datasource";
+} from "src/models/syncthing_entities";
+import { SyncThingFromCLI } from "../data/datasources/syncthing_local_datasource";
+import { SyncThingFromREST } from "../data/datasources/syncthing_remote_datasource";
 
-export class SyncThingRepositoryImpl implements SyncThingRepository {
+export interface SyncthingController {
+	getConfiguration(): Promise<SyncThingConfiguration | Failure>;
+	getAPIKey(): Promise<string | Failure>;
+	getDevices(): Promise<SyncThingDevice[] | Failure>;
+	getFolders(): Promise<SyncThingFolder[] | Failure>;
+	startSyncThing(): Promise<boolean | Failure>;
+	stopSyncThing(): Promise<boolean | Failure>;
+}
+
+export class SyncthingControllerImpl implements SyncthingController {
 	constructor(
 		public syncthingFromCLI: SyncThingFromCLI,
 		public syncthingFromREST: SyncThingFromREST

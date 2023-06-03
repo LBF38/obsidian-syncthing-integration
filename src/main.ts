@@ -1,8 +1,8 @@
 import { exec } from "child_process";
 import { Editor, Modal, Notice, Plugin } from "obsidian";
 import { SyncThingFromRESTimpl } from "./data/datasources/syncthing_remote_datasource";
-import { SampleSettingTab } from "./presentation/pages/syncthing_settings_page";
-import { SyncThingConfiguration } from "./domain/entities/syncthing";
+import { SampleSettingTab } from "./views/syncthing_settings_page";
+import { SyncThingConfiguration } from "./models/syncthing_entities";
 
 //! Remember to rename these classes and interfaces!
 
