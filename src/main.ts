@@ -1,6 +1,18 @@
 import { Notice, Plugin } from "obsidian";
+import {
+	SyncthingController,
+	SyncthingControllerImpl,
+} from "./controllers/syncthing_controller";
+import {
+	SyncThingFromCLI,
+	SyncThingFromCLIimpl,
+} from "./data/datasources/syncthing_local_datasource";
+import {
+	SyncThingFromREST,
+	SyncThingFromRESTimpl,
+} from "./data/datasources/syncthing_remote_datasource";
 import { SyncThingConfiguration } from "./models/syncthing_entities";
-import { DiffModal } from "./views/syncthing_diff";
+import { ConflictsModal } from "./views/syncthing_conflicts";
 import { SampleSettingTab } from "./views/syncthing_settings_page";
 
 //! Remember to rename these classes and interfaces!
@@ -17,6 +29,12 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 
 export default class MyPlugin extends Plugin {
 	settings!: MyPluginSettings;
+	syncthingFromCLI: SyncThingFromCLI = new SyncThingFromCLIimpl();
+	syncthingFromREST: SyncThingFromREST = new SyncThingFromRESTimpl();
+	syncthingController: SyncthingController = new SyncthingControllerImpl(
+		this.syncthingFromCLI,
+		this.syncthingFromREST
+	);
 
 	async onload() {
 		await this.loadSettings();
@@ -32,7 +50,7 @@ export default class MyPlugin extends Plugin {
 		this.addSettingTab(new SampleSettingTab(this.app, this));
 
 		this.addRibbonIcon("construction", "Open Syncthing diff modal", () => {
-			new DiffModal(this.app).open();
+			new ConflictsModal(this.app, this.syncthingController).open();
 		});
 	}
 
