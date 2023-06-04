@@ -1,80 +1,15 @@
-import { App, ItemView, Modal, Setting, WorkspaceLeaf } from "obsidian";
 import { createTwoFilesPatch } from "diff";
-import { defaultDiff2HtmlConfig, html } from "diff2html";
+import { Diff2HtmlConfig, html } from "diff2html";
+import { App, Modal, Setting, TFile } from "obsidian";
 
-export const MAIN_DIFF_VIEW = "main-diff-view";
-
-export class MainDiffView extends ItemView {
-	constructor(leaf: WorkspaceLeaf) {
-		super(leaf);
-	}
-
-	getViewType() {
-		return MAIN_DIFF_VIEW;
-	}
-
-	getDisplayText() {
-		return "Example view";
-	}
-
-	async onOpen() {
-		const container = this.containerEl.children[1];
-		container.empty();
-		container.createEl("h4", { text: "Example view" });
-		this.contentEl.setText("Hello world!");
-		this.contentEl.createEl("h1", { text: "Hello world!" });
-		const file1 = {
-			tfile: this.app.vault.getMarkdownFiles()[0],
-			content: await this.app.vault.read(
-				this.app.vault.getMarkdownFiles()[0]
-			),
-		};
-		const file2 = {
-			tfile: this.app.vault.getMarkdownFiles()[1],
-			content: await this.app.vault.read(
-				this.app.vault.getMarkdownFiles()[1]
-			),
-		};
-		this.contentEl.createEl("h1", { text: file1.tfile.basename });
-		this.contentEl.createDiv({ text: file1.content });
-		this.contentEl.createEl("h1", { text: file2.tfile.basename });
-		this.contentEl.createDiv({ text: file2.content });
-		this.containerEl
-			.createEl("button", { text: "Diff" })
-			.addEventListener("click", () => {
-				createTwoFilesPatch(
-					file1.tfile.basename,
-					file2.tfile.basename,
-					file1.content,
-					file2.content
-				);
-			});
-		const difference = createTwoFilesPatch(
-			file1.tfile.basename,
-			file2.tfile.basename,
-			file1.content,
-			file2.content
-		);
-		this.contentEl.createEl("h1", { text: "Difference" });
-		this.contentEl.createDiv({ text: difference });
-		this.contentEl
-			.createEl("button", { text: "Open diff between files" })
-			.addEventListener("click", () => {
-				new Modal(this.app).open();
-				// new SampleModal( // ! Change this to a better UI.
-				// 	app,
-				// 	html(difference, defaultDiff2HtmlConfig)
-				// ).open();
-			});
-	}
-
-	async onClose() {
-		// Nothing to clean up.
-	}
-}
+// CSS styling for the diff.
+import "diff2html/bundles/css/diff2html.min.css";
+// import "highlight.js/styles/github.css";
+import "highlight.js/styles/github-dark.css";
 
 export class DiffModal extends Modal {
-	constructor(app: App, public content: string) {
+	d2hUI?: string;
+	constructor(app: App) {
 		super(app);
 	}
 
@@ -95,7 +30,14 @@ export class DiffModal extends Modal {
 					button
 						.setButtonText("Resolve conflict")
 						.setCta()
-						.onClick(() => {
+						.onClick(async () => {
+							this.d2hUI = await this.getDiffContent(
+								file,
+								files[0]
+							);
+							// this.d2hUI.draw();
+							this.close();
+							this.open();
 							// TODO: add logic to resolve conflict.
 						});
 				});
@@ -106,7 +48,8 @@ export class DiffModal extends Modal {
 			cls: ["diff", "diff-modal-middle"],
 		});
 		middle.createEl("h1", { text: "Diff" });
-		middle.createDiv({ text: "This is the difference between two files." });
+		middle.createDiv({ attr: { id: "diff-ui" } });
+		middle.createDiv().innerHTML = this.d2hUI ?? "";
 
 		// Right side : Details about the original file.
 		const rightSide = contentEl.createDiv({
@@ -115,17 +58,12 @@ export class DiffModal extends Modal {
 		rightSide.createEl("h1", { text: "Original file" });
 		rightSide.createDiv({ text: "Original file content & details" });
 		new Setting(rightSide)
-			.setName(files[1].basename)
+			.setName(files[0].basename)
 			.setDesc("Details")
 			.settingEl.createEl("ul")
 			.createEl("li", {
 				text: `Size : ${files[0].stat.size.toString()}`,
 			});
-
-		// Bottom : Buttons to resolve the conflict.
-		// const bottom = contentEl.createDiv({ cls: "diff-modal-bottom" });
-		// bottom.createEl("h1", { text: "Resolve conflict" });
-		// bottom.createDiv({ text: "Resolve conflict content" });
 
 		// CSS styling for the modal.
 		this.modalEl.setCssStyles({
@@ -147,18 +85,43 @@ export class DiffModal extends Modal {
 		});
 
 		middle.setCssStyles({
+			width: "50%",
 			height: "100%",
 			overflow: "auto",
+			padding: "1rem",
 		});
 
 		rightSide.setCssStyles({
 			height: "100%",
 			overflow: "auto",
 		});
+
+		// CSS styling for the diff.*
+		// const diff = contentEl.find(".diff");
+		// diff.setCssStyles({
+		// 	border: "1px solid black",
+		// 	borderRadius: "5px",
+		// 	padding: "1rem",
+		// });
 	}
 
 	onClose() {
 		const { contentEl } = this;
 		contentEl.empty();
+	}
+
+	// Utils fonctions
+	async getDiffContent(file1: TFile, file2: TFile): Promise<string> {
+		const filesDiff = createTwoFilesPatch(
+			file1.basename,
+			file2.basename,
+			await this.app.vault.read(file1),
+			await this.app.vault.read(file2)
+		);
+		const d2hUIConfig: Diff2HtmlConfig = {
+			outputFormat: "line-by-line",
+			drawFileList: false,
+		};
+		return html(filesDiff, d2hUIConfig);
 	}
 }

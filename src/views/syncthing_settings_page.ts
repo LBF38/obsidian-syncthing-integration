@@ -65,28 +65,5 @@ export class SampleSettingTab extends PluginSettingTab {
 					})
 				);
 		}
-		// syncthingAPI
-		// 	.getConfiguration()
-		// 	.then((config) => {
-		// 		console.log("Settings Page : Configuration");
-		// 		console.log(config.version);
-		// 		for (const folder of config.folders) {
-		// 			new Setting(containerEl)
-		// 				.setName(folder.label)
-		// 				.addToggle((button) => null);
-		// 		}
-		// 		for (const device of config.devices) {
-		// 			new Setting(containerEl)
-		// 				.setName(device.name ?? device.deviceID)
-		// 				.addToggle((button) => null);
-		// 		}
-		// 		this.plugin.settings.configuration = config;
-		// 	})
-		// 	.catch((err) => {
-		// 		containerEl.createEl("h2", "SyncThing configuration");
-		// 		containerEl.createEl("p", {
-		// 			text: "Could not connect to SyncThing. Please check your API key and make sure SyncThing is running.",
-		// 		});
-		// 	});
 	}
 }
