@@ -37,7 +37,7 @@ If you want to develop this plugin locally, please follow the instructions below
 1. Clone the repository
 2. Install the dependencies using `pnpm install`
 3. Build the plugin using `pnpm dev`
-4. (Optional) Use the hot-reload plugin in Obsidian to reload the plugin automatically when you make changes
+4. (Optional) Use the [hot-reload plugin](https://github.com/pjeby/hot-reload) in Obsidian to reload the plugin automatically when you make changes
 
 > **Note**
 > When using the hot-reload plugin, you have to clone this plugin in the `.obsidian/plugins` folder of your vault.
