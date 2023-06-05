@@ -10,6 +10,8 @@
 
 # npm
 node_modules
+# pnpm (in devcontainer)
+.pnpm-store
 
 # Don't include the compiled main.js file in the repo.
 # They should be uploaded to GitHub releases instead.

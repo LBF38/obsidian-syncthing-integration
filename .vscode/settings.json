@@ -2,6 +2,7 @@
     "conventionalCommits.scopes": [
 		"README",
 		"syncthing",
-		"dev"
+		"dev",
+		"deps"
 	]
 }
