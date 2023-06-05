@@ -1,0 +1,7 @@
+{
+    "conventionalCommits.scopes": [
+		"README",
+		"syncthing",
+		"dev"
+	]
+}
