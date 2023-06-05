@@ -1,6 +1,7 @@
 import { exec } from "child_process";
 import { SyncThingConfigurationModel } from "../models/syncthing";
 import { promisify } from "util";
+import { CliFailure } from "src/models/failures";
 
 /**
  * Interface for using the CLI of Syncthing.
@@ -10,28 +11,46 @@ export interface SyncThingFromCLI {
 	/**
 	 * Get the API key of Syncthing installation using the CLI.
 	 */
-	getAPIkey(): string | Error;
+	getAPIkey(): Promise<string>;
+	/**
+	 * Get the configuration of Syncthing installation using the CLI.
+	 */
 	getConfiguration(): Promise<SyncThingConfigurationModel>;
+	/**
+	 * Get the version of Syncthing installation using the CLI.
+	 * This is used to check if Syncthing is installed.
+	 */
+	getVersion(): Promise<string>;
 }
 
 export class SyncThingFromCLIimpl implements SyncThingFromCLI {
+	async getVersion(): Promise<string> {
+		const syncthingVersion = "syncthing --version";
+		const response = await this.runSyncthingCommand(syncthingVersion);
+		if (response instanceof Error) {
+			throw new CliFailure(response.message);
+		}
+		return response;
+	}
+
 	async getConfiguration(): Promise<SyncThingConfigurationModel> {
 		const commandToGetConfig = "syncthing cli config dump-json";
 		const response = await this.runSyncthingCommand(commandToGetConfig);
 		if (response instanceof Error) {
-			throw response;
+			throw new CliFailure(response.message);
 		}
-		console.log(JSON.parse(response)["version"]);
+		console.log("Config version : " + JSON.parse(response)["version"]);
 		return SyncThingConfigurationModel.fromJSON(response);
 	}
 
-	getAPIkey(): string | Error {
-		const { stdout, stderr } = exec("syncthing cli config gui apikey get");
-		if (stderr) {
-			console.error(stderr);
-			return "";
+	async getAPIkey(): Promise<string> {
+		const response = await this.runSyncthingCommand(
+			"syncthing cli config gui apikey get"
+		);
+		if (response instanceof Error) {
+			throw new CliFailure("No API key found.");
 		}
-		return stdout?.read() ?? Error("No API key found.");
+		return response;
 	}
 
 	private async runSyncthingCommand(

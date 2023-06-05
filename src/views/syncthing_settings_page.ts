@@ -1,21 +1,62 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import { SyncThingFromCLIimpl } from "../data/syncthing_local_datasource";
+import { SyncthingController } from "src/controllers/syncthing_controller";
 import MyPlugin from "src/main";
+import { Failure } from "src/models/failures";
 
 export class SampleSettingTab extends PluginSettingTab {
 	plugin: MyPlugin;
+	syncthingController: SyncthingController;
 
 	constructor(app: App, plugin: MyPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
+		this.syncthingController = plugin.syncthingController;
 	}
 
 	async display(): Promise<void> {
 		const { containerEl } = this;
-		const syncthingAPI = new SyncThingFromCLIimpl();
-		await syncthingAPI.getConfiguration().then((config) => {
-			return (this.plugin.settings.configuration = config);
-		});
+		containerEl.empty();
+
+		// TODO: Add banner with the logo.
+		// containerEl
+		// 	.createEl("img", {
+		// 		attr: {
+		// 			src: "assets/syncthing-logo-horizontal.svg",
+		// 		},
+		// 	})
+		// 	.appendChild(
+		// 		containerEl.createEl("img", {
+		// 			attr: {
+		// 				src: "assets/obsidian_software_logo.svg",
+		// 			},
+		// 		})
+		// 	);
+
+		// Check if Syncthing is installed.
+		const hasSyncthing = await this.syncthingController.hasSyncThing();
+		if (!hasSyncthing) {
+			containerEl.createEl("h1", { text: "Syncthing is not installed." });
+			containerEl
+				.createEl("p", {
+					text: "Please install Syncthing at the following URL: ",
+				})
+				.append(
+					containerEl.createEl("a", {
+						text: "https://syncthing.net/downloads",
+						href: "https://syncthing.net/downloads",
+					})
+				);
+			return;
+		}
+
+		// Get the Syncthing configuration from CLI.
+		const configuration = await this.syncthingController.getConfiguration();
+		if (configuration instanceof Failure) {
+			containerEl.createEl("h2", {
+				text: "Error getting configuration. Please try again later.",
+			});
+			return;
+		}
 
 		containerEl.empty();
 

@@ -9,6 +9,7 @@ import { SyncThingFromREST } from "../data/syncthing_remote_datasource";
 import { TFile } from "obsidian";
 
 export interface SyncthingController {
+	hasSyncThing(): Promise<boolean>;
 	getConfiguration(): Promise<SyncThingConfiguration | Failure>;
 	getConflicts(): Promise<TFile[] | Failure>;
 	getAPIKey(): Promise<string | Failure>;
@@ -23,6 +24,17 @@ export class SyncthingControllerImpl implements SyncthingController {
 		public syncthingFromCLI: SyncThingFromCLI,
 		public syncthingFromREST: SyncThingFromREST
 	) {}
+
+	async hasSyncThing(): Promise<boolean> {
+		return await this.syncthingFromCLI
+			.getVersion()
+			.then((version) => {
+				return true;
+			})
+			.catch((error) => {
+				return false;
+			});
+	}
 
 	async getConflicts(): Promise<Failure | TFile[]> {
 		// return app.vault.getFiles();
