@@ -1,93 +1,54 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Page avec colonnes cliquables</title>
-  <style>
-    .row {
-      display: flex;
-    }
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8" />
+		<!-- Make sure to load the highlight.js CSS file before the Diff2Html CSS file -->
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/styles/github.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="https://cdn.jsdelivr.net/npm/diff2html/bundles/css/diff2html.min.css"
+		/>
+		<script
+			type="text/javascript"
+			src="https://cdn.jsdelivr.net/npm/diff2html/bundles/js/diff2html-ui.min.js"
+		></script>
+	</head>
+	<script>
+		const diffString = `diff --git a/sample.js b/sample.js
+index 0000001..0ddf2ba
+--- a/sample.js
++++ b/sample.js
+@@ -1 +1 @@
+-console.log("Hello World!")
++console.log("Hello from Diff2Html!")`;
 
-    .column {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
-      color: white;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .col-1 {
-      background-color: red;
-    }
-
-    .col-2 {
-      background-color: blue;
-    }
-
-    .col-3 {
-      background-color: green;
-    }
-
-    .button-container {
-      margin-bottom: 10px;
-    }
-  </style>
-  <script>
-    function afficherContenu(contenu) {
-      var col2 = document.getElementById("col-2");
-      col2.innerHTML = contenu;
-    }
-
-    function genererBoutons(debut, fin, colonne) {
-      for (var i = debut; i <= fin; i++) {
-        var button = document.createElement('button');
-        button.innerHTML = 'Élément ' + i;
-        button.onclick = function() {
-          afficherContenu('Contenu de l\'élément ' + i);
-        };
-        colonne.appendChild(button);
-        colonne.appendChild(document.createElement('br'));
-      }
-    }
-
-    window.onload = function() {
-      var col1 = document.querySelector('.col-1');
-      var col2 = document.querySelector('.col-2');
-      var col3 = document.querySelector('.col-3');
-      genererBoutons(1, 9, col1);
-      genererBoutons(1, 9, col3);
-    };
-  </script>
-</head>
-<body>
-  <div class="row">
-    <div class="column col-1"></div>
-    <div class="column col-2" id="col-2">
-      <!-- Le contenu affiché ici sera remplacé par le JavaScript -->
-    </div>
-    <div class="column col-3"></div>
-	<table>
-		<tbody>
-			<td>test</td>
-			<td>test</td>
-			<td>test</td>
-			<td>test</td>
-			<tr>
-				<td>test</td>
-				<td>test</td>
-				<td>test</td>
-				<td>test</td>
-				<td>test</td>
-			</tr>
-			<tr>
-				<td>second row</td>
-				<td>third row</td>
-			</tr>
-		</tbody>
-	</table>
-  </div>
-</body>
+		document.addEventListener("DOMContentLoaded", function () {
+			var targetElement = document.getElementById("myDiffElement");
+			var configuration = {
+				drawFileList: true,
+				fileListToggle: false,
+				fileListStartVisible: false,
+				fileContentToggle: false,
+				matching: "lines",
+				// outputFormat: "side-by-side",
+				synchronisedScroll: true,
+				highlight: true,
+				renderNothingWhenEmpty: false,
+			};
+			var diff2htmlUi = new Diff2HtmlUI(
+				targetElement,
+				diffString,
+				configuration
+			);
+			diff2htmlUi.draw();
+			diff2htmlUi.highlightCode();
+		});
+	</script>
+	<body>
+		<div id="myDiffElement"></div>
+	</body>
 </html>
