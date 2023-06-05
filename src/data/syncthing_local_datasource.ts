@@ -21,9 +21,21 @@ export interface SyncThingFromCLI {
 	 * This is used to check if Syncthing is installed.
 	 */
 	getVersion(): Promise<string>;
+	/**
+	 * Start the Syncthing service using the CLI.
+	 */
+	startSyncThing(): Promise<boolean>;
 }
 
 export class SyncThingFromCLIimpl implements SyncThingFromCLI {
+	async startSyncThing(): Promise<boolean> {
+		const syncthingStart = "syncthing";
+		const response = await this.runSyncthingCommand(syncthingStart);
+		if (response instanceof Error) {
+			throw new CliFailure(response.message);
+		}
+		return true;
+	}
 	async getVersion(): Promise<string> {
 		const syncthingVersion = "syncthing --version";
 		const response = await this.runSyncthingCommand(syncthingVersion);

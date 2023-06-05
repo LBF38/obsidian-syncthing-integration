@@ -9,13 +9,38 @@ import { SyncThingFromREST } from "../data/syncthing_remote_datasource";
 import { TFile } from "obsidian";
 
 export interface SyncthingController {
+	/**
+	 * Checks if SyncThing is installed on the system.
+	 */
 	hasSyncThing(): Promise<boolean>;
+	/**
+	 * Gets the SyncThing configuration.
+	 */
 	getConfiguration(): Promise<SyncThingConfiguration | Failure>;
+	/**
+	 * Gets the SyncThing conflicting files.
+	 * @see https://docs.syncthing.net/rest/db-conflicts-get.html
+	 */
 	getConflicts(): Promise<TFile[] | Failure>;
+	/**
+	 * Gets the SyncThing API key from the CLI.
+	 */
 	getAPIKey(): Promise<string | Failure>;
+	/**
+	 * Gets the SyncThing devices.
+	 */
 	getDevices(): Promise<SyncThingDevice[] | Failure>;
+	/**
+	 * Gets the SyncThing folders.
+	 */
 	getFolders(): Promise<SyncThingFolder[] | Failure>;
+	/**
+	 * Starts the Syncthing service.
+	 */
 	startSyncThing(): Promise<boolean | Failure>;
+	/**
+	 * Stops the Syncthing service.
+	 */
 	stopSyncThing(): Promise<boolean | Failure>;
 }
 
@@ -47,7 +72,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 
 	async getConfiguration(): Promise<SyncThingConfiguration | Failure> {
 		try {
-			const config = await this.syncthingFromREST.getConfiguration();
+			const config = await this.syncthingFromCLI.getConfiguration();
 			return config;
 		} catch (error) {
 			console.error(error);
@@ -61,7 +86,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 		throw new Error("Method not implemented.");
 	}
 	startSyncThing(): Promise<boolean> {
-		throw new Error("Method not implemented.");
+		return this.syncthingFromCLI.startSyncThing();
 	}
 	stopSyncThing(): Promise<boolean> {
 		throw new Error("Method not implemented.");

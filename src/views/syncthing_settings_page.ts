@@ -96,6 +96,10 @@ export class SampleSettingTab extends PluginSettingTab {
 			})
 			.appendChild(containerEl.createEl("tbody"));
 		const thisDeviceConfig = this.plugin.settings.configuration?.devices[0];
+		new Setting(containerEl)
+			.setHeading()
+			.setName("This Device")
+			.setDesc("This is the device that you are currently using.");
 		if (thisDeviceConfig) {
 			thisDeviceTable
 				.appendChild(containerEl.createEl("tr"))
