@@ -1,5 +1,5 @@
 import { App, Modal, Setting } from "obsidian";
-import { SyncthingController } from "src/controllers/syncthing_controller";
+import { SyncthingController } from "../controllers/syncthing_controller";
 import { Failure } from "src/models/failures";
 
 /**

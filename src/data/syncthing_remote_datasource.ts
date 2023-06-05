@@ -1,5 +1,5 @@
 import { requestUrl } from "obsidian";
-import { SyncThingConfigurationModel } from "../../models/syncthing";
+import { SyncThingConfigurationModel } from "../models/syncthing";
 import { SyncThingFromCLIimpl } from "./syncthing_local_datasource";
 
 /**

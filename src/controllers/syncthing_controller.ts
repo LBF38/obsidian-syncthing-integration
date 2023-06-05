@@ -4,8 +4,8 @@ import {
 	SyncThingDevice,
 	SyncThingFolder,
 } from "src/models/syncthing_entities";
-import { SyncThingFromCLI } from "../data/datasources/syncthing_local_datasource";
-import { SyncThingFromREST } from "../data/datasources/syncthing_remote_datasource";
+import { SyncThingFromCLI } from "../data/syncthing_local_datasource";
+import { SyncThingFromREST } from "../data/syncthing_remote_datasource";
 import { TFile } from "obsidian";
 
 export interface SyncthingController {
@@ -25,7 +25,6 @@ export class SyncthingControllerImpl implements SyncthingController {
 	) {}
 
 	async getConflicts(): Promise<Failure | TFile[]> {
-
 		// return app.vault.getFiles();
 		return new RestFailure();
 	}

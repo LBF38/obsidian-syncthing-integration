@@ -6,11 +6,11 @@ import {
 import {
 	SyncThingFromCLI,
 	SyncThingFromCLIimpl,
-} from "./data/datasources/syncthing_local_datasource";
+} from "./data/syncthing_local_datasource";
 import {
 	SyncThingFromREST,
 	SyncThingFromRESTimpl,
-} from "./data/datasources/syncthing_remote_datasource";
+} from "./data/syncthing_remote_datasource";
 import { SyncThingConfiguration } from "./models/syncthing_entities";
 import { ConflictsModal } from "./views/syncthing_conflicts";
 import { SampleSettingTab } from "./views/syncthing_settings_page";

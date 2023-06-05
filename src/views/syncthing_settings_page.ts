@@ -1,5 +1,5 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import { SyncThingFromCLIimpl } from "src/data/datasources/syncthing_local_datasource";
+import { SyncThingFromCLIimpl } from "../data/syncthing_local_datasource";
 import MyPlugin from "src/main";
 
 export class SampleSettingTab extends PluginSettingTab {
