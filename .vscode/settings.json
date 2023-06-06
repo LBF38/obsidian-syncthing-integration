@@ -1,8 +1,12 @@
 {
-    "conventionalCommits.scopes": [
+	"conventionalCommits.scopes": [
 		"README",
 		"syncthing",
 		"dev",
 		"deps"
-	]
+	],
+	"markdownlint.config": {
+		"MD033": false,
+		"MD041": false
+	}
 }

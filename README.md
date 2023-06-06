@@ -8,6 +8,17 @@
 
 This plugin allows you to synchronize your Obsidian vault with a remote device using [Syncthing](https://syncthing.net/).
 
+## :link: Useful links
+
+### Related softwares
+
+- [Syncthing](https://syncthing.net/)
+- [Obsidian](https://obsidian.md/)
+
+### Plugin's related links
+
+- [Roadmap](docs/ROADMAP.md)
+
 ## :arrow_down: Installation
 
 You can install the plugin using the following ways :
