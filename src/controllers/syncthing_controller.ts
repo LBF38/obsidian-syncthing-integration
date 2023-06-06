@@ -39,6 +39,11 @@ export interface SyncthingController {
 		conflictingFiles: TFile[] | Failure;
 	}>;
 	/**
+	 * Parses a SyncThing conflict filename.
+	 * @returns a {@linkcode ConflictFilename} object if the filename is valid, or a {@linkcode Failure} object if it is not.
+	 */
+	parseConflictFilename(filename: string): ConflictFilename | Failure;
+	/**
 	 * Gets the SyncThing API key from the CLI.
 	 */
 	getAPIKey(): Promise<string | Failure>;
@@ -62,8 +67,8 @@ export interface SyncthingController {
 
 interface ConflictFilename {
 	filename: string;
-	date: number; // format: YYYYMMDD
-	time: number; // format: HHMMSS
+	date: string; // format: YYYYMMDD
+	time: string; // format: HHMMSS
 	modifiedBy: string; // format: reduced device ID (7 characters)
 	extension: string; // format: file extension
 }
@@ -105,24 +110,29 @@ export class SyncthingControllerImpl implements SyncthingController {
 		return conflictsFiles;
 	}
 
-	async getDiffFiles(entryFile: TFile) {
-		const regex = new RegExp(/(.*).sync-conflict-(\d+)-(\d+)-(\w+).(\w+)/);
-		const match = regex.exec(entryFile.name);
+	parseConflictFilename(filename: string): ConflictFilename | Failure {
+		const regex = new RegExp(/(.*).sync-conflict-(\d{8})-(\d{6})-(\w+).(\w+)/);
+		const match = regex.exec(filename);
 		if (!match) {
-			return {
-				originalFile: entryFile,
-				conflictingFiles: new Failure(
-					"Error parsing conflict filename."
-				),
-			};
+			return new Failure("Error parsing conflict filename.");
 		}
-		const filenameProperties: ConflictFilename = {
+		return {
 			filename: match[1],
-			date: parseInt(match[2]),
-			time: parseInt(match[3]),
+			date: match[2],
+			time: match[3],
 			modifiedBy: match[4],
 			extension: match[5],
 		};
+	}
+
+	async getDiffFiles(entryFile: TFile) {
+		const filenameProperties = this.parseConflictFilename(entryFile.name);
+		if (filenameProperties instanceof Failure) {
+			return {
+				originalFile: entryFile,
+				conflictingFiles: filenameProperties,
+			};
+		}
 		const allFiles = this.plugin.app.vault.getFiles();
 		const conflictsFiles = allFiles.filter((file) => {
 			return (
