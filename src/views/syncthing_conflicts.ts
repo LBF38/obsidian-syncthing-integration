@@ -1,6 +1,6 @@
 import { App, Modal, Setting } from "obsidian";
-import { SyncthingController } from "../controllers/syncthing_controller";
 import { Failure } from "src/models/failures";
+import { SyncthingController } from "../controllers/syncthing_controller";
 import { DiffModal } from "./syncthing_diff";
 
 /**
@@ -21,6 +21,7 @@ export class ConflictsModal extends Modal {
 
 		if (conflictFiles instanceof Failure) {
 			new Setting(contentEl)
+				.setHeading()
 				.setName("Failed to get conflicts")
 				.setDesc(conflictFiles.message)
 				.addButton((button) => {
@@ -35,10 +36,44 @@ export class ConflictsModal extends Modal {
 			return;
 		}
 
+		// TODO: rank the conflicts by date
+		new Setting(contentEl)
+			.setName("Order by date")
+			.setHeading()
+			.addButton((button) => {
+				button
+					.setButtonText("Order by date")
+					.setCta()
+					.onClick(() => {
+						// this.close();
+						// this.open();
+					});
+			});
+
+		// List of conflicts
 		for (const file of conflictFiles) {
-			new Setting(contentEl)
-				.setName(file.basename)
-				.setDesc(file.path)
+			const filenameProps =
+				this.syncthingController.parseConflictFilename(file.name);
+			if (filenameProps instanceof Failure) {
+				new Setting(contentEl)
+					.setName(filenameProps.message)
+					.setDesc(file.basename)
+					.addButton((button) =>
+						button.setButtonText("ERROR").setWarning()
+					);
+				continue;
+			}
+			const dateString = filenameProps.date.toString();
+			const timeString = filenameProps.time.toString();
+			const conflictDate = `${dateString.slice(0, 4)}-${dateString.slice(
+				4,
+				6
+			)}-${dateString.slice(6, 8)} ${timeString.slice(
+				0,
+				2
+			)}:${timeString.slice(2, 4)}:${timeString.slice(4, 6)}`;
+			const fileSetting = new Setting(contentEl)
+				.setName(filenameProps.filename)
 				.addButton((button) => {
 					button
 						.setButtonText("Open")
@@ -51,6 +86,17 @@ export class ConflictsModal extends Modal {
 							).open();
 						});
 				});
+			// Description
+			const infoList = fileSetting.descEl.createEl("ul");
+			infoList.createEl("li", {
+				text: `Last modified: ${conflictDate}`,
+			});
+			infoList.createEl("li", {
+				text: `Modified by: ${filenameProps.modifiedBy}`,
+			});
+			infoList.createEl("li", {
+				text: `File Extension: ${filenameProps.extension}`,
+			});
 		}
 	}
 
