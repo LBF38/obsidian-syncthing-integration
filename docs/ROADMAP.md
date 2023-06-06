@@ -13,7 +13,7 @@ The current development roadmap is available [on GitHub](https://github.com/LBF3
 - [ ] A way to resolve conflicts : Conflicts and Diffs modals
   - [ ] These modals should provide the user with a way to handle the conflicts between files.
   - [ ] Therefore, it should display a three-way diff between the original file, the conflicted file and the merge version.
-  - [ ] The ConflictsModal provides a simple UI to display all files in conflict.
+  - [x] The ConflictsModal provides a simple UI to display all files in conflict.
   - [ ] The DiffModal provides a simple UI to display the three-way diff between the files.
     - [ ] It should also provide a way to resolve the conflicts with buttons or through an editor. (WIP)
     - [ ] Relevant information about the files should be displayed. (Like dates, sizes, filenames, ...)
