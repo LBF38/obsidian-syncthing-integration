@@ -33,7 +33,8 @@ export default class MyPlugin extends Plugin {
 	syncthingFromREST: SyncThingFromREST = new SyncThingFromRESTimpl();
 	syncthingController: SyncthingController = new SyncthingControllerImpl(
 		this.syncthingFromCLI,
-		this.syncthingFromREST
+		this.syncthingFromREST,
+		this
 	);
 
 	async onload() {

@@ -1,6 +1,7 @@
 import { App, Modal, Setting } from "obsidian";
 import { SyncthingController } from "../controllers/syncthing_controller";
 import { Failure } from "src/models/failures";
+import { DiffModal } from "./syncthing_diff";
 
 /**
  * Modal to display the files in conflict when syncing w/ Syncthing.
@@ -14,23 +15,21 @@ export class ConflictsModal extends Modal {
 
 	async onOpen() {
 		const { contentEl } = this;
-		contentEl.setText("Conflicting files");
 
 		contentEl.createEl("h1", { text: "Conflicting files w/ Syncthing" });
 		const conflictFiles = await this.syncthingController.getConflicts();
 
 		if (conflictFiles instanceof Failure) {
 			new Setting(contentEl)
-				.setName("Error")
-				.setDesc(
-					"Could not get the conflicts : " + conflictFiles.message
-				)
+				.setName("Failed to get conflicts")
+				.setDesc(conflictFiles.message)
 				.addButton((button) => {
 					button
-						.setButtonText("Retry")
+						.setButtonText("Try again")
 						.setCta()
 						.onClick(() => {
-							this.onOpen();
+							this.close();
+							this.open();
 						});
 				});
 			return;
@@ -45,11 +44,11 @@ export class ConflictsModal extends Modal {
 						.setButtonText("Open")
 						.setCta()
 						.onClick(() => {
-							this.app.workspace.openLinkText(
-								file.path,
-								"",
-								true
-							);
+							new DiffModal(
+								this.app,
+								file,
+								this.syncthingController
+							).open();
 						});
 				});
 		}

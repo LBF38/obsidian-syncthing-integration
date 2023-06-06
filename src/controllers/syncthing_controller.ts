@@ -1,3 +1,5 @@
+import { TFile } from "obsidian";
+import MyPlugin from "src/main";
 import { Failure, RestFailure } from "src/models/failures";
 import {
 	SyncThingConfiguration,
@@ -6,9 +8,13 @@ import {
 } from "src/models/syncthing_entities";
 import { SyncThingFromCLI } from "../data/syncthing_local_datasource";
 import { SyncThingFromREST } from "../data/syncthing_remote_datasource";
-import { TFile } from "obsidian";
 
 export interface SyncthingController {
+	plugin: MyPlugin;
+	/**
+	 * Gets the SyncThing API status.
+	 */
+	getAPIStatus(): Promise<string>;
 	/**
 	 * Checks if SyncThing is installed on the system.
 	 */
@@ -18,10 +24,20 @@ export interface SyncthingController {
 	 */
 	getConfiguration(): Promise<SyncThingConfiguration | Failure>;
 	/**
-	 * Gets the SyncThing conflicting files.
-	 * @see https://docs.syncthing.net/rest/db-conflicts-get.html
+	 * Gets the SyncThing conflicting files for the ConflictsModal.
+	 * It returns a list of all files that are in conflict.
+	 * (but only one version of each file, if applicable)
+	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes
 	 */
 	getConflicts(): Promise<TFile[] | Failure>;
+	/**
+	 * Gets the SyncThing conflicting files for the DiffModal.
+	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes
+	 */
+	getDiffFiles(file: TFile): Promise<{
+		originalFile: TFile;
+		conflictingFiles: TFile[] | Failure;
+	}>;
 	/**
 	 * Gets the SyncThing API key from the CLI.
 	 */
@@ -44,11 +60,25 @@ export interface SyncthingController {
 	stopSyncThing(): Promise<boolean | Failure>;
 }
 
+interface ConflictFilename {
+	filename: string;
+	date: number; // format: YYYYMMDD
+	time: number; // format: HHMMSS
+	modifiedBy: string; // format: reduced device ID (7 characters)
+	extension: string; // format: file extension
+}
+
 export class SyncthingControllerImpl implements SyncthingController {
 	constructor(
 		public syncthingFromCLI: SyncThingFromCLI,
-		public syncthingFromREST: SyncThingFromREST
+		public syncthingFromREST: SyncThingFromREST,
+		public plugin: MyPlugin
 	) {}
+
+	async getAPIStatus(): Promise<string> {
+		// const response = requestUrl(this.plugin.settings.)
+		return "Not implemented.";
+	}
 
 	async hasSyncThing(): Promise<boolean> {
 		return await this.syncthingFromCLI
@@ -61,9 +91,56 @@ export class SyncthingControllerImpl implements SyncthingController {
 			});
 	}
 
-	async getConflicts(): Promise<Failure | TFile[]> {
-		// return app.vault.getFiles();
-		return new RestFailure();
+	async getConflicts(): Promise<TFile[] | Failure> {
+		const allFiles = this.plugin.app.vault.getFiles();
+		const conflictsFiles = allFiles.filter((currentFile, _, files) => {
+			// const reducedFiles = allFiles.filter(
+			// 	(file) => file.basename === currentFile.basename
+			// );
+			return currentFile.name.contains(".sync-conflict");
+		});
+		if (conflictsFiles.length === 0) {
+			return new Failure("No conflicts found.");
+		}
+		return conflictsFiles;
+	}
+
+	async getDiffFiles(entryFile: TFile) {
+		const regex = new RegExp(/(.*).sync-conflict-(\d+)-(\d+)-(\w+).(\w+)/);
+		const match = regex.exec(entryFile.name);
+		if (!match) {
+			return {
+				originalFile: entryFile,
+				conflictingFiles: new Failure(
+					"Error parsing conflict filename."
+				),
+			};
+		}
+		const filenameProperties: ConflictFilename = {
+			filename: match[1],
+			date: parseInt(match[2]),
+			time: parseInt(match[3]),
+			modifiedBy: match[4],
+			extension: match[5],
+		};
+		const allFiles = this.plugin.app.vault.getFiles();
+		const conflictsFiles = allFiles.filter((file) => {
+			return (
+				(file.name.contains(".sync-conflict") &&
+					file.name.contains(filenameProperties.filename)) ||
+				file.basename === filenameProperties.filename
+			);
+		});
+		const originalFile = conflictsFiles.find(
+			(file) => file.basename === filenameProperties.filename
+		);
+		return {
+			originalFile: originalFile ?? entryFile,
+			conflictingFiles:
+				conflictsFiles.length > 0
+					? conflictsFiles
+					: new Failure("No conflicts found."),
+		};
 	}
 
 	getAPIKey(): Promise<string | Failure> {

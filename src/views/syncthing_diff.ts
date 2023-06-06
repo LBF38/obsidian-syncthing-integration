@@ -6,34 +6,66 @@ import { App, Modal, Setting, TFile } from "obsidian";
 import "diff2html/bundles/css/diff2html.min.css";
 // import "highlight.js/styles/github.css";
 import "highlight.js/styles/github-dark.css";
+import { SyncthingController } from "src/controllers/syncthing_controller";
+import { Failure } from "src/models/failures";
 
 export class DiffModal extends Modal {
 	d2hUI?: string;
-	constructor(app: App) {
+	originalFile: TFile;
+	conflictingFiles: TFile[] | Failure;
+	constructor(
+		app: App,
+		public file: TFile,
+		public syncthingController: SyncthingController
+	) {
 		super(app);
+		this.conflictingFiles = [];
+		this.originalFile = file;
 	}
 
-	onOpen() {
+	async onOpen() {
 		const { contentEl } = this;
+
+		({
+			originalFile: this.originalFile,
+			conflictingFiles: this.conflictingFiles,
+		} = await this.syncthingController.getDiffFiles(this.file));
+
+		if (this.conflictingFiles instanceof Failure) {
+			contentEl.createEl("h1", { text: "Diff w/ Syncthing" });
+			new Setting(contentEl)
+				.setName("Failed to get diff")
+				.setDesc(this.conflictingFiles.message)
+				.addButton((button) => {
+					button
+						.setButtonText("Try again")
+						.setCta()
+						.onClick(() => {
+							this.close();
+							this.open();
+						});
+				});
+			return;
+		}
 
 		// Left side : list of all conflicting files.
 		const leftSide = contentEl.createDiv({
 			cls: ["diff", "diff-modal-left-side"],
 		});
 		leftSide.createEl("h1", { text: "Conflicting files" });
-		const files = this.app.vault.getMarkdownFiles();
-		files.forEach((file) => {
+		this.conflictingFiles.sort((a, b) => a.stat.mtime - b.stat.mtime);
+		this.conflictingFiles.forEach((file) => {
 			new Setting(leftSide)
 				.setName(file.basename)
-				.setDesc(file.stat.mtime.toString())
+				.setDesc(new Date(file.stat.mtime).toString())
 				.addButton((button) => {
 					button
 						.setButtonText("Resolve conflict")
 						.setCta()
 						.onClick(async () => {
 							this.d2hUI = await this.getDiffContent(
-								file,
-								files[0]
+								this.originalFile,
+								file
 							);
 							// this.d2hUI.draw();
 							this.close();
@@ -58,11 +90,11 @@ export class DiffModal extends Modal {
 		rightSide.createEl("h1", { text: "Original file" });
 		rightSide.createDiv({ text: "Original file content & details" });
 		new Setting(rightSide)
-			.setName(files[0].basename)
+			.setName(this.originalFile.basename)
 			.setDesc("Details")
 			.settingEl.createEl("ul")
 			.createEl("li", {
-				text: `Size : ${files[0].stat.size.toString()}`,
+				text: `Size : ${this.originalFile.stat.size.toString()}`,
 			});
 
 		// CSS styling for the modal.
