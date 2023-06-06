@@ -30,3 +30,5 @@ data.json
 syncthing_config.json
 # Generated main.css file from the imports in TypeScript.
 main.css
+# Outdir from esbuild
+build

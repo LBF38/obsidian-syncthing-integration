@@ -3,7 +3,8 @@
 		"README",
 		"syncthing",
 		"dev",
-		"deps"
+		"deps",
+		"ui"
 	],
 	"markdownlint.config": {
 		"MD033": false,

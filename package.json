@@ -20,12 +20,15 @@
 		"@typescript-eslint/parser": "5.29.0",
 		"builtin-modules": "3.3.0",
 		"child_process": "^1.0.2",
+		"css-minify": "^2.0.0",
 		"diff": "^5.1.0",
 		"diff2html": "^3.4.35",
 		"esbuild": "0.17.3",
 		"eslint": "^8.42.0",
+		"fs": "0.0.1-security",
 		"highlight.js": "^11.8.0",
 		"obsidian": "latest",
+		"sass": "^1.62.1",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4"
 	}
