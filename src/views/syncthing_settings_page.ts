@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 import { SyncthingController } from "src/controllers/syncthing_controller";
 import MyPlugin from "src/main";
 import { Failure } from "src/models/failures";
@@ -49,7 +49,7 @@ export class SampleSettingTab extends PluginSettingTab {
 			return;
 		}
 
-		// Get the Syncthing configuration from CLI.
+		// Get the Syncthing configuration from CLI or API.
 		const configuration = await this.syncthingController.getConfiguration();
 		if (configuration instanceof Failure) {
 			containerEl.createEl("h2", {
@@ -57,6 +57,7 @@ export class SampleSettingTab extends PluginSettingTab {
 			});
 			return;
 		}
+		this.plugin.settings.configuration = configuration;
 
 		containerEl.empty();
 
@@ -74,6 +75,7 @@ export class SampleSettingTab extends PluginSettingTab {
 				})
 			);
 
+		// API Key setting.
 		new Setting(containerEl)
 			.setName("SyncThing API Key")
 			.setDesc("Add your SyncThing API key here for the plugin to work.")
@@ -82,11 +84,30 @@ export class SampleSettingTab extends PluginSettingTab {
 					.setPlaceholder("Enter your API key here...")
 					.setValue(this.plugin.settings.api_key ?? "")
 					.onChange(async (value) => {
-						console.log("Secret: " + value);
+						// console.log("Secret: " + value);
 						this.plugin.settings.api_key = value;
 						await this.plugin.saveSettings();
 					})
 			);
+
+		// Trying to make an HTTP request to the API.
+		new Setting(containerEl)
+			.setName("SyncThing API Status")
+			.addButton((button) => {
+				button.setButtonText("Check API Status").onClick(async () => {
+					const status =
+						await this.syncthingController.getAPIStatus();
+					new Notice(status);
+				});
+			});
+
+		// TEST : difference between file.basename and file.name in Obsidian API.
+		// const file = this.app.vault.getFiles()[0];
+		// containerEl.createEl("h1", { text: "TEST" });
+		// containerEl.createEl("p", { text: "file.basename: " + file.basename });
+		// containerEl.createEl("p", { text: "file.name: " + file.name });
+		// ! file.basename : file name without extension
+		// ! file.name : file name with extension
 
 		containerEl.createEl("h1", { text: "Syncthing Configuration" });
 		containerEl.createEl("h2", { text: "This Device" });
@@ -96,10 +117,6 @@ export class SampleSettingTab extends PluginSettingTab {
 			})
 			.appendChild(containerEl.createEl("tbody"));
 		const thisDeviceConfig = this.plugin.settings.configuration?.devices[0];
-		new Setting(containerEl)
-			.setHeading()
-			.setName("This Device")
-			.setDesc("This is the device that you are currently using.");
 		if (thisDeviceConfig) {
 			thisDeviceTable
 				.appendChild(containerEl.createEl("tr"))

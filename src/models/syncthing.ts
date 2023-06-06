@@ -15,6 +15,7 @@ export class SyncThingConfigurationModel extends SyncThingConfiguration {
 	}
 
 	static fromJSON(json: string): SyncThingConfigurationModel {
+		// TODO: separate this into each SyncThing Model (folders, devices, etc.)
 		const parsedJSON = JSON.parse(json);
 		const folders: SyncThingFolder[] = [];
 		for (const parsedFolder of parsedJSON["folders"]) {
