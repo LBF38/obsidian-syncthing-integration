@@ -28,3 +28,5 @@ data.json
 
 # Exclude an example of Syncthing API response
 syncthing_config.json
+# Generated main.css file from the imports in TypeScript.
+main.css
