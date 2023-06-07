@@ -1,4 +1,12 @@
-import { App, Modal, Setting } from "obsidian";
+import {
+	App,
+	BaseComponent,
+	Component,
+	DropdownComponent,
+	ExtraButtonComponent,
+	Modal,
+	Setting,
+} from "obsidian";
 import { Failure } from "src/models/failures";
 import { SyncthingController } from "../controllers/syncthing_controller";
 import { DiffModal } from "./syncthing_diff";
@@ -41,62 +49,83 @@ export class ConflictsModal extends Modal {
 			.setName("Order by date")
 			.setHeading()
 			.addButton((button) => {
-				button
-					.setButtonText("Order by date")
-					.setCta()
-					.onClick(() => {
-						// this.close();
-						// this.open();
-					});
+				button.setButtonText("Order by date").onClick(() => {
+					// this.close();
+					// this.open();
+				});
 			});
 
+		contentEl.createEl("hr");
+
 		// List of conflicts
-		for (const file of conflictFiles) {
-			const filenameProps =
-				this.syncthingController.parseConflictFilename(file.name);
-			if (filenameProps instanceof Failure) {
-				new Setting(contentEl)
-					.setName(filenameProps.message)
-					.setDesc(file.basename)
-					.addButton((button) =>
-						button.setButtonText("ERROR").setWarning()
-					);
+		// TODO: make it collapsible and group them by files
+		for (const conflictFilename of conflictFiles.keys()) {
+			const conflictFilesList = conflictFiles.get(conflictFilename);
+			if (conflictFilesList === undefined) {
+				console.log(conflictFilename, conflictFilesList);
+				console.log(conflictFiles);
 				continue;
 			}
-			const dateString = filenameProps.date.toString();
-			const timeString = filenameProps.time.toString();
-			const conflictDate = `${dateString.slice(0, 4)}-${dateString.slice(
-				4,
-				6
-			)}-${dateString.slice(6, 8)} ${timeString.slice(
-				0,
-				2
-			)}:${timeString.slice(2, 4)}:${timeString.slice(4, 6)}`;
-			const fileSetting = new Setting(contentEl)
-				.setName(filenameProps.filename)
-				.addButton((button) => {
+			const conflictFilesDetailsEl = contentEl.createEl("details", {});
+			const summary = conflictFilesDetailsEl.createEl("summary", {
+				text: "Open for more details",
+			});
+			new Setting(summary)
+				.setName(
+					`${conflictFilename} (${conflictFilesList.length} conflicts)`
+				)
+				.addButton((button) =>
 					button
-						.setButtonText("Open")
 						.setCta()
+						.setButtonText("Open diff modal")
 						.onClick(() => {
 							new DiffModal(
 								this.app,
-								file,
+								conflictFilesList[0],
 								this.syncthingController
 							).open();
-						});
+						})
+				);
+			for (const file of conflictFilesList) {
+				const filenameProps =
+					this.syncthingController.parseConflictFilename(file.name);
+				if (filenameProps instanceof Failure) {
+					new Setting(conflictFilesDetailsEl)
+						.setName(filenameProps.message)
+						.setDesc(file.basename)
+						.addButton((button) =>
+							button.setButtonText("ERROR").setWarning()
+						);
+					continue;
+				}
+				// TODO: enhance date formats to enable sorting
+				const dateString = filenameProps.date;
+				const timeString = filenameProps.time;
+				const conflictDate = `${dateString.slice(
+					0,
+					4
+				)}-${dateString.slice(4, 6)}-${dateString.slice(
+					6,
+					8
+				)} ${timeString.slice(0, 2)}:${timeString.slice(
+					2,
+					4
+				)}:${timeString.slice(4, 6)}`;
+				const fileSetting = new Setting(conflictFilesDetailsEl).setName(
+					filenameProps.filename
+				);
+				// Description
+				const infoList = fileSetting.descEl.createEl("ul");
+				infoList.createEl("li", {
+					text: `Conflict date: ${conflictDate}`,
 				});
-			// Description
-			const infoList = fileSetting.descEl.createEl("ul");
-			infoList.createEl("li", {
-				text: `Last modified: ${conflictDate}`,
-			});
-			infoList.createEl("li", {
-				text: `Modified by: ${filenameProps.modifiedBy}`,
-			});
-			infoList.createEl("li", {
-				text: `File Extension: ${filenameProps.extension}`,
-			});
+				infoList.createEl("li", {
+					text: `Modified by: ${filenameProps.modifiedBy}`,
+				});
+				infoList.createEl("li", {
+					text: `File Extension: ${filenameProps.extension}`,
+				});
+			}
 		}
 	}
 

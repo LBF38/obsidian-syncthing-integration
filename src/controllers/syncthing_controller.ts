@@ -34,7 +34,7 @@ export interface SyncthingController {
 	 * (but only one version of each file, if applicable)
 	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes
 	 */
-	getConflicts(): Promise<TFile[] | Failure>;
+	getConflicts(): Promise<Map<string, TFile[]> | Failure>;
 	/**
 	 * Gets the SyncThing conflicting files for the DiffModal.
 	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes
@@ -140,18 +140,30 @@ export class SyncthingControllerImpl implements SyncthingController {
 			});
 	}
 
-	async getConflicts(): Promise<TFile[] | Failure> {
+	async getConflicts(): Promise<Map<string, TFile[]> | Failure> {
+		// Get all conflicting files
 		const allFiles = this.plugin.app.vault.getFiles();
-		const conflictsFiles = allFiles.filter((currentFile, _, files) => {
-			// const reducedFiles = allFiles.filter(
-			// 	(file) => file.basename === currentFile.basename
-			// );
+		const conflictsFiles = allFiles.filter((currentFile) => {
 			return currentFile.name.contains(".sync-conflict");
 		});
 		if (conflictsFiles.length === 0) {
 			return new Failure("No conflicts found.");
 		}
-		return conflictsFiles;
+		// Reorder conflicting files by filename in a Map
+		let conflictsFilesMap = new Map<string, TFile[]>();
+		for (const file of conflictsFiles) {
+			const filenameProperties = this.parseConflictFilename(file.name);
+			if (filenameProperties instanceof Failure) {
+				return filenameProperties;
+			}
+			const filename = filenameProperties.filename;
+			if (conflictsFilesMap.has(filename)) {
+				conflictsFilesMap.get(filename)!.push(file);
+				continue;
+			}
+			conflictsFilesMap.set(filename, [file]);
+		}
+		return conflictsFilesMap;
 	}
 
 	parseConflictFilename(filename: string): ConflictFilename | Failure {
@@ -160,7 +172,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 		);
 		const match = regex.exec(filename);
 		if (!match) {
-			return new Failure("Error parsing conflict filename.");
+			return new Failure(`Error parsing conflict filename : ${filename}`);
 		}
 		return {
 			filename: match[1],
