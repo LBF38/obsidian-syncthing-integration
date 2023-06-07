@@ -1,6 +1,6 @@
 import { createTwoFilesPatch } from "diff";
 import { Diff2HtmlConfig, html } from "diff2html";
-import { App, ButtonComponent, Modal, Setting, TFile } from "obsidian";
+import { App, ButtonComponent, Modal, Notice, Setting, TFile } from "obsidian";
 import { SyncthingController } from "src/controllers/syncthing_controller";
 import { Failure } from "src/models/failures";
 
@@ -81,7 +81,11 @@ export class DiffModal extends Modal {
 				})
 				.addButton((button) => {
 					button.setButtonText("Open").onClick(() => {
-						this.app.workspace.openLinkText(file.path, "", "window");
+						this.app.workspace.openLinkText(
+							file.path,
+							"",
+							"window"
+						);
 						// button.setDisabled(true);
 					});
 				});
@@ -128,17 +132,46 @@ export class DiffModal extends Modal {
 			.setCta()
 			.onClick(() => {
 				this.close();
-				this.app.vault.trash(this.originalFile, true);
+				new Notice("Resolving conflict : Accepting left", 5000);
+				const filenamePath = this.originalFile.path;
+				setTimeout(
+					() => new Notice(`Deleting ${filenamePath}...`, 5000),
+					500
+				);
+				this.app.vault.delete(this.originalFile);
+				setTimeout(() => {
+					new Notice(
+						`Renaming ${this.currentConflictFile.path} to ${filenamePath}...`,
+						5000
+					);
+				}, 1000);
 				this.app.fileManager.renameFile(
 					this.currentConflictFile,
-					"/conflict_resolved.md"
+					filenamePath
 				);
+				setTimeout(() => {
+					new Notice(`Conflict resolved : Accepted left`, 5000);
+				}, 2000);
+				this.originalFile = this.currentConflictFile;
 				this.open();
 			});
 		new ButtonComponent(buttonsContainer)
 			.setButtonText("Accept original")
 			.setCta()
-			.onClick(() => {});
+			.onClick(() => {
+				this.close();
+				new Notice("Resolving conflict : Accepting original", 5000);
+				setTimeout(
+					() =>
+						new Notice(
+							`Deleting ${this.currentConflictFile.path}...`,
+							5000
+						),
+					1000
+				);
+				this.app.vault.delete(this.currentConflictFile);
+				this.open();
+			});
 		new ButtonComponent(buttonsContainer)
 			.setButtonText("Open files in new panes")
 			.setCta()
