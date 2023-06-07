@@ -23,7 +23,7 @@ const copyManifest = {
 	name: "copy-manifest",
 	setup: (build) => {
 		build.onEnd(() => {
-			fs.copyFileSync("manifest.json", "build/manifest.json");
+			fs.copyFileSync("manifest.json", `${outdir}/manifest.json`);
 		});
 	},
 };
@@ -34,7 +34,7 @@ const copyMinifiedCSS = {
 			const { css } = sass.compile("src/styles.scss");
 			const minCss = await minify(css);
 			const content = `${cssBanner}\n${minCss}`;
-			fs.writeFileSync("build/styles.css", content, {
+			fs.writeFileSync(`${outdir}/styles.css`, content, {
 				encoding: "utf-8",
 			});
 		});
@@ -42,6 +42,7 @@ const copyMinifiedCSS = {
 };
 
 const prod = process.argv[2] === "production";
+const outdir = prod ? "build" : ".";
 
 const context = await esbuild.context({
 	banner: {
@@ -71,7 +72,7 @@ const context = await esbuild.context({
 	sourcemap: prod ? false : "inline",
 	minify: prod,
 	treeShaking: true,
-	outdir: "build/",
+	outdir: outdir,
 	plugins: [copyManifest, copyMinifiedCSS],
 	loader: { ".scss": "text" },
 });

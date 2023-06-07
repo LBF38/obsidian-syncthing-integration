@@ -4,7 +4,8 @@
 		"syncthing",
 		"dev",
 		"deps",
-		"ui"
+		"ui",
+		"esbuild"
 	],
 	"markdownlint.config": {
 		"MD033": false,
