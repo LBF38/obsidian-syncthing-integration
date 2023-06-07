@@ -7,12 +7,20 @@
  */
 export class SyncThingConfiguration {
 	constructor(
+		/**
+		 * The configuration's version
+		 * @see https://docs.syncthing.net/users/config.html#config-option-configuration.version
+		 */
 		public version: string,
 		public folders: SyncThingFolder[],
 		public devices: SyncThingDevice[]
 	) {}
 }
 
+/**
+ * Available sync types in Syncthing.
+ * @see https://docs.syncthing.net/users/config.html#config-option-folder.type
+ */
 type SyncTypes =
 	| "sendreceive"
 	| "sendonly"
@@ -27,6 +35,10 @@ type SyncTypes =
  */
 export class SyncThingFolder {
 	constructor(
+		/**
+		 * The folder ID.
+		 * Must be unique.
+		 */
 		public id: string,
 		public label: string,
 		public path: string,
@@ -45,6 +57,10 @@ export class SyncThingFolder {
  */
 export class SyncThingDevice {
 	constructor(
+		/**
+		 * The device ID.
+		 * @see https://docs.syncthing.net/dev/device-ids.html#device-ids
+		 */
 		public deviceID: string,
 		public introducedBy: string,
 		public encryptionPassword: string,
@@ -56,8 +72,7 @@ export class SyncThingDevice {
 }
 
 /**
- * This is the devices' information that is stored in the folder object.
- * {@link SyncThingFolder}
+ * This is the devices' information that is stored in the {@linkcode SyncThingFolder} object.
  */
 export class ReducedSyncThingDevice
 	implements
