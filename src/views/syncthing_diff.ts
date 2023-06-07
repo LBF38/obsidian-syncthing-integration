@@ -8,6 +8,7 @@ export class DiffModal extends Modal {
 	d2hUI?: string;
 	originalFile: TFile;
 	conflictingFiles: TFile[] | Failure;
+	currentConflictFile: TFile;
 	constructor(
 		app: App,
 		public file: TFile,
@@ -16,6 +17,7 @@ export class DiffModal extends Modal {
 		super(app);
 		this.conflictingFiles = [];
 		this.originalFile = file;
+		this.currentConflictFile = file;
 	}
 
 	async onOpen() {
@@ -58,21 +60,30 @@ export class DiffModal extends Modal {
 		this.conflictingFiles.forEach((file) => {
 			new Setting(leftSide)
 				.setName(file.basename)
-				.setDesc(new Date(file.stat.mtime).toString())
+				// TODO: enhance description w/ more info on conflict file. (path, size, date, etc.)
+				.setDesc(
+					new Date(file.stat.mtime).toString() + "\n" + file.path
+				)
 				.addButton((button) => {
 					button
 						.setButtonText("Resolve conflict")
 						.setCta()
 						.onClick(async () => {
+							this.currentConflictFile = file;
 							this.d2hUI = await this.getDiffContent(
 								this.originalFile,
-								file
+								this.currentConflictFile
 							);
-							// this.d2hUI.draw();
 							this.close();
 							this.open();
 							// TODO: add logic to resolve conflict.
 						});
+				})
+				.addButton((button) => {
+					button.setButtonText("Open").onClick(() => {
+						this.app.workspace.openLinkText(file.path, "", "window");
+						// button.setDisabled(true);
+					});
 				});
 		});
 
@@ -111,11 +122,19 @@ export class DiffModal extends Modal {
 		const buttonsContainer = contentEl.createDiv({
 			cls: ["diff", "diff-modal-buttons-container"],
 		});
-		// buttonsContainer.createEl("h2", { text: "Manage conflict" });
+		// TODO: add logic to resolve conflict. (for the 3 buttons)
 		new ButtonComponent(buttonsContainer)
 			.setButtonText("Accept left")
 			.setCta()
-			.onClick(() => {});
+			.onClick(() => {
+				this.close();
+				this.app.vault.trash(this.originalFile, true);
+				this.app.fileManager.renameFile(
+					this.currentConflictFile,
+					"/conflict_resolved.md"
+				);
+				this.open();
+			});
 		new ButtonComponent(buttonsContainer)
 			.setButtonText("Accept original")
 			.setCta()
