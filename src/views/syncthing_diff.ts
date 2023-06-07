@@ -1,11 +1,6 @@
 import { createTwoFilesPatch } from "diff";
 import { Diff2HtmlConfig, html } from "diff2html";
-import { App, Modal, Setting, TFile } from "obsidian";
-
-// CSS styling for the diff.
-import "diff2html/bundles/css/diff2html.min.css";
-// import "highlight.js/styles/github.css";
-import "highlight.js/styles/github-dark.css";
+import { App, ButtonComponent, Modal, Setting, TFile } from "obsidian";
 import { SyncthingController } from "src/controllers/syncthing_controller";
 import { Failure } from "src/models/failures";
 
@@ -48,11 +43,17 @@ export class DiffModal extends Modal {
 			return;
 		}
 
+		// Container for the 3 columns.
+		const diffContainer = contentEl.createDiv({
+			cls: ["diff", "diff-modal-container"],
+		});
+
 		// Left side : list of all conflicting files.
-		const leftSide = contentEl.createDiv({
+		const leftSide = diffContainer.createDiv({
 			cls: ["diff", "diff-modal-left-side"],
 		});
 		leftSide.createEl("h1", { text: "Conflicting files" });
+		// TODO: change to sorting by conflict date.
 		this.conflictingFiles.sort((a, b) => a.stat.mtime - b.stat.mtime);
 		this.conflictingFiles.forEach((file) => {
 			new Setting(leftSide)
@@ -76,7 +77,7 @@ export class DiffModal extends Modal {
 		});
 
 		// Middle : diff between the two files.
-		const middle = contentEl.createDiv({
+		const middle = diffContainer.createDiv({
 			cls: ["diff", "diff-modal-middle"],
 		});
 		middle.createEl("h1", { text: "Diff" });
@@ -84,18 +85,45 @@ export class DiffModal extends Modal {
 		middle.createDiv().innerHTML = this.d2hUI ?? "";
 
 		// Right side : Details about the original file.
-		const rightSide = contentEl.createDiv({
+		const rightSide = diffContainer.createDiv({
 			cls: ["diff", "diff-modal-right-side"],
 		});
 		rightSide.createEl("h1", { text: "Original file" });
 		rightSide.createDiv({ text: "Original file content & details" });
-		new Setting(rightSide)
+		const rightSideSetting = new Setting(rightSide)
 			.setName(this.originalFile.basename)
-			.setDesc("Details")
-			.settingEl.createEl("ul")
-			.createEl("li", {
-				text: `Size : ${this.originalFile.stat.size.toString()}`,
-			});
+			.setHeading()
+			.setDesc("Details");
+		const rightSideList = rightSideSetting.descEl.createEl("ul");
+		rightSideList.createEl("li", {
+			text: `Size : ${this.originalFile.stat.size.toString()} Bytes`,
+		});
+		rightSideList.createEl("li", {
+			text: `Last modified : ${new Date(
+				this.originalFile.stat.mtime
+			).toString()}`,
+		});
+		rightSideList.createEl("li", {
+			text: `Created by : <insert device ID or name>`,
+		});
+
+		// Adding buttons for managing the conflict.
+		const buttonsContainer = contentEl.createDiv({
+			cls: ["diff", "diff-modal-buttons-container"],
+		});
+		// buttonsContainer.createEl("h2", { text: "Manage conflict" });
+		new ButtonComponent(buttonsContainer)
+			.setButtonText("Accept left")
+			.setCta()
+			.onClick(() => {});
+		new ButtonComponent(buttonsContainer)
+			.setButtonText("Accept original")
+			.setCta()
+			.onClick(() => {});
+		new ButtonComponent(buttonsContainer)
+			.setButtonText("Open files in new panes")
+			.setCta()
+			.onClick(() => {});
 
 		// CSS styling for the modal.
 		this.modalEl.setCssStyles({
@@ -103,17 +131,28 @@ export class DiffModal extends Modal {
 			height: "100%",
 		});
 
-		contentEl.setCssStyles({
+		diffContainer.setCssStyles({
 			display: "flex",
 			flexDirection: "row",
 			justifyContent: "space-between",
 			alignItems: "center",
 			padding: "1rem",
+			alignSelf: "start",
+		});
+
+		buttonsContainer.setCssStyles({
+			display: "flex",
+			flexDirection: "row",
+			justifyContent: "center",
+			alignItems: "center",
+			padding: "1rem",
+			// margin: "0 auto",
 		});
 
 		leftSide.setCssStyles({
 			height: "100%",
 			overflow: "auto",
+			alignSelf: "start",
 		});
 
 		middle.setCssStyles({
@@ -121,20 +160,24 @@ export class DiffModal extends Modal {
 			height: "100%",
 			overflow: "auto",
 			padding: "1rem",
+			alignContent: "top",
+			alignSelf: "start",
 		});
 
 		rightSide.setCssStyles({
 			height: "100%",
 			overflow: "auto",
+			alignSelf: "start",
 		});
 
-		// CSS styling for the diff.*
-		// const diff = contentEl.find(".diff");
-		// diff.setCssStyles({
-		// 	border: "1px solid black",
-		// 	borderRadius: "5px",
-		// 	padding: "1rem",
-		// });
+		// CSS Styling for ButtonComponent.
+		const buttonComponent =
+			buttonsContainer.getElementsByClassName("mod-cta");
+		Array.from(buttonComponent).forEach((button) => {
+			(button as HTMLElement).setCssStyles({
+				margin: "1rem",
+			});
+		});
 	}
 
 	onClose() {
