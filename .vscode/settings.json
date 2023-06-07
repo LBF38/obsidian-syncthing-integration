@@ -5,7 +5,8 @@
 		"dev",
 		"deps",
 		"ui",
-		"esbuild"
+		"esbuild",
+		"controllers"
 	],
 	"markdownlint.config": {
 		"MD033": false,

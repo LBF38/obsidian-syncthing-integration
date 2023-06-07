@@ -10,6 +10,11 @@ import { SyncThingFromCLI } from "../data/syncthing_local_datasource";
 import { SyncThingFromREST } from "../data/syncthing_remote_datasource";
 
 export interface SyncthingController {
+	/**
+	 * The plugin instance.
+	 * To make it easier to call plugin's methods.
+	 * @see https://docs.obsidian.md/Reference/TypeScript+API/Plugin/Plugin
+	 */
 	plugin: MyPlugin;
 	/**
 	 * Gets the SyncThing API status.
@@ -40,6 +45,15 @@ export interface SyncthingController {
 	}>;
 	/**
 	 * Parses a SyncThing conflict filename.
+	 * The filename format is as follow : `{filename}.sync-conflict-{date}-{time}-{modifiedBy}.{extension}`
+	 * The format of each part is as follow :
+	 * - `{filename}` : the filename of the file that is in conflict.
+	 * - `{date}` : the date of the conflict, in the format `YYYYMMDD`.
+	 * - `{time}` : the time of the conflict, in the format `HHMMSS`.
+	 * - `{modifiedBy}` : the device ID of the device that modified the file. it is a reduced version of {@linkcode SyncThingDevice.deviceID}
+	 * - `{extension}` : the file extension of the file that is in conflict.
+	 * @param filename the filename to parse.
+	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes for the filename format.
 	 * @returns a {@linkcode ConflictFilename} object if the filename is valid, or a {@linkcode Failure} object if it is not.
 	 */
 	parseConflictFilename(filename: string): ConflictFilename | Failure;
@@ -66,11 +80,41 @@ export interface SyncthingController {
 }
 
 interface ConflictFilename {
+	/**
+	 * The filename of the file that is in conflict.
+	 *
+	 * format: filename allowed characters in Obsidian
+	 * @example `MyFile`
+	 */
 	filename: string;
-	date: string; // format: YYYYMMDD
-	time: string; // format: HHMMSS
+	/**
+	 * The date of the conflict, in the format `YYYYMMDD`.
+	 *
+	 * format: YYYYMMDD
+	 * @example `20210930`
+	 */
+	date: string;
+	/**
+	 * The time of the conflict, in the format `HHMMSS`.
+	 *
+	 * format: HHMMSS
+	 * @example `123456`
+	 */
+	time: string;
+	/**
+	 * The device ID of the device that modified the file. it is a reduced version of {@linkcode SyncThingDevice.deviceID}
+	 *
+	 * format: reduced device ID (7 characters)
+	 * @example `ABCDEF1`
+	 */
 	modifiedBy: string; // format: reduced device ID (7 characters)
-	extension: string; // format: file extension
+	/**
+	 * The file extension of the file that is in conflict.
+	 *
+	 * format: file extension
+	 * @example `md`
+	 */
+	extension: string;
 }
 
 export class SyncthingControllerImpl implements SyncthingController {
@@ -111,7 +155,9 @@ export class SyncthingControllerImpl implements SyncthingController {
 	}
 
 	parseConflictFilename(filename: string): ConflictFilename | Failure {
-		const regex = new RegExp(/(.*).sync-conflict-(\d{8})-(\d{6})-(\w+).(\w+)/);
+		const regex = new RegExp(
+			/(.*).sync-conflict-(\d{8})-(\d{6})-(\w+).(\w+)/
+		);
 		const match = regex.exec(filename);
 		if (!match) {
 			return new Failure("Error parsing conflict filename.");
@@ -144,6 +190,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 		const originalFile = conflictsFiles.find(
 			(file) => file.basename === filenameProperties.filename
 		);
+		if (originalFile) conflictsFiles.remove(originalFile);
 		return {
 			originalFile: originalFile ?? entryFile,
 			conflictingFiles:
