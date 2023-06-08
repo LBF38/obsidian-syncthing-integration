@@ -6,6 +6,7 @@ import { Failure } from "src/models/failures";
 
 export class DiffModal extends Modal {
 	d2hUI?: string;
+	d2hColorBlind = false;
 	originalFile: TFile;
 	conflictingFiles: TFile[] | Failure;
 	currentConflictFile: TFile;
@@ -47,13 +48,15 @@ export class DiffModal extends Modal {
 
 		// Container for the 3 columns.
 		const diffContainer = contentEl.createDiv({
-			cls: ["diff", "diff-modal-container"],
+			cls: [
+				"diff",
+				"diff-modal-container",
+				this.d2hColorBlind ? "colorblind" : "",
+			],
 		});
 
 		// Left side : list of all conflicting files.
-		const leftSide = diffContainer.createDiv({
-			cls: ["diff", "diff-modal-left-side"],
-		});
+		const leftSide = diffContainer.createDiv();
 		leftSide.createEl("h1", { text: "Conflicting files" });
 		// TODO: change to sorting by conflict date.
 		this.conflictingFiles.sort((a, b) => a.stat.mtime - b.stat.mtime);
@@ -86,23 +89,27 @@ export class DiffModal extends Modal {
 							"",
 							"window"
 						);
-						// button.setDisabled(true);
 					});
 				});
 		});
 
 		// Middle : diff between the two files.
-		const middle = diffContainer.createDiv({
-			cls: ["diff", "diff-modal-middle"],
-		});
+		const middle = diffContainer.createDiv();
 		middle.createEl("h1", { text: "Diff" });
+		new Setting(middle)
+			.setName("Enable colorblind mode")
+			.addToggle((toggle) => {
+				toggle.setValue(this.d2hColorBlind).onChange((value) => {
+					this.d2hColorBlind = value;
+					this.close();
+					this.open();
+				});
+			});
 		middle.createDiv({ attr: { id: "diff-ui" } });
 		middle.createDiv().innerHTML = this.d2hUI ?? "";
 
 		// Right side : Details about the original file.
-		const rightSide = diffContainer.createDiv({
-			cls: ["diff", "diff-modal-right-side"],
-		});
+		const rightSide = diffContainer.createDiv();
 		rightSide.createEl("h1", { text: "Original file" });
 		rightSide.createDiv({ text: "Original file content & details" });
 		const rightSideSetting = new Setting(rightSide)
@@ -183,42 +190,7 @@ export class DiffModal extends Modal {
 		new ButtonComponent(buttonsContainer)
 			.setButtonText("Open files in new panes")
 			.setCta()
-			.onClick(async () => {
-				const leftPane = this.app.workspace.openPopoutLeaf();
-				leftPane.openFile(this.currentConflictFile);
-				const lowerPane = this.app.workspace.createLeafBySplit(
-					leftPane,
-					"horizontal"
-				);
-				lowerPane.openFile(this.originalFile);
-				const rightPane = this.app.workspace.createLeafBySplit(
-					leftPane,
-					"vertical"
-				);
-				// newPanes.openFile(this.originalFile);
-				rightPane.view.containerEl.empty();
-				rightPane.view.navigation = false;
-				rightPane.view.containerEl.addClass("diff");
-				rightPane.view.containerEl.title = "Difference tab";
-				rightPane.view.containerEl.createEl("h1", {
-					text: `Difference tab`,
-				});
-				rightPane.view.containerEl.createEl("ul").append(
-					createEl("li", {
-						text: `Green : ${this.originalFile.basename}`,
-					}),
-					createEl("li", {
-						text: `Red : ${this.currentConflictFile.basename}`,
-					})
-				);
-				rightPane.view.containerEl.createDiv().innerHTML =
-					await this.getDiffContent(
-						this.originalFile,
-						this.currentConflictFile
-					);
-
-				// TODO: #18 IDEA: create a workspace leaf with all the files in conflict.
-			});
+			.onClick(this.buildManualDiffPanes);
 
 		// CSS styling for the modal.
 		this.modalEl.setCssStyles({
@@ -294,4 +266,52 @@ export class DiffModal extends Modal {
 		};
 		return html(filesDiff, d2hUIConfig);
 	}
+
+	buildManualDiffPanes = async () => {
+		const leftPane = this.app.workspace.openPopoutLeaf();
+		leftPane.openFile(this.currentConflictFile);
+		const lowerPane = this.app.workspace.createLeafBySplit(
+			leftPane,
+			"horizontal"
+		);
+		lowerPane.openFile(this.originalFile);
+		const rightPane = this.app.workspace.createLeafBySplit(
+			leftPane,
+			"vertical"
+		);
+		const rightPaneEl = rightPane.view.containerEl;
+		rightPaneEl.empty();
+		rightPane.view.navigation = false;
+		rightPaneEl.addClass("diff");
+		if (this.d2hColorBlind) rightPaneEl.addClass("colorblind");
+		rightPaneEl.title = "Difference tab";
+		rightPaneEl.createEl("h1", {
+			text: `Difference tab`,
+		});
+		new Setting(rightPaneEl)
+			.setName("Enable colorblind mode")
+			.addToggle((toggle) => {
+				toggle.setValue(this.d2hColorBlind).onChange((value) => {
+					this.d2hColorBlind = value;
+					leftPane.getContainer().win.close();
+					this.open();
+					// TODO: add function to change the colorblind mode. (rebuild all state UI)
+					this.buildManualDiffPanes();
+				});
+			});
+		rightPaneEl.createEl("ul").append(
+			createEl("li", {
+				text: `Green : ${this.originalFile.basename}`,
+			}),
+			createEl("li", {
+				text: `Red : ${this.currentConflictFile.basename}`,
+			})
+		);
+		rightPaneEl.createDiv().innerHTML = await this.getDiffContent(
+			this.originalFile,
+			this.currentConflictFile
+		);
+
+		// TODO: #18 IDEA: create a workspace leaf with all the files in conflict.
+	};
 }
