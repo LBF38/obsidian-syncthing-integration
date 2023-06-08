@@ -153,7 +153,11 @@ export class DiffModal extends Modal {
 					new Notice(`Conflict resolved : Accepted left`, 5000);
 				}, 2000);
 				this.originalFile = this.currentConflictFile;
-				this.open();
+				new DiffModal(
+					this.app,
+					this.originalFile,
+					this.syncthingController
+				);
 			});
 		new ButtonComponent(buttonsContainer)
 			.setButtonText("Accept original")
@@ -170,12 +174,51 @@ export class DiffModal extends Modal {
 					1000
 				);
 				this.app.vault.delete(this.currentConflictFile);
-				this.open();
+				new DiffModal(
+					this.app,
+					this.originalFile,
+					this.syncthingController
+				);
 			});
 		new ButtonComponent(buttonsContainer)
 			.setButtonText("Open files in new panes")
 			.setCta()
-			.onClick(() => {});
+			.onClick(async () => {
+				const leftPane = this.app.workspace.openPopoutLeaf();
+				leftPane.openFile(this.currentConflictFile);
+				const lowerPane = this.app.workspace.createLeafBySplit(
+					leftPane,
+					"horizontal"
+				);
+				lowerPane.openFile(this.originalFile);
+				const rightPane = this.app.workspace.createLeafBySplit(
+					leftPane,
+					"vertical"
+				);
+				// newPanes.openFile(this.originalFile);
+				rightPane.view.containerEl.empty();
+				rightPane.view.navigation = false;
+				rightPane.view.containerEl.addClass("diff");
+				rightPane.view.containerEl.title = "Difference tab";
+				rightPane.view.containerEl.createEl("h1", {
+					text: `Difference tab`,
+				});
+				rightPane.view.containerEl.createEl("ul").append(
+					createEl("li", {
+						text: `Green : ${this.originalFile.basename}`,
+					}),
+					createEl("li", {
+						text: `Red : ${this.currentConflictFile.basename}`,
+					})
+				);
+				rightPane.view.containerEl.createDiv().innerHTML =
+					await this.getDiffContent(
+						this.originalFile,
+						this.currentConflictFile
+					);
+
+				// TODO: #18 IDEA: create a workspace leaf with all the files in conflict.
+			});
 
 		// CSS styling for the modal.
 		this.modalEl.setCssStyles({
