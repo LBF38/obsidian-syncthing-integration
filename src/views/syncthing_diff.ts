@@ -294,9 +294,10 @@ export class DiffModal extends Modal {
 				toggle.setValue(this.d2hColorBlind).onChange((value) => {
 					this.d2hColorBlind = value;
 					leftPane.getContainer().win.close();
-					this.open();
-					// TODO: add function to change the colorblind mode. (rebuild all state UI)
 					this.buildManualDiffPanes();
+					// this.open();
+					// TODO: add function to change the colorblind mode. (rebuild all state UI)
+					// this.buildManualDiffPanes();
 				});
 			});
 		rightPaneEl.createEl("ul").append(
