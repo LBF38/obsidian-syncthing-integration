@@ -42,6 +42,7 @@ export interface SyncthingController {
 	getDiffFiles(file: TFile): Promise<{
 		originalFile: TFile;
 		conflictingFiles: TFile[] | Failure;
+		conflictingFilesProperties?: Map<TFile, ConflictFilename | Failure>;
 	}>;
 	/**
 	 * Parses a SyncThing conflict filename.
@@ -79,7 +80,7 @@ export interface SyncthingController {
 	stopSyncThing(): Promise<boolean | Failure>;
 }
 
-interface ConflictFilename {
+export interface ConflictFilename {
 	/**
 	 * The filename of the file that is in conflict.
 	 *
@@ -101,6 +102,10 @@ interface ConflictFilename {
 	 * @example `123456`
 	 */
 	time: string;
+	/**
+	 * Full date and time of the conflict, in the Date format.
+	 */
+	dateTime: Date;
 	/**
 	 * The device ID of the device that modified the file. it is a reduced version of {@linkcode SyncThingDevice.deviceID}
 	 *
@@ -150,7 +155,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 			return new Failure("No conflicts found.");
 		}
 		// Reorder conflicting files by filename in a Map
-		let conflictsFilesMap = new Map<string, TFile[]>();
+		const conflictsFilesMap = new Map<string, TFile[]>();
 		for (const file of conflictsFiles) {
 			const filenameProperties = this.parseConflictFilename(file.name);
 			if (filenameProperties instanceof Failure) {
@@ -178,37 +183,59 @@ export class SyncthingControllerImpl implements SyncthingController {
 			filename: match[1],
 			date: match[2],
 			time: match[3],
+			dateTime: new Date(`${match[2]}T${match[3]}Z`),
 			modifiedBy: match[4],
 			extension: match[5],
 		};
 	}
 
-	async getDiffFiles(entryFile: TFile) {
-		const filenameProperties = this.parseConflictFilename(entryFile.name);
+	async getDiffFiles(file: TFile): Promise<{
+		originalFile: TFile;
+		conflictingFiles: TFile[] | Failure;
+		conflictingFilesProperties?: Map<TFile, Failure | ConflictFilename>;
+	}> {
+		const filenameProperties = this.parseConflictFilename(file.name);
 		if (filenameProperties instanceof Failure) {
 			return {
-				originalFile: entryFile,
+				originalFile: file,
 				conflictingFiles: filenameProperties,
 			};
 		}
 		const allFiles = this.plugin.app.vault.getFiles();
-		const conflictsFiles = allFiles.filter((file) => {
+		const conflictsFiles = allFiles.filter((currentFile) => {
 			return (
-				(file.name.contains(".sync-conflict") &&
-					file.name.contains(filenameProperties.filename)) ||
-				file.basename === filenameProperties.filename
+				(currentFile.name.contains(".sync-conflict") &&
+					currentFile.name.contains(filenameProperties.filename)) ||
+				currentFile.basename === filenameProperties.filename
 			);
 		});
 		const originalFile = conflictsFiles.find(
-			(file) => file.basename === filenameProperties.filename
+			(currentFile) =>
+				currentFile.basename === filenameProperties.filename
 		);
 		if (originalFile) conflictsFiles.remove(originalFile);
+		const result =
+			conflictsFiles.length > 0
+				? conflictsFiles
+				: new Failure("No conflicts found.");
+		if (result instanceof Failure) {
+			return {
+				originalFile: file,
+				conflictingFiles: result,
+			};
+		}
+		const conflictingFilesProperties = new Map<
+			TFile,
+			Failure | ConflictFilename
+		>();
+		for (const conflictingFile of conflictsFiles) {
+			const properties = this.parseConflictFilename(conflictingFile.name);
+			conflictingFilesProperties.set(conflictingFile, properties);
+		}
 		return {
-			originalFile: originalFile ?? entryFile,
-			conflictingFiles:
-				conflictsFiles.length > 0
-					? conflictsFiles
-					: new Failure("No conflicts found."),
+			originalFile: file,
+			conflictingFiles: conflictsFiles,
+			conflictingFilesProperties: conflictingFilesProperties,
 		};
 	}
 

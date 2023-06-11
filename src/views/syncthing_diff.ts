@@ -1,7 +1,10 @@
 import { createTwoFilesPatch } from "diff";
 import { Diff2HtmlConfig, html } from "diff2html";
 import { App, ButtonComponent, Modal, Notice, Setting, TFile } from "obsidian";
-import { SyncthingController } from "src/controllers/syncthing_controller";
+import {
+	ConflictFilename,
+	SyncthingController,
+} from "src/controllers/syncthing_controller";
 import { Failure } from "src/models/failures";
 
 export class DiffModal extends Modal {
@@ -9,6 +12,7 @@ export class DiffModal extends Modal {
 	d2hColorBlind = false;
 	originalFile: TFile;
 	conflictingFiles: TFile[] | Failure;
+	conflictingFilesProperties?: Map<TFile, ConflictFilename | Failure>;
 	currentConflictFile: TFile;
 	constructor(
 		app: App,
@@ -27,6 +31,7 @@ export class DiffModal extends Modal {
 		({
 			originalFile: this.originalFile,
 			conflictingFiles: this.conflictingFiles,
+			conflictingFilesProperties: this.conflictingFilesProperties,
 		} = await this.syncthingController.getDiffFiles(this.file));
 
 		if (this.conflictingFiles instanceof Failure) {
@@ -45,6 +50,10 @@ export class DiffModal extends Modal {
 				});
 			return;
 		}
+		if (this.conflictingFilesProperties === undefined) {
+			new Notice("Error getting conflicting files properties.");
+			return;
+		}
 
 		// Container for the 3 columns.
 		const diffContainer = contentEl.createDiv({
@@ -59,13 +68,29 @@ export class DiffModal extends Modal {
 		const leftSide = diffContainer.createDiv();
 		leftSide.createEl("h1", { text: "Conflicting files" });
 		// TODO: change to sorting by conflict date.
-		this.conflictingFiles.sort((a, b) => a.stat.mtime - b.stat.mtime);
+		this.conflictingFiles.sort((a, b) => {
+			return (
+				this.conflictingFilesProperties?.get(a).conflictDate -
+				this.conflictingFilesProperties?.get(b).conflictDate
+			);
+		});
 		this.conflictingFiles.forEach((file) => {
+			const fileProperties = this.conflictingFilesProperties?.get(file);
+			if (fileProperties === undefined) {
+				new Notice("Error getting conflicting files properties.");
+				return;
+			}
+			if (fileProperties instanceof Failure) {
+				new Setting(leftSide)
+					.setName(fileProperties.message)
+					.setDesc(file.path);
+				return;
+			}
 			new Setting(leftSide)
-				.setName(file.basename)
+				.setName(fileProperties.filename)
 				// TODO: enhance description w/ more info on conflict file. (path, size, date, etc.)
 				.setDesc(
-					new Date(file.stat.mtime).toString() + "\n" + file.path
+					`Conflict date : ${fileProperties.dateTime.toString()}`
 				)
 				.addButton((button) => {
 					button
@@ -79,7 +104,6 @@ export class DiffModal extends Modal {
 							);
 							this.close();
 							this.open();
-							// TODO: add logic to resolve conflict.
 						});
 				})
 				.addButton((button) => {
