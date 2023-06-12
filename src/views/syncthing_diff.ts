@@ -12,7 +12,7 @@ export class DiffModal extends Modal {
 	d2hColorBlind = false;
 	originalFile: TFile;
 	conflictingFiles: TFile[] | Failure;
-	conflictingFilesProperties?: Map<TFile, ConflictFilename | Failure>;
+	conflictingFilesProperties: Map<TFile, ConflictFilename | Failure>;
 	currentConflictFile: TFile;
 	constructor(
 		app: App,
@@ -23,6 +23,7 @@ export class DiffModal extends Modal {
 		this.conflictingFiles = [];
 		this.originalFile = file;
 		this.currentConflictFile = file;
+		this.conflictingFilesProperties = new Map();
 	}
 
 	async onOpen() {
@@ -50,10 +51,6 @@ export class DiffModal extends Modal {
 				});
 			return;
 		}
-		if (this.conflictingFilesProperties === undefined) {
-			new Notice("Error getting conflicting files properties.");
-			return;
-		}
 
 		// Container for the 3 columns.
 		const diffContainer = contentEl.createDiv({
@@ -68,14 +65,14 @@ export class DiffModal extends Modal {
 		const leftSide = diffContainer.createDiv();
 		leftSide.createEl("h1", { text: "Conflicting files" });
 		// TODO: change to sorting by conflict date.
-		this.conflictingFiles.sort((a, b) => {
-			return (
-				this.conflictingFilesProperties?.get(a).conflictDate -
-				this.conflictingFilesProperties?.get(b).conflictDate
-			);
-		});
+		// this.conflictingFiles.sort((a, b) => {
+		// 	return (
+		// 		this.conflictingFilesProperties.get(a)?.conflictDate -
+		// 		this.conflictingFilesProperties.get(b)?.conflictDate
+		// 	);
+		// });
 		this.conflictingFiles.forEach((file) => {
-			const fileProperties = this.conflictingFilesProperties?.get(file);
+			const fileProperties = this.conflictingFilesProperties.get(file);
 			if (fileProperties === undefined) {
 				new Notice("Error getting conflicting files properties.");
 				return;
@@ -86,6 +83,7 @@ export class DiffModal extends Modal {
 					.setDesc(file.path);
 				return;
 			}
+			console.log(fileProperties);
 			new Setting(leftSide)
 				.setName(fileProperties.filename)
 				// TODO: enhance description w/ more info on conflict file. (path, size, date, etc.)
@@ -114,7 +112,8 @@ export class DiffModal extends Modal {
 							"window"
 						);
 					});
-				});
+				})
+				.settingEl.createEl("p", { text: file.path });
 		});
 
 		// Middle : diff between the two files.
@@ -318,9 +317,8 @@ export class DiffModal extends Modal {
 				toggle.setValue(this.d2hColorBlind).onChange((value) => {
 					this.d2hColorBlind = value;
 					leftPane.getContainer().win.close();
-					this.buildManualDiffPanes();
 					// this.open();
-					// TODO: add function to change the colorblind mode. (rebuild all state UI)
+					// TODO: add function to change the colorblind mode. (rebuild all state UI) => use of React for views ?
 					// this.buildManualDiffPanes();
 				});
 			});
@@ -338,5 +336,13 @@ export class DiffModal extends Modal {
 		);
 
 		// TODO: #18 IDEA: create a workspace leaf with all the files in conflict.
+		if (this.conflictingFiles instanceof Failure) return;
+		this.conflictingFiles.remove(this.currentConflictFile);
+		this.app.workspace.setActiveLeaf(leftPane);
+		for (const conflictFile of this.conflictingFiles) {
+			const leaf = this.app.workspace.getLeaf("tab");
+			leaf.openFile(conflictFile);
+		}
+		this.app.workspace.setActiveLeaf(leftPane);
 	};
 }

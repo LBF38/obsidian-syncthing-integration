@@ -9,6 +9,8 @@ import {
 import { SyncThingFromCLI } from "../data/syncthing_local_datasource";
 import { SyncThingFromREST } from "../data/syncthing_remote_datasource";
 
+// TODO: refactor the whole Controller. Needed for better usage in views.
+
 export interface SyncthingController {
 	/**
 	 * The plugin instance.
@@ -42,7 +44,7 @@ export interface SyncthingController {
 	getDiffFiles(file: TFile): Promise<{
 		originalFile: TFile;
 		conflictingFiles: TFile[] | Failure;
-		conflictingFilesProperties?: Map<TFile, ConflictFilename | Failure>;
+		conflictingFilesProperties: Map<TFile, ConflictFilename | Failure>;
 	}>;
 	/**
 	 * Parses a SyncThing conflict filename.
@@ -183,22 +185,30 @@ export class SyncthingControllerImpl implements SyncthingController {
 			filename: match[1],
 			date: match[2],
 			time: match[3],
-			dateTime: new Date(`${match[2]}T${match[3]}Z`),
+			dateTime: new Date(
+				`${match[2].slice(0, 4)}-${match[2].slice(
+					4,
+					6
+				)}-${match[2].slice(6, 8)}T${match[3].slice(
+					0,
+					2
+				)}:${match[3].slice(2, 4)}:${match[3].slice(4, 6)}`
+			),
 			modifiedBy: match[4],
 			extension: match[5],
 		};
 	}
 
-	async getDiffFiles(file: TFile): Promise<{
-		originalFile: TFile;
-		conflictingFiles: TFile[] | Failure;
-		conflictingFilesProperties?: Map<TFile, Failure | ConflictFilename>;
-	}> {
+	async getDiffFiles(file: TFile) {
 		const filenameProperties = this.parseConflictFilename(file.name);
 		if (filenameProperties instanceof Failure) {
 			return {
 				originalFile: file,
 				conflictingFiles: filenameProperties,
+				conflictingFilesProperties: new Map<TFile, Failure>().set(
+					file,
+					filenameProperties
+				),
 			};
 		}
 		const allFiles = this.plugin.app.vault.getFiles();
@@ -220,8 +230,12 @@ export class SyncthingControllerImpl implements SyncthingController {
 				: new Failure("No conflicts found.");
 		if (result instanceof Failure) {
 			return {
-				originalFile: file,
+				originalFile: originalFile ? originalFile : file,
 				conflictingFiles: result,
+				conflictingFilesProperties: new Map<TFile, Failure>().set(
+					file,
+					result
+				),
 			};
 		}
 		const conflictingFilesProperties = new Map<
@@ -233,7 +247,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 			conflictingFilesProperties.set(conflictingFile, properties);
 		}
 		return {
-			originalFile: file,
+			originalFile: originalFile ? originalFile : file,
 			conflictingFiles: conflictsFiles,
 			conflictingFilesProperties: conflictingFilesProperties,
 		};
