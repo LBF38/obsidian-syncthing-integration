@@ -27,6 +27,7 @@ export class DiffModal extends Modal {
 	}
 
 	async onOpen() {
+		// TODO: #20 General UI improvements => use React for better state management & UI.
 		const { contentEl } = this;
 
 		({
@@ -84,12 +85,9 @@ export class DiffModal extends Modal {
 				return;
 			}
 			console.log(fileProperties);
-			new Setting(leftSide)
+			const fileSetting = new Setting(leftSide);
+			fileSetting
 				.setName(fileProperties.filename)
-				// TODO: enhance description w/ more info on conflict file. (path, size, date, etc.)
-				.setDesc(
-					`Conflict date : ${fileProperties.dateTime.toString()}`
-				)
 				.addButton((button) => {
 					button
 						.setButtonText("Resolve conflict")
@@ -112,8 +110,21 @@ export class DiffModal extends Modal {
 							"window"
 						);
 					});
-				})
-				.settingEl.createEl("p", { text: file.path });
+				});
+			// TODO: enhance description w/ more info on conflict file. (path, size, date, etc.)
+			const settingDescList = fileSetting.descEl.createEl("ul");
+			const fileDescList = [
+				`Conflict date : ${fileProperties.dateTime.toISOString()}`,
+				`Size : ${file.stat.size.toString()} Bytes`,
+				`Last modified : ${new Date(file.stat.mtime).toISOString()}`,
+				`Modified by : ${fileProperties.modifiedBy}`,
+				`Path : ${file.path}`,
+			];
+			for (const desc of fileDescList) {
+				settingDescList.createEl("li", {
+					text: desc,
+				});
+			}
 		});
 
 		// Middle : diff between the two files.
