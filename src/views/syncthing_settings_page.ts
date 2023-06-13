@@ -127,5 +127,19 @@ export class SampleSettingTab extends PluginSettingTab {
 					})
 				);
 		}
+
+		// Plugin's dev Mode.
+		containerEl.createEl("h1", { text: "Developer Mode" });
+		new Setting(containerEl)
+			.setName("Enable Plugin's Developer Mode")
+			.addToggle((toggle) => {
+				toggle
+					.setValue(this.plugin.settings.devMode)
+					.onChange(async (value) => {
+						this.plugin.settings.devMode = value;
+						await this.plugin.saveSettings();
+						this.plugin.load();
+					});
+			});
 	}
 }

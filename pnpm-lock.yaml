@@ -11,6 +11,9 @@ devDependencies:
   '@codemirror/view':
     specifier: ^6.13.0
     version: 6.13.0
+  '@js-random/date':
+    specifier: ^0.3.5
+    version: 0.3.5
   '@types/diff':
     specifier: ^5.0.3
     version: 5.0.3
@@ -50,6 +53,9 @@ devDependencies:
   highlight.js:
     specifier: ^11.8.0
     version: 11.8.0
+  lorem-ipsum:
+    specifier: ^2.0.8
+    version: 2.0.8
   obsidian:
     specifier: latest
     version: 1.2.8(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
@@ -330,6 +336,16 @@ packages:
 
   /@humanwhocodes/object-schema@1.2.1:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
+    dev: true
+
+  /@js-random/date@0.3.5:
+    resolution: {integrity: sha512-9uNK/JBOaUVv2Kwjp8EgX8ojVcHebL6wKFVGdcGrHnKXiyl/SZJPjdOXVLQaBpkgoKP9F6rflOTVEK9JZf4Smw==}
+    dependencies:
+      '@js-random/number': 0.3.5
+    dev: true
+
+  /@js-random/number@0.3.5:
+    resolution: {integrity: sha512-k1n/1M9CLuTMl7R0I6Fky+EwPBfmK+b+au1xpgKNJOv466DkLURU/4HHQ+KOe9Hsgw6O/vM7guEnu53JspWbWA==}
     dev: true
 
   /@nodelib/fs.scandir@2.1.5:
@@ -679,6 +695,11 @@ packages:
   /commander@8.3.0:
     resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
     engines: {node: '>= 12'}
+    dev: true
+
+  /commander@9.5.0:
+    resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
+    engines: {node: ^12.20.0 || >=14}
     dev: true
 
   /concat-map@0.0.1:
@@ -1316,6 +1337,14 @@ packages:
 
   /lodash.uniq@4.5.0:
     resolution: {integrity: sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==}
+    dev: true
+
+  /lorem-ipsum@2.0.8:
+    resolution: {integrity: sha512-5RIwHuCb979RASgCJH0VKERn9cQo/+NcAi2BMe9ddj+gp7hujl6BI+qdOG4nVsLDpwWEJwTVYXNKP6BGgbcoGA==}
+    engines: {node: '>= 8.x', npm: '>= 5.x'}
+    hasBin: true
+    dependencies:
+      commander: 9.5.0
     dev: true
 
   /lru-cache@6.0.0:
