@@ -13,7 +13,8 @@ export class SyncThingConfiguration {
 		 */
 		public version: string,
 		public folders: SyncThingFolder[],
-		public devices: SyncThingDevice[]
+		public devices: SyncThingDevice[],
+		public syncthingBaseUrl: string
 	) {}
 }
 

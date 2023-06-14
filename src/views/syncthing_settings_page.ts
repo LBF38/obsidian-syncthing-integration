@@ -95,9 +95,14 @@ export class SampleSettingTab extends PluginSettingTab {
 			.setName("SyncThing API Status")
 			.addButton((button) => {
 				button.setButtonText("Check API Status").onClick(async () => {
-					const status =
-						await this.syncthingController.getAPIStatus();
-					new Notice(status);
+					this.syncthingController
+						.getAPIStatus()
+						.then((status) => {
+							new Notice(`Syncthing Ping : ${status}`);
+						})
+						.catch((error) => {
+							new Notice(error);
+						});
 				});
 			});
 
@@ -116,17 +121,15 @@ export class SampleSettingTab extends PluginSettingTab {
 				text: "This table will show the folders and devices that are configured on this device.",
 			})
 			.appendChild(containerEl.createEl("tbody"));
-		const thisDeviceConfig = this.plugin.settings.configuration?.devices[0];
-		if (thisDeviceConfig) {
-			thisDeviceTable
-				.appendChild(containerEl.createEl("tr"))
-				.appendChild(containerEl.createEl("td", { text: "Device ID" }))
-				.appendChild(
-					containerEl.createEl("td", {
-						text: thisDeviceConfig.deviceID.slice(0, 8),
-					})
-				);
-		}
+		const thisDeviceConfig = configuration.devices[0];
+		thisDeviceTable
+			.appendChild(containerEl.createEl("tr"))
+			.appendChild(containerEl.createEl("td", { text: "Device ID" }))
+			.appendChild(
+				containerEl.createEl("td", {
+					text: thisDeviceConfig.deviceID.slice(0, 8),
+				})
+			);
 
 		// Plugin's dev Mode.
 		containerEl.createEl("h1", { text: "Developer Mode" });

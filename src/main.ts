@@ -22,14 +22,13 @@ import {
 //! Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {
-	api_key: string | null;
-	configuration: SyncThingConfiguration | null;
+	api_key: string;
+	configuration: SyncThingConfiguration | Partial<SyncThingConfiguration>;
 	devMode: boolean;
 }
 
 const DEFAULT_SETTINGS: Partial<MyPluginSettings> = {
-	api_key: null,
-	configuration: null,
+	configuration: { syncthingBaseUrl: "http://localhost:8384" },
 	devMode: false,
 };
 

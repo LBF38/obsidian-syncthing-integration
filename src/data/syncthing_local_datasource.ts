@@ -62,7 +62,7 @@ export class SyncThingFromCLIimpl implements SyncThingFromCLI {
 		if (response instanceof Error) {
 			throw new CliFailure("No API key found.");
 		}
-		return response;
+		return response.trim();
 	}
 
 	private async runSyncthingCommand(

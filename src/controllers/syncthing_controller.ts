@@ -1,4 +1,4 @@
-import { TFile } from "obsidian";
+import { TFile, requestUrl } from "obsidian";
 import MyPlugin from "src/main";
 import { Failure, RestFailure } from "src/models/failures";
 import {
@@ -132,11 +132,38 @@ export class SyncthingControllerImpl implements SyncthingController {
 	) {}
 
 	async getAPIStatus(): Promise<string> {
-		// const response = requestUrl(this.plugin.settings.)
-		return "Not implemented.";
+		if (!this.plugin.settings.api_key) {
+			const error = await this.syncthingFromCLI
+				.getAPIkey()
+				.then((apiKey) => {
+					this.plugin.settings.api_key = apiKey;
+					console.log("getAPIkey", apiKey);
+				})
+				.catch((error) => {
+					return Error(
+						`Error while getting the API key from the CLI. Please check your settings. Error message : ${error}`
+					);
+				});
+			if (error) {
+				return error.message;
+			}
+		}
+		const response = await requestUrl({
+			url:
+				this.plugin.settings.configuration.syncthingBaseUrl +
+				"/rest/system/ping",
+			headers: {
+				"X-API-Key": this.plugin.settings.api_key,
+				// CORS headers
+				"Access-Control-Allow-Origin": "*",
+			},
+		});
+		console.log(response);
+		return response.json["ping"];
 	}
 
 	async hasSyncThing(): Promise<boolean> {
+		// TODO: extract to datasources classes (FromCLI and FromREST)
 		return await this.syncthingFromCLI
 			.getVersion()
 			.then((version) => {

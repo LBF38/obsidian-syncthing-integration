@@ -9,9 +9,10 @@ export class SyncThingConfigurationModel extends SyncThingConfiguration {
 	constructor(
 		version: string,
 		folders: SyncThingFolder[],
-		devices: SyncThingDevice[]
+		devices: SyncThingDevice[],
+		syncthingBaseUrl = "http://localhost:8384"
 	) {
-		super(version, folders, devices);
+		super(version, folders, devices, syncthingBaseUrl);
 	}
 
 	static fromJSON(json: string): SyncThingConfigurationModel {
