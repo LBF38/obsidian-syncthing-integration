@@ -1,11 +1,11 @@
 import { TFile, requestUrl } from "obsidian";
-import MyPlugin from "src/main";
+import SyncthingPlugin from "src/main";
 import { CliFailure, Failure, RestFailure } from "src/models/failures";
 import {
 	SyncThingConfiguration,
 	SyncThingDevice,
 	SyncThingFolder,
-} from "src/models/syncthing_entities";
+} from "src/models/entities";
 import { SyncThingFromCLI } from "../data/syncthing_local_datasource";
 import { SyncThingFromREST } from "../data/syncthing_remote_datasource";
 
@@ -17,7 +17,7 @@ export interface SyncthingController {
 	 * To make it easier to call plugin's methods.
 	 * @see https://docs.obsidian.md/Reference/TypeScript+API/Plugin/Plugin
 	 */
-	plugin: MyPlugin;
+	plugin: SyncthingPlugin;
 	/**
 	 * Gets the SyncThing API status.
 	 */
@@ -128,13 +128,14 @@ export class SyncthingControllerImpl implements SyncthingController {
 	constructor(
 		public syncthingFromCLI: SyncThingFromCLI,
 		public syncthingFromREST: SyncThingFromREST,
-		public plugin: MyPlugin
+		public plugin: SyncthingPlugin
 	) {}
 
 	async getAPIStatus(): Promise<string> {
 		if (!this.plugin.settings.api_key) {
 			return "API key is not set.";
 		}
+		// TODO: refactor in remote datasource.
 		const response = await requestUrl({
 			url:
 				this.plugin.settings.configuration.syncthingBaseUrl +

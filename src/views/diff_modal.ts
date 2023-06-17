@@ -4,7 +4,7 @@ import { App, ButtonComponent, Modal, Notice, Setting, TFile } from "obsidian";
 import {
 	ConflictFilename,
 	SyncthingController,
-} from "src/controllers/syncthing_controller";
+} from "src/controllers/main_controller";
 import { Failure } from "src/models/failures";
 
 export class DiffModal extends Modal {

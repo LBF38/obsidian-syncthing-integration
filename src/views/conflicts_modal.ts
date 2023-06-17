@@ -1,15 +1,7 @@
-import {
-	App,
-	BaseComponent,
-	Component,
-	DropdownComponent,
-	ExtraButtonComponent,
-	Modal,
-	Setting,
-} from "obsidian";
+import { App, Modal, Setting } from "obsidian";
 import { Failure } from "src/models/failures";
-import { SyncthingController } from "../controllers/syncthing_controller";
-import { DiffModal } from "./syncthing_diff";
+import { SyncthingController } from "../controllers/main_controller";
+import { DiffModal } from "./diff_modal";
 
 /**
  * Modal to display the files in conflict when syncing w/ Syncthing.

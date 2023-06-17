@@ -8,10 +8,10 @@
 import randomDate from "@js-random/date";
 import { loremIpsum } from "lorem-ipsum";
 import { App, Modal, Notice, Setting } from "obsidian";
-import MyPlugin from "../main";
+import SyncthingPlugin from "../main";
 
 export class PluginDevModeController {
-	constructor(public plugin: MyPlugin) {}
+	constructor(public plugin: SyncthingPlugin) {}
 
 	async generateSyncthingConflicts(distinctFiles = 2, conflictsPerFile = 3) {
 		// TODO: fix the function. It doesn't work yet and don't know why. It makes the app crash.

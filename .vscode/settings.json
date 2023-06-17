@@ -8,7 +8,8 @@
 		"esbuild",
 		"controllers",
 		"models",
-		"settings"
+		"settings",
+		"project"
 	],
 	"markdownlint.config": {
 		"MD033": false,

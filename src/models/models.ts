@@ -3,7 +3,7 @@ import {
 	SyncThingConfiguration,
 	SyncThingDevice,
 	SyncThingFolder,
-} from "src/models/syncthing_entities";
+} from "src/models/entities";
 
 export class SyncThingConfigurationModel extends SyncThingConfiguration {
 	constructor(

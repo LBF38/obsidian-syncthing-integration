@@ -1,5 +1,5 @@
 import { exec } from "child_process";
-import { SyncThingConfigurationModel } from "../models/syncthing";
+import { SyncThingConfigurationModel } from "../models/models";
 import { promisify } from "util";
 import { CliFailure } from "src/models/failures";
 

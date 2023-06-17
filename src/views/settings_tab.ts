@@ -1,13 +1,13 @@
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
-import { SyncthingController } from "src/controllers/syncthing_controller";
-import MyPlugin from "src/main";
+import { SyncthingController } from "src/controllers/main_controller";
+import SyncthingPlugin from "src/main";
 import { Failure } from "src/models/failures";
 
-export class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+export class SyncthingSettingTab extends PluginSettingTab {
+	plugin: SyncthingPlugin;
 	syncthingController: SyncthingController;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: SyncthingPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 		this.syncthingController = plugin.syncthingController;
