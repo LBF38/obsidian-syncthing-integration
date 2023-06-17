@@ -33,7 +33,9 @@ const DEFAULT_SETTINGS: Partial<MyPluginSettings> = {
 };
 
 export default class MyPlugin extends Plugin {
+	static loadCount = 0;
 	settings!: MyPluginSettings;
+	pluginsElements: HTMLElement[] = [];
 	syncthingFromCLI: SyncThingFromCLI = new SyncThingFromCLIimpl();
 	syncthingFromREST: SyncThingFromREST = new SyncThingFromRESTimpl();
 	syncthingController: SyncthingController = new SyncthingControllerImpl(
@@ -46,6 +48,7 @@ export default class MyPlugin extends Plugin {
 	);
 
 	async onload() {
+		MyPlugin.loadCount++;
 		await this.loadSettings();
 
 		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
@@ -55,40 +58,48 @@ export default class MyPlugin extends Plugin {
 			new Notice("SyncThing integration is not yet implemented.");
 		});
 
+		const pluginSettingTab = new SampleSettingTab(this.app, this);
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		if (MyPlugin.loadCount === 1) this.addSettingTab(pluginSettingTab);
 
-		this.addRibbonIcon("construction", "Open Syncthing diff modal", () => {
-			new ConflictsModal(this.app, this.syncthingController).open();
-		});
-
-		// if (this.settings.devMode) {
-		new Notice("Dev mode is enabled.");
-		this.addRibbonIcon(
-			"chevron-right-square",
-			"Generate Syncthing conflicts",
-			async () => {
-				new DevModeModal(
-					this.app,
-					new PluginDevModeController(this)
-				).open();
+		const syncthingConflictManager = this.addRibbonIcon(
+			"construction",
+			"Open Syncthing conflict manager modal",
+			() => {
+				new ConflictsModal(this.app, this.syncthingController).open();
 			}
 		);
-		this.addCommand({
-			id: "generate-syncthing-conflicts",
-			name: "Generate Syncthing conflicts",
-			icon: "chevron-right-square",
-			callback: async () => {
-				new DevModeModal(
-					this.app,
-					new PluginDevModeController(this)
-				).open();
-			},
-		});
-		// }
+		if (this.settings.devMode) {
+			new Notice("Dev mode is enabled.");
+			const devModeGenerator = this.addRibbonIcon(
+				"chevron-right-square",
+				"Generate Syncthing conflicts",
+				async () => {
+					new DevModeModal(
+						this.app,
+						new PluginDevModeController(this)
+					).open();
+				}
+			);
+			this.addCommand({
+				id: "generate-syncthing-conflicts",
+				name: "Generate Syncthing conflicts",
+				icon: "chevron-right-square",
+				callback: async () => {
+					new DevModeModal(
+						this.app,
+						new PluginDevModeController(this)
+					).open();
+				},
+			});
+			this.pluginsElements.push(devModeGenerator);
+		}
+		this.pluginsElements.push(statusBarItemEl, syncthingConflictManager);
 	}
 
-	onunload() {}
+	onunload(): void {
+		this.pluginsElements.forEach((element) => element.remove());
+	}
 
 	async loadSettings() {
 		this.settings = Object.assign(

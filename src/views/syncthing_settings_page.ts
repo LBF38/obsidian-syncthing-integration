@@ -16,7 +16,6 @@ export class SampleSettingTab extends PluginSettingTab {
 	async display(): Promise<void> {
 		const { containerEl } = this;
 		containerEl.empty();
-
 		// TODO: Add banner with the logo.
 		// containerEl
 		// 	.createEl("img", {
@@ -76,19 +75,38 @@ export class SampleSettingTab extends PluginSettingTab {
 			);
 
 		// API Key setting.
-		new Setting(containerEl)
+		const apiKeySetting = new Setting(containerEl);
+		apiKeySetting
 			.setName("SyncThing API Key")
 			.setDesc("Add your SyncThing API key here for the plugin to work.")
-			.addText((text) =>
-				text
-					.setPlaceholder("Enter your API key here...")
-					.setValue(this.plugin.settings.api_key ?? "")
-					.onChange(async (value) => {
-						// console.log("Secret: " + value);
-						this.plugin.settings.api_key = value;
-						await this.plugin.saveSettings();
-					})
+			.addText(
+				(text) =>
+					(text
+						.setPlaceholder("Enter your API key here...")
+						.setValue(this.plugin.settings.api_key ?? "")
+						.onChange(async (value) => {
+							// console.log("Secret: " + value);
+							this.plugin.settings.api_key = value;
+							await this.plugin.saveSettings();
+						}).inputEl.type = "password")
+				// TODO: add a button to show the api key in clear text.
 			);
+
+		if (!this.plugin.settings.api_key) {
+			apiKeySetting.addButton((button) => {
+				button.setButtonText("Get API Key").onClick(async () => {
+					this.syncthingController.getAPIKey().then((key) => {
+						if (key instanceof Failure) {
+							new Notice(key.message);
+							return;
+						}
+						this.plugin.settings.api_key = key;
+						this.plugin.saveSettings();
+						this.display();
+					});
+				});
+			});
+		}
 
 		// Trying to make an HTTP request to the API.
 		new Setting(containerEl)
@@ -141,7 +159,8 @@ export class SampleSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.devMode = value;
 						await this.plugin.saveSettings();
-						this.plugin.load();
+						this.plugin.onunload();
+						this.plugin.onload();
 					});
 			});
 	}

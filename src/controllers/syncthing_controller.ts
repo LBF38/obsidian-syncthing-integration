@@ -1,6 +1,6 @@
 import { TFile, requestUrl } from "obsidian";
 import MyPlugin from "src/main";
-import { Failure, RestFailure } from "src/models/failures";
+import { CliFailure, Failure, RestFailure } from "src/models/failures";
 import {
 	SyncThingConfiguration,
 	SyncThingDevice,
@@ -133,20 +133,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 
 	async getAPIStatus(): Promise<string> {
 		if (!this.plugin.settings.api_key) {
-			const error = await this.syncthingFromCLI
-				.getAPIkey()
-				.then((apiKey) => {
-					this.plugin.settings.api_key = apiKey;
-					console.log("getAPIkey", apiKey);
-				})
-				.catch((error) => {
-					return Error(
-						`Error while getting the API key from the CLI. Please check your settings. Error message : ${error}`
-					);
-				});
-			if (error) {
-				return error.message;
-			}
+			return "API key is not set.";
 		}
 		const response = await requestUrl({
 			url:
@@ -280,8 +267,20 @@ export class SyncthingControllerImpl implements SyncthingController {
 		};
 	}
 
-	getAPIKey(): Promise<string | Failure> {
-		throw new Error("Method not implemented.");
+	async getAPIKey(): Promise<string | Failure> {
+		if (!this.plugin.settings.api_key) {
+			try {
+				const apiKey = await this.syncthingFromCLI.getAPIkey();
+				if (apiKey) {
+					this.plugin.settings.api_key = apiKey;
+					await this.plugin.saveSettings();
+					return apiKey;
+				}
+			} catch (error) {
+				return new CliFailure("Error getting API key.");
+			}
+		}
+		return this.plugin.settings.api_key;
 	}
 
 	async getConfiguration(): Promise<SyncThingConfiguration | Failure> {
