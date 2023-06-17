@@ -1,8 +1,13 @@
-import { Notice, Plugin } from "obsidian";
+import * as iframeResizer from "iframe-resizer";
+import { App, Modal, Notice, Plugin, requestUrl } from "obsidian";
 import {
 	SyncthingController,
 	SyncthingControllerImpl,
 } from "./controllers/main_controller";
+import {
+	DevModeModal,
+	PluginDevModeController,
+} from "./controllers/plugin_dev_mode";
 import {
 	SyncThingFromCLI,
 	SyncThingFromCLIimpl,
@@ -14,10 +19,6 @@ import {
 import { SyncThingConfiguration } from "./models/entities";
 import { ConflictsModal } from "./views/conflicts_modal";
 import { SyncthingSettingTab } from "./views/settings_tab";
-import {
-	DevModeModal,
-	PluginDevModeController,
-} from "./controllers/plugin_dev_mode";
 
 //! Remember to rename these classes and interfaces!
 
@@ -58,8 +59,8 @@ export default class SyncthingPlugin extends Plugin {
 			new Notice("SyncThing integration is not yet implemented.");
 		});
 
-		const pluginSettingTab = new SyncthingSettingTab(this.app, this);
 		// This adds a settings tab so the user can configure various aspects of the plugin
+		const pluginSettingTab = new SyncthingSettingTab(this.app, this);
 		if (SyncthingPlugin.loadCount === 1)
 			this.addSettingTab(pluginSettingTab);
 
@@ -70,6 +71,8 @@ export default class SyncthingPlugin extends Plugin {
 				new ConflictsModal(this.app, this.syncthingController).open();
 			}
 		);
+
+		// Plugin's Dev mode
 		if (this.settings.devMode) {
 			new Notice("Dev mode is enabled.");
 			const devModeGenerator = this.addRibbonIcon(
@@ -95,7 +98,18 @@ export default class SyncthingPlugin extends Plugin {
 			});
 			this.pluginsElements.push(devModeGenerator);
 		}
-		this.pluginsElements.push(statusBarItemEl, syncthingConflictManager);
+
+		// Add test Modal to ribbon
+		const test = this.addRibbonIcon("star", "Test Modal", () =>
+			new TestModal(this.app, this).open()
+		);
+
+		// Plugin's HTML elements to be removed on unload
+		this.pluginsElements.push(
+			statusBarItemEl,
+			syncthingConflictManager,
+			test
+		);
 	}
 
 	onunload(): void {
@@ -112,5 +126,58 @@ export default class SyncthingPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+}
+
+class TestModal extends Modal {
+	private iframe: HTMLIFrameElement;
+	constructor(app: App, public plugin: SyncthingPlugin) {
+		super(app);
+		this.iframe = document.createElement("iframe");
+	}
+
+	async onOpen() {
+		const syncthingGUI = await requestUrl({
+			url: this.plugin.settings.configuration.syncthingBaseUrl + "",
+			headers: {
+				"X-API-Key": this.plugin.settings.api_key,
+				"Access-Control-Allow-Origin": "*", // Required for CORS support to work
+			},
+		});
+		if (syncthingGUI.status >= 400) {
+			new Notice("Syncthing is not running.");
+			return;
+		}
+		console.log(syncthingGUI);
+
+		this.contentEl.createEl("h2", { text: "Syncthing Configuration" });
+
+		// Create the iframe element
+		this.iframe = this.contentEl.createEl("iframe", {
+			attr: {
+				src: this.plugin.settings.configuration.syncthingBaseUrl + "/",
+				frameborder: "0",
+				allowfullscreen: "true",
+				innerWidth: "100%",
+				innerHeight: "100%",
+			},
+		});
+		// this.iframe.srcdoc = syncthingGUI.text;
+
+		// Initialize the iframe resizer
+		iframeResizer.iframeResizer(
+			{
+				log: false,
+				checkOrigin: false,
+				heightCalculationMethod: "taggedElement",
+				scrolling: true,
+			},
+			this.iframe
+		);
+	}
+
+	onClose() {
+		const { contentEl } = this;
+		contentEl.empty();
 	}
 }
