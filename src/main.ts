@@ -1,4 +1,3 @@
-import * as iframeResizer from "iframe-resizer";
 import { App, Modal, Notice, Plugin } from "obsidian";
 import {
 	SyncthingController,
@@ -160,63 +159,71 @@ class TestModal extends Modal {
 
 		this.contentEl.createEl("h2", { text: "Syncthing Configuration" });
 
-		// Create the iframe element
-		this.iframe = this.contentEl.createEl("iframe", {
-			attr: {
-				src: this.plugin.settings.configuration.syncthingBaseUrl + "/",
-				frameborder: "0",
-				allowfullscreen: "true",
-				width: "100%",
-				height: "100%",
-			},
-		});
-		this.iframe.src = URL.createObjectURL(await syncthingGUI.blob());
-		this.iframe.contentWindow?.fetch(
-			this.plugin.settings.configuration.syncthingBaseUrl + "/"
-		);
-		// this.iframe.
-
-		// Initialize the iframe resizer
-		// iframeResizer.iframeResizer(
-		// 	{
-		// 		log: false,
-		// 		checkOrigin: false,
-		// 		heightCalculationMethod: "taggedElement",
-		// 		scrolling: true,
-		// 	},
-		// 	this.iframe
-		// );
-
 		// Create the collapsible element
 		const collapsible = this.contentEl.createEl("details");
-		collapsible.createEl("summary", {
+		const summary = collapsible.createEl("summary", {
 			text: "Syncthing Connection Properties",
-			attr: { style: "font-weight: bold; cursor: pointer;" },
+			attr: {
+				style: `
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #2196F3;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
+    `,
+			},
+		});
+		summary.createEl("span", {
+			text: "+",
+			attr: {
+				style: `
+      margin-right: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+    `,
+			},
 		});
 
-		// Create the table element
-		const table = collapsible.createEl("table", {
-			attr: { style: "border-collapse: collapse; width: 100%;" },
-		});
+		// Create the container for the tiles
+		const tileContainer = collapsible.createEl("div");
 
-		// Add the properties to the table
-		addTableRow(table, "Status", syncthingGUI.status.toString());
-		addTableRow(
-			table,
+		// Add the properties as tiles
+		addTile(tileContainer, "Status", syncthingGUI.status.toString());
+		addTile(
+			tileContainer,
 			"Base URL",
 			this.plugin.settings.configuration.syncthingBaseUrl ?? ""
 		);
 
-		function addTableRow(table: HTMLElement, label: string, value: string) {
-			const row = table.createEl("tr");
-			row.createEl("td", {
+		function addTile(
+			container: HTMLElement,
+			label: string,
+			value: string,
+			color1 = "#4CAF50",
+			color2 = "#2196F3"
+		) {
+			const tile = container.createEl("div", {
+				attr: {
+					style: `background-color: ${color1}; color: white; padding: 10px; border-radius: 5px; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); margin-bottom: 10px;`,
+				},
+			});
+			tile.createEl("div", {
 				text: label,
-				attr: { style: "border: 1px solid black; padding: 5px;" },
+				attr: { style: "font-weight: bold; margin-bottom: 5px;" },
 			});
-			row.createEl("td", {
-				text: value,
-				attr: { style: "border: 1px solid black; padding: 5px;" },
-			});
+			tile.createEl("div", { text: value });
+
+			// Alternate between two colors
+			const lastTile = container.lastElementChild as HTMLElement;
+			if (lastTile) {
+				const lastColor = lastTile.style.backgroundColor;
+				tile.style.backgroundColor =
+					lastColor === color1 ? color2 : color1;
+			}
 		}
 	}
 
