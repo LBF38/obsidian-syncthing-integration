@@ -29,7 +29,6 @@
 		"eslint": "^8.42.0",
 		"fs": "0.0.1-security",
 		"highlight.js": "^11.8.0",
-		"iframe-resizer": "^4.3.6",
 		"lorem-ipsum": "^2.0.8",
 		"obsidian": "latest",
 		"sass": "^1.62.1",

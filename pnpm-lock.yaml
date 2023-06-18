@@ -56,9 +56,6 @@ devDependencies:
   highlight.js:
     specifier: ^11.8.0
     version: 11.8.0
-  iframe-resizer:
-    specifier: ^4.3.6
-    version: 4.3.6
   lorem-ipsum:
     specifier: ^2.0.8
     version: 2.0.8
@@ -1234,11 +1231,6 @@ packages:
     dependencies:
       mkdirp: 0.3.0
       nopt: 1.0.10
-    dev: true
-
-  /iframe-resizer@4.3.6:
-    resolution: {integrity: sha512-wz0WodRIF6eP0oGQa5NIP1yrITAZ59ZJvVaVJqJRjaeCtfm461vy2C3us6CKx0e7pooqpIGLpVMSTzrfAjX9Sg==}
-    engines: {node: '>=0.8.0'}
     dev: true
 
   /ignore@5.2.4:
