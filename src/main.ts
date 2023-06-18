@@ -1,5 +1,5 @@
 import * as iframeResizer from "iframe-resizer";
-import { App, Modal, Notice, Plugin, requestUrl } from "obsidian";
+import { App, Modal, Notice, Plugin } from "obsidian";
 import {
 	SyncthingController,
 	SyncthingControllerImpl,
@@ -137,13 +137,21 @@ class TestModal extends Modal {
 	}
 
 	async onOpen() {
-		const syncthingGUI = await requestUrl({
-			url: this.plugin.settings.configuration.syncthingBaseUrl + "",
-			headers: {
-				"X-API-Key": this.plugin.settings.api_key,
-				"Access-Control-Allow-Origin": "*", // Required for CORS support to work
-			},
-		});
+		if (!this.plugin.settings.api_key) {
+			new Notice("API key is not set.");
+			return;
+		}
+		const syncthingGUI = await fetch(
+			this.plugin.settings.configuration.syncthingBaseUrl ??
+				"http://localhost:8384",
+			{
+				headers: {
+					"X-API-Key": this.plugin.settings.api_key ?? "",
+					// "Access-Control-Allow-Origin": "*", // Required for CORS support to work
+				},
+				mode: "cors",
+			}
+		);
 		if (syncthingGUI.status >= 400) {
 			new Notice("Syncthing is not running.");
 			return;
@@ -158,22 +166,58 @@ class TestModal extends Modal {
 				src: this.plugin.settings.configuration.syncthingBaseUrl + "/",
 				frameborder: "0",
 				allowfullscreen: "true",
-				innerWidth: "100%",
-				innerHeight: "100%",
+				width: "100%",
+				height: "100%",
 			},
 		});
-		// this.iframe.srcdoc = syncthingGUI.text;
+		this.iframe.src = URL.createObjectURL(await syncthingGUI.blob());
+		this.iframe.contentWindow?.fetch(
+			this.plugin.settings.configuration.syncthingBaseUrl + "/"
+		);
+		// this.iframe.
 
 		// Initialize the iframe resizer
-		iframeResizer.iframeResizer(
-			{
-				log: false,
-				checkOrigin: false,
-				heightCalculationMethod: "taggedElement",
-				scrolling: true,
-			},
-			this.iframe
+		// iframeResizer.iframeResizer(
+		// 	{
+		// 		log: false,
+		// 		checkOrigin: false,
+		// 		heightCalculationMethod: "taggedElement",
+		// 		scrolling: true,
+		// 	},
+		// 	this.iframe
+		// );
+
+		// Create the collapsible element
+		const collapsible = this.contentEl.createEl("details");
+		collapsible.createEl("summary", {
+			text: "Syncthing Connection Properties",
+			attr: { style: "font-weight: bold; cursor: pointer;" },
+		});
+
+		// Create the table element
+		const table = collapsible.createEl("table", {
+			attr: { style: "border-collapse: collapse; width: 100%;" },
+		});
+
+		// Add the properties to the table
+		addTableRow(table, "Status", syncthingGUI.status.toString());
+		addTableRow(
+			table,
+			"Base URL",
+			this.plugin.settings.configuration.syncthingBaseUrl ?? ""
 		);
+
+		function addTableRow(table: HTMLElement, label: string, value: string) {
+			const row = table.createEl("tr");
+			row.createEl("td", {
+				text: label,
+				attr: { style: "border: 1px solid black; padding: 5px;" },
+			});
+			row.createEl("td", {
+				text: value,
+				attr: { style: "border: 1px solid black; padding: 5px;" },
+			});
+		}
 	}
 
 	onClose() {
