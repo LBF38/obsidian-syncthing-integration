@@ -88,3 +88,50 @@ export class ReducedSyncThingDevice
 		public encryptionPassword: string
 	) {}
 }
+
+/**
+ * Definition of a conflict filename.
+ */
+export interface ConflictFilename {
+	/**
+	 * The filename of the file that is in conflict.
+	 *
+	 * format: filename allowed characters in Obsidian
+	 * @example `MyFile`
+	 */
+	filename: string;
+	/**
+	 * The date of the conflict, in the format `YYYYMMDD`.
+	 *
+	 * format: YYYYMMDD
+	 * @example `20210930`
+	 */
+	date: string;
+	/**
+	 * The time of the conflict, in the format `HHMMSS`.
+	 *
+	 * format: HHMMSS
+	 * @example `123456`
+	 */
+	time: string;
+	/**
+	 * Full date and time of the conflict, in the Date format.
+	 */
+	dateTime: Date;
+	/**
+	 * The device ID of the device that modified the file. it is a reduced version of {@linkcode SyncThingDevice.deviceID}
+	 *
+	 * format: reduced device ID (7 characters)
+	 * @example `ABCDEF1`
+	 */
+	modifiedBy: string; // format: reduced device ID (7 characters)
+	/**
+	 * The file extension of the file that is in conflict.
+	 *
+	 * format: file extension
+	 * @example `md`
+	 */
+	extension: string;
+}
+
+// TODO: add all entities necessary from Syncthing API (REST/CLI) to the integration in Obsidian.
