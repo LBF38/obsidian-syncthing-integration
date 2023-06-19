@@ -1,5 +1,8 @@
 # vscode
-.vscode 
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 
 # Intellij
 *.iml
@@ -7,6 +10,8 @@
 
 # npm
 node_modules
+# pnpm (in devcontainer)
+.pnpm-store
 
 # Don't include the compiled main.js file in the repo.
 # They should be uploaded to GitHub releases instead.
@@ -20,3 +25,11 @@ data.json
 
 # Exclude macOS Finder (System Explorer) View States
 .DS_Store
+
+# Exclude an example of Syncthing API response
+syncthing_config.json
+# Generated files from project
+main.css
+styles.js
+# Outdir from esbuild
+build

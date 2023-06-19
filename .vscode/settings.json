@@ -1,0 +1,16 @@
+{
+	"conventionalCommits.scopes": [
+		"README",
+		"syncthing",
+		"dev",
+		"deps",
+		"ui",
+		"esbuild",
+		"controllers",
+		"models"
+	],
+	"markdownlint.config": {
+		"MD033": false,
+		"MD041": false
+	}
+}
