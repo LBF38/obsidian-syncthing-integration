@@ -16,7 +16,7 @@
 		"@codemirror/view": "^6.13.0",
 		"@js-random/date": "^0.3.5",
 		"@types/diff": "^5.0.3",
-		"@types/node": "^18.0.0",
+		"@types/node": "^16.18.34",
 		"@typescript-eslint/eslint-plugin": "5.29.0",
 		"@typescript-eslint/parser": "5.29.0",
 		"builtin-modules": "3.3.0",
