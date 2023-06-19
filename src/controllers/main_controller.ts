@@ -137,6 +137,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 			}
 			const filename = filenameProperties.filename;
 			if (conflictsFilesMap.has(filename)) {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				conflictsFilesMap.get(filename)!.push(file);
 				continue;
 			}
@@ -250,16 +251,22 @@ export class SyncthingControllerImpl implements SyncthingController {
 			return new CliFailure();
 		}
 	}
-	getDevices(): Promise<SyncThingDevice[]> {
-		throw new Error("Method not implemented.");
+	async getDevices(): Promise<SyncThingDevice[]> {
+		return await this.syncthingFromREST.getDevices();
 	}
-	getFolders(): Promise<SyncThingFolder[]> {
-		throw new Error("Method not implemented.");
+	async getFolders(): Promise<SyncThingFolder[]> {
+		return await this.syncthingFromREST
+			.getAllFolders()
+			.then((folders) => folders);
+		// .catch(async (error) => {
+		// 	console.error(error);
+		// 	return await this.syncthingFromCLI.getFolders();
+		// });
 	}
-	startSyncThing(): Promise<boolean> {
+	async startSyncThing(): Promise<boolean> {
 		return this.syncthingFromCLI.startSyncThing();
 	}
-	stopSyncThing(): Promise<boolean> {
-		throw new Error("Method not implemented.");
+	async stopSyncThing(): Promise<boolean> {
+		return this.syncthingFromCLI.stopSyncThing();
 	}
 }

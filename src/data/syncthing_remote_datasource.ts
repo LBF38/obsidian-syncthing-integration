@@ -19,11 +19,25 @@ export interface SyncThingFromREST {
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
 	getConfiguration(): Promise<SyncThingConfigurationModel>;
+	/**
+	 * Get all the folders of Syncthing installation using the REST API.
+	 */
 	getAllFolders(): Promise<SyncThingFolderModel[]>;
+	/**
+	 * Get all the folders of Syncthing installation for a specific device using the REST API.
+	 * @param device - The device to get the folders for.
+	 */
 	getFoldersForDevice(
 		device: SyncThingDevice
 	): Promise<SyncThingFolderModel[]>;
+	/**
+	 * Get all the devices of Syncthing installation using the REST API.
+	 */
 	getDevices(): Promise<SyncThingDeviceModel[]>;
+	/**
+	 * Ping the Syncthing installation using the REST API.
+	 * This is used to check if Syncthing is installed.
+	 */
 	ping(): Promise<"pong">;
 }
 

@@ -25,9 +25,22 @@ export interface SyncThingFromCLI {
 	 * Start the Syncthing service using the CLI.
 	 */
 	startSyncThing(): Promise<boolean>;
+	/**
+	 * Stop the Syncthing service using the CLI.
+	 */
+	stopSyncThing(): Promise<boolean>;
 }
 
 export class SyncThingFromCLIimpl implements SyncThingFromCLI {
+	async stopSyncThing(): Promise<boolean> {
+		const syncthingStop = "syncthing cli operations shutdown";
+		const response = this.runSyncthingCommand(syncthingStop);
+		if (response instanceof Error) {
+			throw new CliFailure(response.message);
+		}
+		return true;
+	}
+
 	async startSyncThing(): Promise<boolean> {
 		const syncthingStart = "syncthing";
 		const response = await this.runSyncthingCommand(syncthingStart);
@@ -36,6 +49,7 @@ export class SyncThingFromCLIimpl implements SyncThingFromCLI {
 		}
 		return true;
 	}
+
 	async getVersion(): Promise<string> {
 		const syncthingVersion = "syncthing --version";
 		const response = await this.runSyncthingCommand(syncthingVersion);
