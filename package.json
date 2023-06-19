@@ -16,7 +16,7 @@
 		"@codemirror/view": "^6.13.0",
 		"@js-random/date": "^0.3.5",
 		"@types/diff": "^5.0.3",
-		"@types/node": "^16.18.34",
+		"@types/node": "^18.0.0",
 		"@typescript-eslint/eslint-plugin": "5.29.0",
 		"@typescript-eslint/parser": "5.29.0",
 		"builtin-modules": "3.3.0",
@@ -24,14 +24,14 @@
 		"css-minify": "^2.0.0",
 		"diff": "^5.1.0",
 		"diff2html": "^3.4.35",
-		"esbuild": "0.17.3",
+		"esbuild": "0.17.19",
 		"eslint": "^8.42.0",
 		"fs": "0.0.1-security",
 		"highlight.js": "^11.8.0",
 		"lorem-ipsum": "^2.0.8",
 		"obsidian": "latest",
 		"sass": "^1.62.1",
-		"tslib": "2.4.0",
-		"typescript": "4.7.4"
+		"tslib": "2.5.0",
+		"typescript": "5.0.4"
 	}
 }
