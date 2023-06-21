@@ -1,11 +1,11 @@
-import { TFile } from "obsidian";
-import MyPlugin from "src/main";
-import { Failure, RestFailure } from "src/models/failures";
+import { TFile, requestUrl } from "obsidian";
+import SyncthingPlugin from "src/main";
+import { CliFailure, Failure, RestFailure } from "src/models/failures";
 import {
 	SyncThingConfiguration,
 	SyncThingDevice,
 	SyncThingFolder,
-} from "src/models/syncthing_entities";
+} from "src/models/entities";
 import { SyncThingFromCLI } from "../data/syncthing_local_datasource";
 import { SyncThingFromREST } from "../data/syncthing_remote_datasource";
 
@@ -17,7 +17,7 @@ export interface SyncthingController {
 	 * To make it easier to call plugin's methods.
 	 * @see https://docs.obsidian.md/Reference/TypeScript+API/Plugin/Plugin
 	 */
-	plugin: MyPlugin;
+	plugin: SyncthingPlugin;
 	/**
 	 * Gets the SyncThing API status.
 	 */
@@ -128,15 +128,30 @@ export class SyncthingControllerImpl implements SyncthingController {
 	constructor(
 		public syncthingFromCLI: SyncThingFromCLI,
 		public syncthingFromREST: SyncThingFromREST,
-		public plugin: MyPlugin
+		public plugin: SyncthingPlugin
 	) {}
 
 	async getAPIStatus(): Promise<string> {
-		// const response = requestUrl(this.plugin.settings.)
-		return "Not implemented.";
+		if (!this.plugin.settings.api_key) {
+			return "API key is not set.";
+		}
+		// TODO: refactor in remote datasource.
+		const response = await requestUrl({
+			url:
+				this.plugin.settings.configuration.syncthingBaseUrl +
+				"/rest/system/ping",
+			headers: {
+				"X-API-Key": this.plugin.settings.api_key,
+				// CORS headers
+				"Access-Control-Allow-Origin": "*",
+			},
+		});
+		console.log(response);
+		return response.json["ping"];
 	}
 
 	async hasSyncThing(): Promise<boolean> {
+		// TODO: extract to datasources classes (FromCLI and FromREST)
 		return await this.syncthingFromCLI
 			.getVersion()
 			.then((version) => {
@@ -253,8 +268,20 @@ export class SyncthingControllerImpl implements SyncthingController {
 		};
 	}
 
-	getAPIKey(): Promise<string | Failure> {
-		throw new Error("Method not implemented.");
+	async getAPIKey(): Promise<string | Failure> {
+		if (!this.plugin.settings.api_key) {
+			try {
+				const apiKey = await this.syncthingFromCLI.getAPIkey();
+				if (apiKey) {
+					this.plugin.settings.api_key = apiKey;
+					await this.plugin.saveSettings();
+					return apiKey;
+				}
+			} catch (error) {
+				return new CliFailure("Error getting API key.");
+			}
+		}
+		return this.plugin.settings.api_key;
 	}
 
 	async getConfiguration(): Promise<SyncThingConfiguration | Failure> {

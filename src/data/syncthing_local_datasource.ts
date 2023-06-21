@@ -1,5 +1,5 @@
 import { exec } from "child_process";
-import { SyncThingConfigurationModel } from "../models/syncthing";
+import { SyncThingConfigurationModel } from "../models/models";
 import { promisify } from "util";
 import { CliFailure } from "src/models/failures";
 
@@ -62,7 +62,7 @@ export class SyncThingFromCLIimpl implements SyncThingFromCLI {
 		if (response instanceof Error) {
 			throw new CliFailure("No API key found.");
 		}
-		return response;
+		return response.trim();
 	}
 
 	private async runSyncthingCommand(

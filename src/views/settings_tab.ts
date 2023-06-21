@@ -1,13 +1,13 @@
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
-import { SyncthingController } from "src/controllers/syncthing_controller";
-import MyPlugin from "src/main";
+import { SyncthingController } from "src/controllers/main_controller";
+import SyncthingPlugin from "src/main";
 import { Failure } from "src/models/failures";
 
-export class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+export class SyncthingSettingTab extends PluginSettingTab {
+	plugin: SyncthingPlugin;
 	syncthingController: SyncthingController;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: SyncthingPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 		this.syncthingController = plugin.syncthingController;
@@ -16,7 +16,6 @@ export class SampleSettingTab extends PluginSettingTab {
 	async display(): Promise<void> {
 		const { containerEl } = this;
 		containerEl.empty();
-
 		// TODO: Add banner with the logo.
 		// containerEl
 		// 	.createEl("img", {
@@ -76,28 +75,52 @@ export class SampleSettingTab extends PluginSettingTab {
 			);
 
 		// API Key setting.
-		new Setting(containerEl)
+		const apiKeySetting = new Setting(containerEl);
+		apiKeySetting
 			.setName("SyncThing API Key")
 			.setDesc("Add your SyncThing API key here for the plugin to work.")
-			.addText((text) =>
-				text
-					.setPlaceholder("Enter your API key here...")
-					.setValue(this.plugin.settings.api_key ?? "")
-					.onChange(async (value) => {
-						// console.log("Secret: " + value);
-						this.plugin.settings.api_key = value;
-						await this.plugin.saveSettings();
-					})
+			.addText(
+				(text) =>
+					(text
+						.setPlaceholder("Enter your API key here...")
+						.setValue(this.plugin.settings.api_key ?? "")
+						.onChange(async (value) => {
+							// console.log("Secret: " + value);
+							this.plugin.settings.api_key = value;
+							await this.plugin.saveSettings();
+						}).inputEl.type = "password")
+				// TODO: add a button to show the api key in clear text.
 			);
+
+		if (!this.plugin.settings.api_key) {
+			apiKeySetting.addButton((button) => {
+				button.setButtonText("Get API Key").onClick(async () => {
+					this.syncthingController.getAPIKey().then((key) => {
+						if (key instanceof Failure) {
+							new Notice(key.message);
+							return;
+						}
+						this.plugin.settings.api_key = key;
+						this.plugin.saveSettings();
+						this.display();
+					});
+				});
+			});
+		}
 
 		// Trying to make an HTTP request to the API.
 		new Setting(containerEl)
 			.setName("SyncThing API Status")
 			.addButton((button) => {
 				button.setButtonText("Check API Status").onClick(async () => {
-					const status =
-						await this.syncthingController.getAPIStatus();
-					new Notice(status);
+					this.syncthingController
+						.getAPIStatus()
+						.then((status) => {
+							new Notice(`Syncthing Ping : ${status}`);
+						})
+						.catch((error) => {
+							new Notice(error);
+						});
 				});
 			});
 
@@ -116,17 +139,15 @@ export class SampleSettingTab extends PluginSettingTab {
 				text: "This table will show the folders and devices that are configured on this device.",
 			})
 			.appendChild(containerEl.createEl("tbody"));
-		const thisDeviceConfig = this.plugin.settings.configuration?.devices[0];
-		if (thisDeviceConfig) {
-			thisDeviceTable
-				.appendChild(containerEl.createEl("tr"))
-				.appendChild(containerEl.createEl("td", { text: "Device ID" }))
-				.appendChild(
-					containerEl.createEl("td", {
-						text: thisDeviceConfig.deviceID.slice(0, 8),
-					})
-				);
-		}
+		const thisDeviceConfig = configuration.devices[0];
+		thisDeviceTable
+			.appendChild(containerEl.createEl("tr"))
+			.appendChild(containerEl.createEl("td", { text: "Device ID" }))
+			.appendChild(
+				containerEl.createEl("td", {
+					text: thisDeviceConfig.deviceID.slice(0, 8),
+				})
+			);
 
 		// Plugin's dev Mode.
 		containerEl.createEl("h1", { text: "Developer Mode" });
@@ -138,7 +159,8 @@ export class SampleSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						this.plugin.settings.devMode = value;
 						await this.plugin.saveSettings();
-						this.plugin.load();
+						this.plugin.onunload();
+						this.plugin.onload();
 					});
 			});
 	}

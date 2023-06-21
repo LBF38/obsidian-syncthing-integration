@@ -2,7 +2,7 @@ import { Notice, Plugin } from "obsidian";
 import {
 	SyncthingController,
 	SyncthingControllerImpl,
-} from "./controllers/syncthing_controller";
+} from "./controllers/main_controller";
 import {
 	SyncThingFromCLI,
 	SyncThingFromCLIimpl,
@@ -11,9 +11,9 @@ import {
 	SyncThingFromREST,
 	SyncThingFromRESTimpl,
 } from "./data/syncthing_remote_datasource";
-import { SyncThingConfiguration } from "./models/syncthing_entities";
-import { ConflictsModal } from "./views/syncthing_conflicts";
-import { SampleSettingTab } from "./views/syncthing_settings_page";
+import { SyncThingConfiguration } from "./models/entities";
+import { ConflictsModal } from "./views/conflicts_modal";
+import { SyncthingSettingTab } from "./views/settings_tab";
 import {
 	DevModeModal,
 	PluginDevModeController,
@@ -21,22 +21,23 @@ import {
 
 //! Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
-	api_key: string | null;
-	configuration: SyncThingConfiguration | null;
+interface SyncthingPluginSettings {
+	api_key: string;
+	configuration: SyncThingConfiguration | Partial<SyncThingConfiguration>;
 	devMode: boolean;
 }
 
-const DEFAULT_SETTINGS: Partial<MyPluginSettings> = {
-	api_key: null,
-	configuration: null,
+const DEFAULT_SETTINGS: Partial<SyncthingPluginSettings> = {
+	configuration: { syncthingBaseUrl: "http://localhost:8384" },
 	devMode: false,
 };
 
-export default class MyPlugin extends Plugin {
-	settings!: MyPluginSettings;
+export default class SyncthingPlugin extends Plugin {
+	static loadCount = 0;
+	settings!: SyncthingPluginSettings;
+	pluginsElements: HTMLElement[] = [];
 	syncthingFromCLI: SyncThingFromCLI = new SyncThingFromCLIimpl();
-	syncthingFromREST: SyncThingFromREST = new SyncThingFromRESTimpl();
+	syncthingFromREST: SyncThingFromREST = new SyncThingFromRESTimpl(this);
 	syncthingController: SyncthingController = new SyncthingControllerImpl(
 		this.syncthingFromCLI,
 		this.syncthingFromREST,
@@ -47,6 +48,7 @@ export default class MyPlugin extends Plugin {
 	);
 
 	async onload() {
+		SyncthingPlugin.loadCount++;
 		await this.loadSettings();
 
 		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
@@ -56,40 +58,49 @@ export default class MyPlugin extends Plugin {
 			new Notice("SyncThing integration is not yet implemented.");
 		});
 
+		const pluginSettingTab = new SyncthingSettingTab(this.app, this);
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		if (SyncthingPlugin.loadCount === 1)
+			this.addSettingTab(pluginSettingTab);
 
-		this.addRibbonIcon("construction", "Open Syncthing diff modal", () => {
-			new ConflictsModal(this.app, this.syncthingController).open();
-		});
-
-		// if (this.settings.devMode) {
-		new Notice("Dev mode is enabled.");
-		this.addRibbonIcon(
-			"chevron-right-square",
-			"Generate Syncthing conflicts",
-			async () => {
-				new DevModeModal(
-					this.app,
-					new PluginDevModeController(this)
-				).open();
+		const syncthingConflictManager = this.addRibbonIcon(
+			"construction",
+			"Open Syncthing conflict manager modal",
+			() => {
+				new ConflictsModal(this.app, this.syncthingController).open();
 			}
 		);
-		this.addCommand({
-			id: "generate-syncthing-conflicts",
-			name: "Generate Syncthing conflicts",
-			icon: "chevron-right-square",
-			callback: async () => {
-				new DevModeModal(
-					this.app,
-					new PluginDevModeController(this)
-				).open();
-			},
-		});
-		// }
+		if (this.settings.devMode) {
+			new Notice("Dev mode is enabled.");
+			const devModeGenerator = this.addRibbonIcon(
+				"chevron-right-square",
+				"Generate Syncthing conflicts",
+				async () => {
+					new DevModeModal(
+						this.app,
+						new PluginDevModeController(this)
+					).open();
+				}
+			);
+			this.addCommand({
+				id: "generate-syncthing-conflicts",
+				name: "Generate Syncthing conflicts",
+				icon: "chevron-right-square",
+				callback: async () => {
+					new DevModeModal(
+						this.app,
+						new PluginDevModeController(this)
+					).open();
+				},
+			});
+			this.pluginsElements.push(devModeGenerator);
+		}
+		this.pluginsElements.push(statusBarItemEl, syncthingConflictManager);
 	}
 
-	onunload() {}
+	onunload(): void {
+		this.pluginsElements.forEach((element) => element.remove());
+	}
 
 	async loadSettings() {
 		this.settings = Object.assign(

@@ -1,6 +1,6 @@
 import { requestUrl } from "obsidian";
-import { SyncThingConfigurationModel } from "../models/syncthing";
-import { SyncThingFromCLIimpl } from "./syncthing_local_datasource";
+import SyncthingPlugin from "src/main";
+import { SyncThingConfigurationModel } from "../models/models";
 
 /**
  * Interface for the REST API of Syncthing.
@@ -16,22 +16,15 @@ export interface SyncThingFromREST {
 }
 
 export class SyncThingFromRESTimpl implements SyncThingFromREST {
-	private apikey: string;
-	constructor() {
-		const syncthingFromCLI = new SyncThingFromCLIimpl();
-		const apikey = syncthingFromCLI.getAPIkey();
-		if (apikey instanceof Error) {
-			throw apikey;
-		}
-		this.apikey = apikey;
-	}
+	constructor(public plugin: SyncthingPlugin) {}
+
 	async getConfiguration(): Promise<SyncThingConfigurationModel> {
 		const baseURL = "http://localhost:8384";
 		const response = await requestUrl({
 			url: `${baseURL}/rest/system/config`,
 			method: "GET",
 			headers: {
-				"X-API-Key": this.apikey,
+				"X-API-Key": this.plugin.settings.api_key,
 				Accept: "*/*",
 				"Content-Type": "application/json",
 				"Access-Control-Allow-Origin": "*",
