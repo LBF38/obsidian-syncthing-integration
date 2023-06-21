@@ -8,6 +8,10 @@
 
 This plugin allows you to synchronize your Obsidian vault with a remote device using [Syncthing](https://syncthing.net/).
 
+## :label: Badges
+
+[![All Contributors](https://img.shields.io/github/all-contributors/lbf38/obsidian-syncthing-integration?color=ee8449&style=flat-square)](#contributors)
+
 ## :link: Useful links
 
 ### Related softwares
@@ -58,6 +62,17 @@ If you want to develop this plugin locally, please follow the instructions below
 ## :busts_in_silhouette: Authors
 
 - [@LBF38](https://github.com/lbf38)
+
+## :sparkles: Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ## :memo: Licensing
 
