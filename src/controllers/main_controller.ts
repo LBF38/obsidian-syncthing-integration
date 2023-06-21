@@ -1,13 +1,14 @@
-import { TFile, requestUrl } from "obsidian";
+import { TFile } from "obsidian";
 import SyncthingPlugin from "src/main";
-import { CliFailure, Failure, RestFailure } from "src/models/failures";
 import {
+	ConflictFilename,
 	SyncThingConfiguration,
 	SyncThingDevice,
 	SyncThingFolder,
 } from "src/models/entities";
-import { SyncThingFromCLI } from "../data/syncthing_local_datasource";
-import { SyncThingFromREST } from "../data/syncthing_remote_datasource";
+import { CliFailure, Failure } from "src/models/failures";
+import { SyncThingFromCLI } from "src/data/syncthing_local_datasource";
+import { SyncThingFromREST } from "src/data/syncthing_remote_datasource";
 
 // TODO: refactor the whole Controller. Needed for better usage in views.
 
@@ -82,48 +83,6 @@ export interface SyncthingController {
 	stopSyncThing(): Promise<boolean | Failure>;
 }
 
-export interface ConflictFilename {
-	/**
-	 * The filename of the file that is in conflict.
-	 *
-	 * format: filename allowed characters in Obsidian
-	 * @example `MyFile`
-	 */
-	filename: string;
-	/**
-	 * The date of the conflict, in the format `YYYYMMDD`.
-	 *
-	 * format: YYYYMMDD
-	 * @example `20210930`
-	 */
-	date: string;
-	/**
-	 * The time of the conflict, in the format `HHMMSS`.
-	 *
-	 * format: HHMMSS
-	 * @example `123456`
-	 */
-	time: string;
-	/**
-	 * Full date and time of the conflict, in the Date format.
-	 */
-	dateTime: Date;
-	/**
-	 * The device ID of the device that modified the file. it is a reduced version of {@linkcode SyncThingDevice.deviceID}
-	 *
-	 * format: reduced device ID (7 characters)
-	 * @example `ABCDEF1`
-	 */
-	modifiedBy: string; // format: reduced device ID (7 characters)
-	/**
-	 * The file extension of the file that is in conflict.
-	 *
-	 * format: file extension
-	 * @example `md`
-	 */
-	extension: string;
-}
-
 export class SyncthingControllerImpl implements SyncthingController {
 	constructor(
 		public syncthingFromCLI: SyncThingFromCLI,
@@ -135,19 +94,10 @@ export class SyncthingControllerImpl implements SyncthingController {
 		if (!this.plugin.settings.api_key) {
 			return "API key is not set.";
 		}
-		// TODO: refactor in remote datasource.
-		const response = await requestUrl({
-			url:
-				this.plugin.settings.configuration.syncthingBaseUrl +
-				"/rest/system/ping",
-			headers: {
-				"X-API-Key": this.plugin.settings.api_key,
-				// CORS headers
-				"Access-Control-Allow-Origin": "*",
-			},
-		});
-		console.log(response);
-		return response.json["ping"];
+		return await this.syncthingFromREST
+			.ping()
+			.then((response) => response)
+			.catch((error) => "Error: " + error);
 	}
 
 	async hasSyncThing(): Promise<boolean> {
@@ -157,8 +107,15 @@ export class SyncthingControllerImpl implements SyncthingController {
 			.then((version) => {
 				return true;
 			})
-			.catch((error) => {
-				return false;
+			.catch(async (error) => {
+				return await this.syncthingFromREST
+					.ping()
+					.then((response) => {
+						return true;
+					})
+					.catch((error) => {
+						return false;
+					});
 			});
 	}
 
@@ -180,6 +137,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 			}
 			const filename = filenameProperties.filename;
 			if (conflictsFilesMap.has(filename)) {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				conflictsFilesMap.get(filename)!.push(file);
 				continue;
 			}
@@ -290,19 +248,25 @@ export class SyncthingControllerImpl implements SyncthingController {
 			return config;
 		} catch (error) {
 			console.error(error);
-			return new RestFailure();
+			return new CliFailure();
 		}
 	}
-	getDevices(): Promise<SyncThingDevice[]> {
-		throw new Error("Method not implemented.");
+	async getDevices(): Promise<SyncThingDevice[]> {
+		return await this.syncthingFromREST.getDevices();
 	}
-	getFolders(): Promise<SyncThingFolder[]> {
-		throw new Error("Method not implemented.");
+	async getFolders(): Promise<SyncThingFolder[]> {
+		return await this.syncthingFromREST
+			.getAllFolders()
+			.then((folders) => folders);
+		// .catch(async (error) => {
+		// 	console.error(error);
+		// 	return await this.syncthingFromCLI.getFolders();
+		// });
 	}
-	startSyncThing(): Promise<boolean> {
+	async startSyncThing(): Promise<boolean> {
 		return this.syncthingFromCLI.startSyncThing();
 	}
-	stopSyncThing(): Promise<boolean> {
-		throw new Error("Method not implemented.");
+	async stopSyncThing(): Promise<boolean> {
+		return this.syncthingFromCLI.stopSyncThing();
 	}
 }

@@ -2,9 +2,9 @@ import { createTwoFilesPatch } from "diff";
 import { Diff2HtmlConfig, html } from "diff2html";
 import { App, ButtonComponent, Modal, Notice, Setting, TFile } from "obsidian";
 import {
-	ConflictFilename,
 	SyncthingController,
 } from "src/controllers/main_controller";
+import { ConflictFilename } from "src/controllers/ConflictFilename";
 import { Failure } from "src/models/failures";
 
 export class DiffModal extends Modal {
