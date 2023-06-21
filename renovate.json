@@ -4,6 +4,6 @@
 		"config:base"
 	],
 	"schedule": [
-		"0 0 1 * *"
+		"every month on the first day of the month"
 	]
 }
