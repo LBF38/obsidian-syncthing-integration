@@ -1,0 +1,13 @@
+{
+  "projectName": "obsidian-syncthing-integration",
+  "projectOwner": "LBF38",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "repoType": "github",
+  "contributorsPerLine": 7,
+  "repoHost": "https://github.com",
+  "commitConvention": "angular",
+  "skipCi": true
+}
