@@ -22,6 +22,7 @@ This plugin allows you to synchronize your Obsidian vault with a remote device u
 ### Plugin's related links
 
 - [Roadmap](docs/ROADMAP.md)
+- [GH Discussions](https://github.com/lbf38/obsidian-syncthing-integration/discussions)
 
 ## :arrow_down: Installation
 
@@ -29,11 +30,15 @@ You can install the plugin using the following ways :
 
 - From the community plugins tab within Obsidian
 - From the [releases page](https://github.com/lbf38/obsidian-syncthing-integration/releases) on GitHub
-- From the source code
+- From the source code, please see [the Development section](#🛠️-development)
+- With [Obsidian42 BRAT](https://github.com/TfTHacker/obsidian42-brat)
 
 ## :wrench: Configuration
 
 :construction: This plugin is still in development. The configuration might not yet be fully available. :construction:
+
+> **Warning**
+> Please backup your vault and use this plugin wisely. Some features could modify files in your vault so please always remember to backup your vault in a different location.
 
 The plugin should work out-of-the-box, but you can configure it by going to the plugin settings. The main objective of this plugin is to provide a complete integration of SyncThing functionalities into the Obsidian app. Therefore, you don't have to rely on other apps to synchronize your vault. You only have to open the Obsidian app on the devices you want to synchronize and the plugin will take care of the rest.
 
