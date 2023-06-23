@@ -59,6 +59,17 @@ If you want to develop this plugin locally, please follow the instructions below
 > And the plugin's files should be at the root of the folder. (`main.js`, `manifest.json` and `styles.css`)
 > It should be automatically set up.
 
+## :clap: Credits
+
+Here are some inspirations for this plugin :
+
+- [Obsidian version history diff by kometenstaub](https://github.com/kometenstaub/obsidian-version-history-diff) - credits for :
+  - the [`styles.scss`](src/styles.scss) file,
+  - corresponding [`esbuild` SCSS/CSS config](esbuild.config.mjs),
+  - and an overall inspiration for the diff modal layout, when resolving file conflicts.
+- [Obsidian testing vault by pedersen](https://github.com/pedersen/obsidian-testing-vault) - credits for :
+  - the plugin's dev mode feature. I added a dev mode modal to easily generate testing files w/ syncthing conflicts format.
+
 ## :busts_in_silhouette: Authors
 
 - [@LBF38](https://github.com/lbf38)
