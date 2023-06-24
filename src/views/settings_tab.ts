@@ -1,7 +1,10 @@
+// import ObsidianLogo from "assets/Obsidian_software_logo.svg";
+// import SyncthingLogo from "assets/syncthing-logo-horizontal.svg";
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 import { SyncthingController } from "src/controllers/main_controller";
 import SyncthingPlugin from "src/main";
 import { Failure } from "src/models/failures";
+import { ObsidianLogo, SyncthingLogo } from "./logos";
 
 export class SyncthingSettingTab extends PluginSettingTab {
 	plugin: SyncthingPlugin;
@@ -17,19 +20,27 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 		// TODO: Add banner with the logo.
-		// containerEl
-		// 	.createEl("img", {
-		// 		attr: {
-		// 			src: "assets/syncthing-logo-horizontal.svg",
-		// 		},
-		// 	})
-		// 	.appendChild(
-		// 		containerEl.createEl("img", {
-		// 			attr: {
-		// 				src: "assets/obsidian_software_logo.svg",
-		// 			},
-		// 		})
-		// 	);
+		const banner = containerEl.createEl("p");
+		const link = banner.createEl("a", {
+			attr: {
+				href: "https://github.com/lbf38/obsidian-syncthing-integration",
+			},
+		});
+		const syncthingImg = containerEl.createEl("img", {
+			attr: {
+				src: SyncthingLogo,
+			},
+		});
+		const obsidianImg = containerEl.createEl("img", {
+			attr: {
+				src: ObsidianLogo,
+			},
+		});
+		syncthingImg.style.height = "100px";
+		obsidianImg.style.height = "100px";
+		banner.style.alignContent = "center";
+		link.append(syncthingImg, obsidianImg);
+		banner.append(link);
 
 		// Check if Syncthing is installed.
 		const hasSyncthing = await this.syncthingController.hasSyncThing();
@@ -57,8 +68,6 @@ export class SyncthingSettingTab extends PluginSettingTab {
 			return;
 		}
 		this.plugin.settings.configuration = configuration;
-
-		containerEl.empty();
 
 		containerEl.createEl("h1", {
 			text: "SyncThing Integration for Obsidian",

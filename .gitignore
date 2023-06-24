@@ -29,7 +29,8 @@ data.json
 # Exclude an example of Syncthing API response
 syncthing_config.json
 # Generated files from project
-main.css
+styles.css
 styles.js
+
 # Outdir from esbuild
 build
