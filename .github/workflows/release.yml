@@ -46,3 +46,5 @@ jobs:
       # - run: pnpm test # Need to add tests for this to work #49
       - name: Release
         run: pnpm release
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
