@@ -3,7 +3,12 @@
 	"plugins": [
 		"@semantic-release/commit-analyzer",
 		"@semantic-release/release-notes-generator",
-		"@semantic-release/changelog",
+		[
+			"@semantic-release/changelog",
+			{
+				"changelogFile": "docs/CHANGELOG.md"
+			}
+		],
 		[
 			"@semantic-release/npm",
 			{
@@ -13,7 +18,7 @@
 		[
 			"@semantic-release/exec",
 			{
-				"prepareCmd": "pnpm run version"
+				"prepareCmd": "if(git log -1 --pretty=%B | grep -q \"chore(release): :bookmark: ${nextRelease.version}\"); then echo \"creating and publishing the release ${nextRelease.version} to GitHub\"; else pnpm run version && git add manifest.json versions.json package.json docs/CHANGELOG.md && git checkout -b release/${nextRelease.version} && git commit -m \"chore(release): :bookmark: ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}\" && git push --set-upstream origin release/${nextRelease.version} && gh pr create --title \"chore(release): :bookmark: ${nextRelease.version}\" --body \"${nextRelease.notes}\" --base master --head release/${nextRelease.version} && git checkout master;   echo \"Need to merge the release PR\"; exit 1; fi"
 			}
 		],
 		[
