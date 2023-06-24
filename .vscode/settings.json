@@ -9,7 +9,8 @@
 		"controllers",
 		"models",
 		"settings",
-		"project"
+		"project",
+		"gh actions"
 	],
 	"markdownlint.config": {
 		"MD033": false,

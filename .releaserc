@@ -1,0 +1,26 @@
+{
+	"tagFormat": "${version}",
+	"plugins": [
+		"@semantic-release/commit-analyzer",
+		"@semantic-release/release-notes-generator",
+		[
+			"@semantic-release/github",
+			{
+				"assets": [
+					{
+						"path": "build/styles.css",
+						"label": "Plugin's CSS styles file"
+					},
+					{
+						"path": "build/main.js",
+						"label": "Plugin's main JS file"
+					},
+					{
+						"path": "build/manifest.json",
+						"label": "Plugin's manifest file"
+					}
+				]
+			}
+		]
+	]
+}
