@@ -10,7 +10,8 @@
 		"models",
 		"settings",
 		"project",
-		"gh actions"
+		"gh actions",
+		"release"
 	],
 	"markdownlint.config": {
 		"MD033": false,
