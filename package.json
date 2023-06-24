@@ -1,14 +1,16 @@
 {
+	"private": true,
 	"name": "obsidian-syncthing-integration",
-	"version": "0.0.1-beta",
-	"description": "SyncThing integration for Obsidian",
-	"main": "main.js",
+	"version": "0.0.0-development",
+	"description": "Syncthing integration for Obsidian",
+	"main": "build/main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
-		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"build": "pnpm lint && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"prepare": "husky install",
-		"lint": "eslint . --ext .ts"
+		"lint": "tsc -noEmit -skipLibCheck && eslint . --ext .ts",
+		"release": "pnpm build && semantic-release"
 	},
 	"keywords": [],
 	"author": "LBF38",
@@ -35,7 +37,12 @@
 		"lorem-ipsum": "^2.0.8",
 		"obsidian": "latest",
 		"sass": "^1.62.1",
+		"semantic-release": "^21.0.5",
 		"tslib": "2.5.0",
 		"typescript": "^4.7.4"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/LBF38/obsidian-syncthing-integration.git"
 	}
 }
