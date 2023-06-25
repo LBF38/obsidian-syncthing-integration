@@ -48,7 +48,6 @@ export class SyncThingFromRESTimpl implements SyncThingFromREST {
 			this.plugin.settings.configuration.syncthingBaseUrl +
 				"/rest/system/ping"
 		);
-		console.log(response);
 		return response.json["ping"];
 	}
 	async getAllFolders(): Promise<SyncThingFolderModel[]> {

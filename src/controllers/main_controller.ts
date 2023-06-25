@@ -24,6 +24,10 @@ export interface SyncthingController {
 	 */
 	getAPIStatus(): Promise<string>;
 	/**
+	 * Gets the Syncthing CLI status.
+	 */
+	getCLIStatus(): Promise<string>;
+	/**
 	 * Checks if SyncThing is installed on the system.
 	 */
 	hasSyncThing(): Promise<boolean>;
@@ -89,6 +93,12 @@ export class SyncthingControllerImpl implements SyncthingController {
 		public syncthingFromREST: SyncThingFromREST,
 		public plugin: SyncthingPlugin
 	) {}
+	async getCLIStatus(): Promise<string> {
+		return this.syncthingFromCLI
+			.getVersion()
+			.then((status) => status)
+			.catch((error) => "Error: " + error);
+	}
 
 	async getAPIStatus(): Promise<string> {
 		if (!this.plugin.settings.api_key) {
@@ -101,7 +111,6 @@ export class SyncthingControllerImpl implements SyncthingController {
 	}
 
 	async hasSyncThing(): Promise<boolean> {
-		// TODO: extract to datasources classes (FromCLI and FromREST)
 		return await this.syncthingFromCLI
 			.getVersion()
 			.then((version) => {
@@ -255,13 +264,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 		return await this.syncthingFromREST.getDevices();
 	}
 	async getFolders(): Promise<SyncThingFolder[]> {
-		return await this.syncthingFromREST
-			.getAllFolders()
-			.then((folders) => folders);
-		// .catch(async (error) => {
-		// 	console.error(error);
-		// 	return await this.syncthingFromCLI.getFolders();
-		// });
+		return await this.syncthingFromREST.getAllFolders();
 	}
 	async startSyncThing(): Promise<boolean> {
 		return this.syncthingFromCLI.startSyncThing();
