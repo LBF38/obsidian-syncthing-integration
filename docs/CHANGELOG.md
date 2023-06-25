@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.1.0...1.1.1) (2023-06-25)
+
+
+### Bug Fixes
+
+* **project:** :ambulance: update plugin id in manifest.json ([81d8f74](https://github.com/LBF38/obsidian-syncthing-integration/commit/81d8f7407367efece32e5ef772364419041e6800))
+
 # [1.1.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.0.0...1.1.0) (2023-06-25)
 
 
