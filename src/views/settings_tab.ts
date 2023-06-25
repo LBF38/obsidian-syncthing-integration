@@ -1,10 +1,9 @@
-// import ObsidianLogo from "assets/Obsidian_software_logo.svg";
-// import SyncthingLogo from "assets/syncthing-logo-horizontal.svg";
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 import { SyncthingController } from "src/controllers/main_controller";
 import SyncthingPlugin from "src/main";
 import { Failure } from "src/models/failures";
 import { ObsidianLogo, SyncthingLogo } from "./logos";
+import { SyncThingConfiguration, SyncThingDevice } from "src/models/entities";
 
 export class SyncthingSettingTab extends PluginSettingTab {
 	plugin: SyncthingPlugin;
@@ -19,7 +18,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 	async display(): Promise<void> {
 		const { containerEl } = this;
 		containerEl.empty();
-		// TODO: Add banner with the logo.
+		// Banner
 		const banner = containerEl.createEl("p");
 		const link = banner.createEl("a", {
 			attr: {
@@ -85,6 +84,16 @@ export class SyncthingSettingTab extends PluginSettingTab {
 
 		// API Key setting.
 		const apiKeySetting = new Setting(containerEl);
+		// Try to get the API key from the CLI.
+		await this.syncthingController.getAPIKey().then((key) => {
+			if (key instanceof Failure) {
+				return;
+			}
+			this.plugin.settings.api_key = key;
+			this.plugin.saveSettings();
+		});
+
+		// Display the API key setting.
 		apiKeySetting
 			.setName("SyncThing API Key")
 			.setDesc("Add your SyncThing API key here for the plugin to work.")
@@ -98,9 +107,10 @@ export class SyncthingSettingTab extends PluginSettingTab {
 							this.plugin.settings.api_key = value;
 							await this.plugin.saveSettings();
 						}).inputEl.type = "password")
-				// TODO: add a button to show the api key in clear text.
 			);
-
+		// Show a button relative to the API key setting.
+		// If the API key is not set, show a button to get it.
+		// If the API key is set, show a button to remove it.
 		if (!this.plugin.settings.api_key) {
 			apiKeySetting.addButton((button) => {
 				button.setButtonText("Get API Key").onClick(async () => {
@@ -115,9 +125,17 @@ export class SyncthingSettingTab extends PluginSettingTab {
 					});
 				});
 			});
+		} else {
+			apiKeySetting.addButton((button) => {
+				button.setButtonText("Remove API Key").onClick(async () => {
+					this.plugin.settings.api_key = "";
+					this.plugin.saveSettings();
+					this.display();
+				});
+			});
 		}
 
-		// Trying to make an HTTP request to the API.
+		// To check the API status.
 		new Setting(containerEl)
 			.setName("SyncThing API Status")
 			.addButton((button) => {
@@ -133,6 +151,17 @@ export class SyncthingSettingTab extends PluginSettingTab {
 				});
 			});
 
+		// To check the Syncthing CLI status.
+		new Setting(containerEl)
+			.setName("SyncThing CLI Status")
+			.addButton((button) => {
+				button.setButtonText("Check CLI Status").onClick(async () => {
+					this.syncthingController.getCLIStatus().then((status) => {
+						new Notice(`Syncthing CLI Status : ${status}`);
+					});
+				});
+			});
+
 		// TEST : difference between file.basename and file.name in Obsidian API.
 		// const file = this.app.vault.getFiles()[0];
 		// containerEl.createEl("h1", { text: "TEST" });
@@ -143,20 +172,10 @@ export class SyncthingSettingTab extends PluginSettingTab {
 
 		containerEl.createEl("h1", { text: "Syncthing Configuration" });
 		containerEl.createEl("h2", { text: "This Device" });
-		const thisDeviceTable = containerEl
-			.createEl("table", {
-				text: "This table will show the folders and devices that are configured on this device.",
-			})
-			.appendChild(containerEl.createEl("tbody"));
-		const thisDeviceConfig = configuration.devices[0];
-		thisDeviceTable
-			.appendChild(containerEl.createEl("tr"))
-			.appendChild(containerEl.createEl("td", { text: "Device ID" }))
-			.appendChild(
-				containerEl.createEl("td", {
-					text: thisDeviceConfig.deviceID.slice(0, 8),
-				})
-			);
+		containerEl.createEl("p", {
+			text: "This table will show the folders and devices that are configured on the Syncthing instance.",
+		});
+		this.initConfigTable(containerEl, configuration);
 
 		// Plugin's dev Mode.
 		containerEl.createEl("h1", { text: "Developer Mode" });
@@ -172,5 +191,44 @@ export class SyncthingSettingTab extends PluginSettingTab {
 						this.plugin.onload();
 					});
 			});
+	}
+
+	/**
+	 * Initiate a config table containing the folders and devices configured on the Syncthing instance.
+	 */
+	private async initConfigTable(
+		containerEl: HTMLElement,
+		configuration: SyncThingConfiguration
+	): Promise<HTMLTableElement> {
+		const configTable = containerEl.createEl("table");
+		configTable.appendChild(containerEl.createEl("tbody"));
+		//create headers
+		const headerRow = configTable.createEl("thead").createEl("tr");
+		headerRow.createEl("th", { text: "Device ID" });
+		headerRow.createEl("th", { text: "Device Name" });
+		headerRow.createEl("th", { text: "Device Address" });
+		//create rows
+		configuration.devices.forEach((device) => {
+			this.addConfigRowToTable(configTable, device);
+		});
+		return configTable;
+	}
+
+	/**
+	 * This helper method should help to make new rows from the syncthing configuration given in params.
+	 * @param tableEl - The table element to add the row to.
+	 */
+	private addConfigRowToTable(
+		tableEl: HTMLTableElement,
+		deviceInfo: SyncThingDevice
+	) {
+		const rowEl = tableEl.appendChild(tableEl.createEl("tr"));
+		rowEl.appendChild(
+			tableEl.createEl("td", { text: deviceInfo.deviceID.slice(0, 8) })
+		);
+		rowEl.appendChild(tableEl.createEl("td", { text: deviceInfo.name }));
+		rowEl.appendChild(
+			tableEl.createEl("td", { text: deviceInfo.address.join(", ") })
+		);
 	}
 }
