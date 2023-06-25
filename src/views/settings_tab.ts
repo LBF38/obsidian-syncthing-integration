@@ -103,7 +103,6 @@ export class SyncthingSettingTab extends PluginSettingTab {
 						.setPlaceholder("Enter your API key here...")
 						.setValue(this.plugin.settings.api_key ?? "")
 						.onChange(async (value) => {
-							// console.log("Secret: " + value);
 							this.plugin.settings.api_key = value;
 							await this.plugin.saveSettings();
 						}).inputEl.type = "password")
@@ -176,6 +175,32 @@ export class SyncthingSettingTab extends PluginSettingTab {
 			text: "This table will show the folders and devices that are configured on the Syncthing instance.",
 		});
 		this.initConfigTable(containerEl, configuration);
+		containerEl.createEl("h2", { text: "Other Devices" });
+		containerEl.createEl("p", {
+			text: "This table will show the folders and devices that are configured on the Syncthing instance.",
+		});
+
+		// Folder infos.
+		containerEl.createEl("h2", { text: "Folder Infos" });
+		containerEl.createEl("p", {
+			text: "This table will show the information concerning the syncthing shared folder, which corresponds to the current vault.",
+		});
+
+		// Open Syncthing GUI.
+		new Setting(containerEl)
+			.setName("Open Syncthing GUI")
+			.setHeading()
+			.setDesc("Open the Syncthing GUI in your browser.")
+			.addButton((button) => {
+				button
+					.setIcon("link")
+					.setCta()
+					.onClick(async () => {
+						window.location.href =
+							this.plugin.settings.configuration
+								.syncthingBaseUrl ?? "http://localhost:8384";
+					});
+			});
 
 		// Plugin's dev Mode.
 		containerEl.createEl("h1", { text: "Developer Mode" });
