@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.0.0...1.1.0) (2023-06-25)
+
+
+### Features
+
+* **ui:** :lipstick: improve settings tab ui ([#59](https://github.com/LBF38/obsidian-syncthing-integration/issues/59)) ([373a75c](https://github.com/LBF38/obsidian-syncthing-integration/commit/373a75cdce2188a578cb71b69b5d69a128dd369f))
+
 # 1.0.0 (2023-06-25)
 
 
