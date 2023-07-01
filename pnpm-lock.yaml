@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -9,8 +9,8 @@ devDependencies:
     specifier: ^6.2.1
     version: 6.2.1
   '@codemirror/view':
-    specifier: ^6.13.0
-    version: 6.13.0
+    specifier: ^6.14.0
+    version: 6.14.0
   '@commitlint/config-conventional':
     specifier: ^17.6.5
     version: 17.6.5
@@ -73,7 +73,7 @@ devDependencies:
     version: 2.0.8
   obsidian:
     specifier: latest
-    version: 1.2.8(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
+    version: 1.2.8(@codemirror/state@6.2.1)(@codemirror/view@6.14.0)
   sass:
     specifier: ^1.62.1
     version: 1.62.1
@@ -114,8 +114,8 @@ packages:
     resolution: {integrity: sha512-RupHSZ8+OjNT38zU9fKH2sv+Dnlr8Eb8sl4NOnnqz95mCFTZUaiRP8Xv5MeeaG0px2b8Bnfe7YGwCV3nsBhbuw==}
     dev: true
 
-  /@codemirror/view@6.13.0:
-    resolution: {integrity: sha512-oXTfJzHJ5Tl7f6T8ZO0HKf981zubxgKohjddLobbntbNZHlOZGMRL+pPZGtclDWFaFJWtGBYRGyNdjQ6Xsx5yA==}
+  /@codemirror/view@6.14.0:
+    resolution: {integrity: sha512-I263FPs4In42MNmrdwN2DfmYPFMVMXgT7o/mxdGp4jv5LPs8i0FOxzmxF5yeeQdYSTztb2ZhmPIu0ahveInVTg==}
     dependencies:
       '@codemirror/state': 6.2.1
       style-mod: 4.0.3
@@ -2771,14 +2771,14 @@ packages:
       boolbase: 1.0.0
     dev: true
 
-  /obsidian@1.2.8(@codemirror/state@6.2.1)(@codemirror/view@6.13.0):
+  /obsidian@1.2.8(@codemirror/state@6.2.1)(@codemirror/view@6.14.0):
     resolution: {integrity: sha512-HrC+feA8o0tXspj4lEAqxb1btwLwHD2oHXSwbbN+CdRHURqbCkuIDLld+nkuyJ1w1c9uvVDRVk8BoeOnWheOrQ==}
     peerDependencies:
       '@codemirror/state': ^6.0.0
       '@codemirror/view': ^6.0.0
     dependencies:
       '@codemirror/state': 6.2.1
-      '@codemirror/view': 6.13.0
+      '@codemirror/view': 6.14.0
       '@types/codemirror': 0.0.108
       moment: 2.29.4
     dev: true
