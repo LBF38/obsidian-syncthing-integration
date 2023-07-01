@@ -47,4 +47,4 @@ jobs:
       - name: Release
         run: pnpm release
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
