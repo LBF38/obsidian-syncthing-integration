@@ -24,7 +24,7 @@
 		"@semantic-release/exec": "^6.0.3",
 		"@semantic-release/git": "^10.0.1",
 		"@types/diff": "^5.0.3",
-		"@types/node": "^18.0.0",
+		"@types/node": "^20.3.3",
 		"@typescript-eslint/eslint-plugin": "5.29.0",
 		"@typescript-eslint/parser": "5.29.0",
 		"builtin-modules": "3.3.0",
