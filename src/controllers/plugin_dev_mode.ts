@@ -14,8 +14,6 @@ export class PluginDevModeController {
 	constructor(public plugin: SyncthingPlugin) {}
 
 	async generateSyncthingConflicts(distinctFiles = 2, conflictsPerFile = 3) {
-		// TODO: fix the function. It doesn't work yet and don't know why. It makes the app crash.
-
 		new Notice("Creating main files...");
 		new Notice(
 			`Parameters: ${distinctFiles} distinct files, ${conflictsPerFile} conflicts per file.`
@@ -68,10 +66,6 @@ export class PluginDevModeController {
 	}
 
 	async purgeVault() {
-		// const files = this.plugin.app.vault.getFiles();
-		// for (const file of files) {
-		// 	await this.plugin.app.vault.delete(file);
-		// }
 		this.plugin.app.vault.getAllLoadedFiles().forEach(async (file) => {
 			await this.plugin.app.vault.delete(file);
 		});

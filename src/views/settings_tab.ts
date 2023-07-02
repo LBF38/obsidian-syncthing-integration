@@ -18,6 +18,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 	async display(): Promise<void> {
 		const { containerEl } = this;
 		containerEl.empty();
+
 		// Banner
 		const banner = containerEl.createEl("p");
 		const link = banner.createEl("a", {

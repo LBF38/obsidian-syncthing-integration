@@ -10,8 +10,6 @@ import { CliFailure, Failure } from "src/models/failures";
 import { SyncThingFromCLI } from "src/data/syncthing_local_datasource";
 import { SyncThingFromREST } from "src/data/syncthing_remote_datasource";
 
-// TODO: refactor the whole Controller. Needed for better usage in views.
-
 export interface SyncthingController {
 	/**
 	 * The plugin instance.
