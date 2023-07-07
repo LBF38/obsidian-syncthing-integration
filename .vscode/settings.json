@@ -11,7 +11,8 @@
 		"settings",
 		"project",
 		"gh actions",
-		"release"
+		"release",
+		"mobile"
 	],
 	"markdownlint.config": {
 		"MD033": false,

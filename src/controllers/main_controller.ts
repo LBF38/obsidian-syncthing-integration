@@ -1,4 +1,4 @@
-import { TFile } from "obsidian";
+import { Platform, TFile } from "obsidian";
 import SyncthingPlugin from "src/main";
 import {
 	ConflictFilename,
@@ -6,9 +6,10 @@ import {
 	SyncThingDevice,
 	SyncThingFolder,
 } from "src/models/entities";
-import { CliFailure, Failure } from "src/models/failures";
+import { CliFailure, Failure, RestFailure } from "src/models/failures";
 import { SyncThingFromCLI } from "src/data/syncthing_local_datasource";
 import { SyncThingFromREST } from "src/data/syncthing_remote_datasource";
+import { SyncthingFromAndroid } from "src/data/syncthing_android_datasource";
 
 export interface SyncthingController {
 	/**
@@ -29,6 +30,10 @@ export interface SyncthingController {
 	 * Checks if SyncThing is installed on the system.
 	 */
 	hasSyncThing(): Promise<boolean>;
+	/**
+	 * Checks if Syncthing is running.
+	 */
+	isRunning(): Promise<boolean>;
 	/**
 	 * Gets the SyncThing configuration.
 	 */
@@ -89,8 +94,15 @@ export class SyncthingControllerImpl implements SyncthingController {
 	constructor(
 		public syncthingFromCLI: SyncThingFromCLI,
 		public syncthingFromREST: SyncThingFromREST,
+		public syncthingFromAndroid: SyncthingFromAndroid,
 		public plugin: SyncthingPlugin
 	) {}
+	async isRunning(): Promise<boolean> {
+		return this.syncthingFromREST
+			.ping()
+			.then((response) => true)
+			.catch((error) => false);
+	}
 	async getCLIStatus(): Promise<string> {
 		return this.syncthingFromCLI
 			.getVersion()
@@ -109,6 +121,14 @@ export class SyncthingControllerImpl implements SyncthingController {
 	}
 
 	async hasSyncThing(): Promise<boolean> {
+		// Mobile support
+		if (Platform.isAndroidApp) {
+			return await this.syncthingFromAndroid.hasSyncthing();
+		} else if (Platform.isIosApp) {
+			// IOS not supported.
+			return false;
+		}
+		// Desktop support
 		return await this.syncthingFromCLI
 			.getVersion()
 			.then((version) => {
@@ -234,6 +254,11 @@ export class SyncthingControllerImpl implements SyncthingController {
 	}
 
 	async getAPIKey(): Promise<string | Failure> {
+		if (Platform.isMobileApp) {
+			return new Failure(
+				"Cannot get API key on mobile. Please enter it manually."
+			);
+		}
 		if (!this.plugin.settings.api_key) {
 			try {
 				const apiKey = await this.syncthingFromCLI.getAPIkey();
@@ -250,12 +275,18 @@ export class SyncthingControllerImpl implements SyncthingController {
 	}
 
 	async getConfiguration(): Promise<SyncThingConfiguration | Failure> {
+		if (!(await this.isRunning()))
+			return new Failure("Syncthing is not running.");
 		try {
-			const config = await this.syncthingFromCLI.getConfiguration();
+			const config = await this.syncthingFromREST.getConfiguration();
 			return config;
 		} catch (error) {
-			console.error(error);
-			return new CliFailure();
+			if (Platform.isMobileApp) {
+				console.error(error);
+				return new RestFailure();
+			}
+			const config = await this.syncthingFromCLI.getConfiguration();
+			return config;
 		}
 	}
 	async getDevices(): Promise<SyncThingDevice[]> {

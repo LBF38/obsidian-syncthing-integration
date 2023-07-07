@@ -55,7 +55,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		if (!hasSyncthing) {
 			new Setting(containerEl)
 				.setName("Syncthing is not installed.")
-				.setDesc("Please install Syncthing at the following URL. ")
+				.setDesc("Please install Syncthing at the following URL.")
 				.addButton((button) => {
 					button
 						.setIcon("link")
@@ -137,11 +137,13 @@ export class SyncthingSettingTab extends PluginSettingTab {
 			});
 		} else {
 			apiKeySetting.addButton((button) => {
-				button.setButtonText("Remove API Key").onClick(async () => {
-					this.plugin.settings.api_key = "";
-					this.plugin.saveSettings();
-					this.display();
-				});
+				button
+					.setButtonText("Clear API Key input")
+					.onClick(async () => {
+						this.plugin.settings.api_key = "";
+						this.plugin.saveSettings();
+						this.display();
+					});
 			});
 			apiKeySetting.addButton((button) => {
 				button.setIcon("eye").onClick(async () => {
@@ -279,7 +281,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 							Platform.isMobileApp
 						) {
 							new Notice(
-								"Please set your GUI credentials first."
+								"Please set your GUI credentials first. There are needed on mobile app."
 							);
 							return;
 						}
@@ -292,6 +294,28 @@ export class SyncthingSettingTab extends PluginSettingTab {
 						window.open(url);
 					});
 			});
+
+		// For mobile app
+		if (Platform.isMobileApp) {
+			new Setting(containerEl)
+				.setName("Open Syncthing mobile app")
+				.setDesc("Open the Syncthing mobile app.")
+				.addButton((button) => {
+					button
+						.setIcon("smartphone")
+						.setCta()
+						.onClick(async () => {
+							if (Platform.isAndroidApp) {
+								this.plugin.syncthingFromAndroid.openSyncthing();
+							} else {
+								new Notice(
+									"The feature is not implemented for your platform. Please open the Syncthing GUI in your browser. You can create an issue on GitHub if you want to request this feature.",
+									5000
+								);
+							}
+						});
+				});
+		}
 
 		// Syncthing configuration integration. This part should show the configuration of the Syncthing instance for the vault.
 		new Setting(containerEl)

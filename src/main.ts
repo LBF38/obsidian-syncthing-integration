@@ -18,6 +18,10 @@ import {
 	DevModeModal,
 	PluginDevModeController,
 } from "./controllers/plugin_dev_mode";
+import {
+	SyncthingFromAndroid,
+	SyncthingFromAndroidImpl,
+} from "./data/syncthing_android_datasource";
 
 interface SyncthingPluginSettings {
 	api_key: string;
@@ -38,9 +42,11 @@ export default class SyncthingPlugin extends Plugin {
 	pluginsElements: HTMLElement[] = [];
 	syncthingFromCLI: SyncThingFromCLI = new SyncThingFromCLIimpl();
 	syncthingFromREST: SyncThingFromREST = new SyncThingFromRESTimpl(this);
+	syncthingFromAndroid: SyncthingFromAndroid = new SyncthingFromAndroidImpl();
 	syncthingController: SyncthingController = new SyncthingControllerImpl(
 		this.syncthingFromCLI,
 		this.syncthingFromREST,
+		this.syncthingFromAndroid,
 		this
 	);
 	devModeController: PluginDevModeController = new PluginDevModeController(

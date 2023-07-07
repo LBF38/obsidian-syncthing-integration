@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  '@capacitor/app-launcher':
+    specifier: ^5.0.5
+    version: 5.0.5(@capacitor/core@5.1.1)
+
 devDependencies:
   '@codemirror/state':
     specifier: ^6.2.1
@@ -109,6 +114,20 @@ packages:
       chalk: 2.4.2
       js-tokens: 4.0.0
     dev: true
+
+  /@capacitor/app-launcher@5.0.5(@capacitor/core@5.1.1):
+    resolution: {integrity: sha512-vmHiA8uzZ9so2g7jDpQHm+AZ1k/gARL/7BBVsAlUyMcAwg72FmeY5ObkObtfWYcgfzDzTsWrrrkIkDhyz4nIzg==}
+    peerDependencies:
+      '@capacitor/core': ^5.0.0
+    dependencies:
+      '@capacitor/core': 5.1.1
+    dev: false
+
+  /@capacitor/core@5.1.1:
+    resolution: {integrity: sha512-17rZMGpZYQgBAmUS1uAS1GrRkPAQiUfpTfvd2wWS9z87GoTL/5vtpPAtI0/XLtr4eve2TsATY2r8BaW2NfEO6Q==}
+    dependencies:
+      tslib: 2.5.0
+    dev: false
 
   /@codemirror/state@6.2.1:
     resolution: {integrity: sha512-RupHSZ8+OjNT38zU9fKH2sv+Dnlr8Eb8sl4NOnnqz95mCFTZUaiRP8Xv5MeeaG0px2b8Bnfe7YGwCV3nsBhbuw==}
@@ -3865,7 +3884,6 @@ packages:
 
   /tslib@2.5.0:
     resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
-    dev: true
 
   /tsutils@3.21.0(typescript@4.7.4):
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
