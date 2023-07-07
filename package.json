@@ -47,8 +47,5 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/LBF38/obsidian-syncthing-integration.git"
-	},
-	"dependencies": {
-		"@capacitor/app-launcher": "^5.0.5"
 	}
 }

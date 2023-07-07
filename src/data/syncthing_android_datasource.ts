@@ -1,4 +1,4 @@
-import { AppLauncher } from "@capacitor/app-launcher";
+import { Platform } from "obsidian";
 
 /**
  * Interface for using the Syncthing App on Android.
@@ -30,16 +30,26 @@ export interface SyncthingFromAndroid {
 
 export class SyncthingFromAndroidImpl implements SyncthingFromAndroid {
 	async hasSyncthing(): Promise<boolean> {
-		const { value } = await AppLauncher.canOpenUrl({
-			url: "com.nutomic.syncthingandroid",
-		});
-		return value;
+		// const { value } = await AppLauncher.canOpenUrl({
+		// 	url: "com.nutomic.syncthingandroid",
+		// });
+		// return value;
+		console.log("Platform: ", Platform);
+		console.log("Obsidian App: ", app);
+		return true;
 	}
 	async openSyncthing(): Promise<boolean> {
-		if (await this.hasSyncthing()) {
-			await AppLauncher.openUrl({ url: "com.nutomic.syncthingandroid" });
-			return true;
-		}
-		return false;
+		const packageName = "com.nutomic.syncthingandroid";
+		const intentAction = "android.intent.action.MAIN";
+		const intentCategory = "android.intent.category.LAUNCHER";
+
+		const deepLink = `intent://${intentAction}#${intentCategory};package=${packageName};end`;
+		const deepLink2 = `intent://${packageName}/${intentAction}#${intentCategory};end`;
+
+		// Ouvrir le lien profond dans le navigateur du système
+		const syncthingApp = window.open(deepLink);
+		console.log("Syncthing App: ", syncthingApp);
+		syncthingApp?.open(deepLink2);
+		return syncthingApp != null;
 	}
 }

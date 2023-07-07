@@ -67,6 +67,9 @@ export class SyncthingSettingTab extends PluginSettingTab {
 			return;
 		}
 
+		// For mobile app
+		this.openMobileApp(containerEl);
+
 		// Get the Syncthing configuration from CLI or API.
 		const configuration = await this.syncthingController.getConfiguration();
 		if (configuration instanceof Failure) {
@@ -296,26 +299,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 			});
 
 		// For mobile app
-		if (Platform.isMobileApp) {
-			new Setting(containerEl)
-				.setName("Open Syncthing mobile app")
-				.setDesc("Open the Syncthing mobile app.")
-				.addButton((button) => {
-					button
-						.setIcon("smartphone")
-						.setCta()
-						.onClick(async () => {
-							if (Platform.isAndroidApp) {
-								this.plugin.syncthingFromAndroid.openSyncthing();
-							} else {
-								new Notice(
-									"The feature is not implemented for your platform. Please open the Syncthing GUI in your browser. You can create an issue on GitHub if you want to request this feature.",
-									5000
-								);
-							}
-						});
-				});
-		}
+		this.openMobileApp(containerEl);
 
 		// Syncthing configuration integration. This part should show the configuration of the Syncthing instance for the vault.
 		new Setting(containerEl)
@@ -357,6 +341,29 @@ export class SyncthingSettingTab extends PluginSettingTab {
 						this.plugin.onload();
 					});
 			});
+	}
+
+	private openMobileApp(containerEl: HTMLElement) {
+		if (Platform.isMobileApp) {
+			new Setting(containerEl)
+				.setName("Open Syncthing mobile app")
+				.setDesc("Open the Syncthing mobile app.")
+				.addButton((button) => {
+					button
+						.setIcon("smartphone")
+						.setCta()
+						.onClick(async () => {
+							if (Platform.isAndroidApp) {
+								this.plugin.syncthingFromAndroid.openSyncthing();
+							} else {
+								new Notice(
+									"The feature is not implemented for your platform. Please open the Syncthing GUI in your browser. You can create an issue on GitHub if you want to request this feature.",
+									5000
+								);
+							}
+						});
+				});
+		}
 	}
 
 	/**
