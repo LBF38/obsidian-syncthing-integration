@@ -21,12 +21,14 @@ import {
 
 interface SyncthingPluginSettings {
 	api_key: string;
+	gui_username: string;
+	gui_password: string;
 	configuration: SyncThingConfiguration | Partial<SyncThingConfiguration>;
 	devMode: boolean;
 }
 
 const DEFAULT_SETTINGS: Partial<SyncthingPluginSettings> = {
-	configuration: { syncthingBaseUrl: "http://localhost:8384" },
+	configuration: { syncthingBaseUrl: "localhost:8384" },
 	devMode: false,
 };
 

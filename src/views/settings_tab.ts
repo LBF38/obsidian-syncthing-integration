@@ -1,9 +1,16 @@
-import { App, Notice, PluginSettingTab, Setting } from "obsidian";
+import {
+	App,
+	Notice,
+	Platform,
+	PluginSettingTab,
+	Setting,
+	TextComponent,
+} from "obsidian";
 import { SyncthingController } from "src/controllers/main_controller";
 import SyncthingPlugin from "src/main";
+import { SyncThingConfiguration, SyncThingDevice } from "src/models/entities";
 import { Failure } from "src/models/failures";
 import { ObsidianLogo, SyncthingLogo } from "./logos";
-import { SyncThingConfiguration, SyncThingDevice } from "src/models/entities";
 
 export class SyncthingSettingTab extends PluginSettingTab {
 	plugin: SyncthingPlugin;
@@ -36,45 +43,48 @@ export class SyncthingSettingTab extends PluginSettingTab {
 				src: ObsidianLogo,
 			},
 		});
-		syncthingImg.style.height = "100px";
-		obsidianImg.style.height = "100px";
-		banner.style.alignContent = "center";
+		syncthingImg.style.height = "50px";
+		obsidianImg.style.height = "50px";
+		banner.style.justifyContent = "center";
+		banner.style.display = "flex";
 		link.append(syncthingImg, obsidianImg);
 		banner.append(link);
 
 		// Check if Syncthing is installed.
 		const hasSyncthing = await this.syncthingController.hasSyncThing();
 		if (!hasSyncthing) {
-			containerEl.createEl("h1", { text: "Syncthing is not installed." });
-			containerEl
-				.createEl("p", {
-					text: "Please install Syncthing at the following URL: ",
-				})
-				.append(
-					containerEl.createEl("a", {
-						text: "https://syncthing.net/downloads",
-						href: "https://syncthing.net/downloads",
-					})
-				);
+			new Setting(containerEl)
+				.setName("Syncthing is not installed.")
+				.setDesc("Please install Syncthing at the following URL. ")
+				.addButton((button) => {
+					button
+						.setIcon("link")
+						.setCta()
+						.onClick(() => {
+							open("https://syncthing.net/downloads", "_blank");
+						});
+				});
 			return;
 		}
 
 		// Get the Syncthing configuration from CLI or API.
 		const configuration = await this.syncthingController.getConfiguration();
 		if (configuration instanceof Failure) {
-			containerEl.createEl("h2", {
-				text: "Error getting configuration. Please try again later.",
-			});
+			new Setting(containerEl)
+				.setName("Error")
+				.setDesc(
+					"Error getting configuration. Please try again later."
+				);
 			return;
 		}
 		this.plugin.settings.configuration = configuration;
 
-		containerEl.createEl("h1", {
-			text: "SyncThing Integration for Obsidian",
-		});
-		containerEl
+		const headerSetting = new Setting(containerEl)
+			.setName("Syncthing Integration for Obsidian")
+			.setHeading();
+		headerSetting.descEl
 			.createEl("p", {
-				text: "This plugin allows you to sync your vault with SyncThing.\nIt allows you to manage the sync process from within Obsidian.\nYou can only manage the folder you are in.\n\nTo use this plugin, you need to have SyncThing installed on your computer.\n\nYou can find more information about SyncThing here: ",
+				text: "This plugin allows you to sync your vault with Syncthing.\nIt allows you to manage the sync process from within Obsidian.\nYou can only manage the folder you are in.\n\nTo use this plugin, you need to have Syncthing installed on your computer.\n\nYou can find more information about Syncthing here: ",
 			})
 			.appendChild(
 				containerEl.createEl("a", {
@@ -96,8 +106,8 @@ export class SyncthingSettingTab extends PluginSettingTab {
 
 		// Display the API key setting.
 		apiKeySetting
-			.setName("SyncThing API Key")
-			.setDesc("Add your SyncThing API key here for the plugin to work.")
+			.setName("Syncthing API Key")
+			.setDesc("Add your Syncthing API key here for the plugin to work.")
 			.addText(
 				(text) =>
 					(text
@@ -133,11 +143,28 @@ export class SyncthingSettingTab extends PluginSettingTab {
 					this.display();
 				});
 			});
+			apiKeySetting.addButton((button) => {
+				button.setIcon("eye").onClick(async () => {
+					apiKeySetting.components.forEach((component) => {
+						if (component instanceof TextComponent) {
+							component.inputEl.type =
+								component.inputEl.type === "password"
+									? "text"
+									: "password";
+							button.setIcon(
+								component.inputEl.type === "password"
+									? "eye"
+									: "eye-off"
+							);
+						}
+					});
+				});
+			});
 		}
 
 		// To check the API status.
 		new Setting(containerEl)
-			.setName("SyncThing API Status")
+			.setName("Syncthing API Status")
 			.addButton((button) => {
 				button.setButtonText("Check API Status").onClick(async () => {
 					this.syncthingController
@@ -152,59 +179,148 @@ export class SyncthingSettingTab extends PluginSettingTab {
 			});
 
 		// To check the Syncthing CLI status.
-		new Setting(containerEl)
-			.setName("SyncThing CLI Status")
-			.addButton((button) => {
-				button.setButtonText("Check CLI Status").onClick(async () => {
-					this.syncthingController.getCLIStatus().then((status) => {
-						new Notice(`Syncthing CLI Status : ${status}`);
-					});
+		if (Platform.isDesktopApp) {
+			new Setting(containerEl)
+				.setName("Syncthing CLI Status")
+				.addButton((button) => {
+					button
+						.setButtonText("Check CLI Status")
+						.onClick(async () => {
+							this.syncthingController
+								.getCLIStatus()
+								.then((status) => {
+									new Notice(
+										`Syncthing CLI Status : ${status}`
+									);
+								});
+						});
 				});
-			});
-
-		// TEST : difference between file.basename and file.name in Obsidian API.
-		// const file = this.app.vault.getFiles()[0];
-		// containerEl.createEl("h1", { text: "TEST" });
-		// containerEl.createEl("p", { text: "file.basename: " + file.basename });
-		// containerEl.createEl("p", { text: "file.name: " + file.name });
-		// ! file.basename : file name without extension
-		// ! file.name : file name with extension
-
-		containerEl.createEl("h1", { text: "Syncthing Configuration" });
-		containerEl.createEl("h2", { text: "This Device" });
-		containerEl.createEl("p", {
-			text: "This table will show the folders and devices that are configured on the Syncthing instance.",
-		});
-		this.initConfigTable(containerEl, configuration);
-		containerEl.createEl("h2", { text: "Other Devices" });
-		containerEl.createEl("p", {
-			text: "This table will show the folders and devices that are configured on the Syncthing instance.",
-		});
-
-		// Folder infos.
-		containerEl.createEl("h2", { text: "Folder Infos" });
-		containerEl.createEl("p", {
-			text: "This table will show the information concerning the syncthing shared folder, which corresponds to the current vault.",
-		});
+		}
 
 		// Open Syncthing GUI.
+		new Setting(containerEl).setName("Syncthing GUI").setHeading();
+		new Setting(containerEl)
+			.setName("Set GUI address")
+			.setDesc(
+				"Please set your Syncthing GUI address here. This address will be used to open the Syncthing GUI in your browser."
+			)
+			.addText((text) => {
+				text.setPlaceholder("Enter your GUI address here...")
+					.setValue(
+						this.plugin.settings.configuration.syncthingBaseUrl ??
+							""
+					)
+					.onChange(async (value) => {
+						this.plugin.settings.configuration.syncthingBaseUrl =
+							value;
+						await this.plugin.saveSettings();
+					});
+			});
+
+		if (Platform.isMobileApp) {
+			const guiSetting = new Setting(containerEl)
+				.setName("Set GUI Credentials")
+				.setDesc(
+					"Please set your Syncthing GUI credentials here. These credentials will be used to open the Syncthing GUI in your browser."
+				);
+			guiSetting
+				.addText((text) => {
+					text.setPlaceholder("Enter your GUI username here...")
+						.setValue(this.plugin.settings.gui_username ?? "")
+						.onChange(async (value) => {
+							this.plugin.settings.gui_username = value;
+							await this.plugin.saveSettings();
+						});
+					text.inputEl.setAttribute("id", "gui-username");
+				})
+				.addText((text) => {
+					text
+						.setPlaceholder("Enter your GUI password here...")
+						.setValue(this.plugin.settings.gui_password ?? "")
+						.onChange(async (value) => {
+							this.plugin.settings.gui_password = value;
+							await this.plugin.saveSettings();
+						}).inputEl.type = "password";
+					text.inputEl.setAttribute("id", "gui-password");
+				})
+				.addButton((button) => {
+					button.setIcon("eye").onClick(async () => {
+						guiSetting.components.forEach((component) => {
+							if (
+								component instanceof TextComponent &&
+								component.inputEl.id === "gui-password"
+							) {
+								component.inputEl.type =
+									component.inputEl.type === "password"
+										? "text"
+										: "password";
+								button.setIcon(
+									component.inputEl.type === "password"
+										? "eye"
+										: "eye-off"
+								);
+							}
+						});
+					});
+				});
+		}
+
 		new Setting(containerEl)
 			.setName("Open Syncthing GUI")
-			.setHeading()
 			.setDesc("Open the Syncthing GUI in your browser.")
 			.addButton((button) => {
 				button
 					.setIcon("link")
 					.setCta()
 					.onClick(async () => {
-						window.location.href =
+						if (
+							(!this.plugin.settings.gui_username ||
+								!this.plugin.settings.gui_password) &&
+							Platform.isMobileApp
+						) {
+							new Notice(
+								"Please set your GUI credentials first."
+							);
+							return;
+						}
+						const url = `http://${
+							this.plugin.settings.gui_username
+						}:${this.plugin.settings.gui_password}@${
 							this.plugin.settings.configuration
-								.syncthingBaseUrl ?? "http://localhost:8384";
+								.syncthingBaseUrl ?? "localhost:8384"
+						}`;
+						window.open(url);
 					});
 			});
 
+		// Syncthing configuration integration. This part should show the configuration of the Syncthing instance for the vault.
+		new Setting(containerEl)
+			.setName("Syncthing Configuration")
+			.setHeading()
+			.setDesc(
+				"This section will show the configuration of the Syncthing instance for the vault."
+			);
+
+		new Setting(containerEl).setName("This part is not implemented yet.");
+
+		// containerEl.createEl("h2", { text: "This Device" });
+		// containerEl.createEl("p", {
+		// 	text: "This table will show the folders and devices that are configured on the Syncthing instance.",
+		// });
+		// this.initConfigTable(containerEl, configuration);
+		// containerEl.createEl("h2", { text: "Other Devices" });
+		// containerEl.createEl("p", {
+		// 	text: "This table will show the folders and devices that are configured on the Syncthing instance.",
+		// });
+
+		// // Folder infos.
+		// containerEl.createEl("h2", { text: "Folder Infos" });
+		// containerEl.createEl("p", {
+		// 	text: "This table will show the information concerning the syncthing shared folder, which corresponds to the current vault.",
+		// });
+
 		// Plugin's dev Mode.
-		containerEl.createEl("h1", { text: "Developer Mode" });
+		new Setting(containerEl).setName("Developer Mode").setHeading();
 		new Setting(containerEl)
 			.setName("Enable Plugin's Developer Mode")
 			.addToggle((toggle) => {

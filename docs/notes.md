@@ -58,3 +58,10 @@ He can also add/remove devices and folders, and change the configuration of the 
 The user should be able to exclude files from Syncthing, just like in the Syncthing web interface.
 This can be done by adding a `.stignore` file in the vault's root folder.
 And it should be possible to do it from the plugin's settings, more easily than creating the file manually.
+
+## Notes on the Obsidian API
+
+### Main difference in `TFile` properties
+
+- `file.basename` : file name without extension
+- `file.name` : file name with extension
