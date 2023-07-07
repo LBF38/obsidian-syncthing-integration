@@ -40,16 +40,31 @@ export class SyncthingFromAndroidImpl implements SyncthingFromAndroid {
 	}
 	async openSyncthing(): Promise<boolean> {
 		const packageName = "com.nutomic.syncthingandroid";
-		const intentAction = "android.intent.action.MAIN";
-		const intentCategory = "android.intent.category.LAUNCHER";
+		const appUrl = `syncthing://${packageName}`;
 
-		const deepLink = `intent://${intentAction}#${intentCategory};package=${packageName};end`;
-		const deepLink2 = `intent://${packageName}/${intentAction}#${intentCategory};end`;
+		const fallbackUrl =
+			"https://play.google.com/store/apps/details?id=com.nutomic.syncthingandroid";
 
-		// Ouvrir le lien profond dans le navigateur du système
-		const syncthingApp = window.open(deepLink);
-		console.log("Syncthing App: ", syncthingApp);
-		syncthingApp?.open(deepLink2);
-		return syncthingApp != null;
+		const openApp = () => {
+			window.location.href = appUrl;
+		};
+
+		const redirectToStore = () => {
+			window.location.href = fallbackUrl;
+		};
+
+		const checkTimeout = setTimeout(redirectToStore, 2000);
+
+		// Tente d'ouvrir l'application Syncthing
+		openApp();
+
+		// Vérifie si l'application Syncthing s'est ouverte
+		document.addEventListener("visibilitychange", () => {
+			if (document.visibilityState === "visible") {
+				console.log("Syncthing is installed");
+				clearTimeout(checkTimeout);
+			}
+		});
+		return true; // Experimenting.
 	}
 }
