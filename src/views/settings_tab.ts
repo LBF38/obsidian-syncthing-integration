@@ -70,17 +70,11 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		// For mobile app
 		this.openMobileApp(containerEl);
 
+		// API Key setting
+		this.apiKeySetting(containerEl);
+
 		// Get the Syncthing configuration from CLI or API.
-		const configuration = await this.syncthingController.getConfiguration();
-		if (configuration instanceof Failure) {
-			new Setting(containerEl)
-				.setName("Error")
-				.setDesc(
-					"Error getting configuration. Please try again later."
-				);
-			return;
-		}
-		this.plugin.settings.configuration = configuration;
+		this.configurationSetting(containerEl);
 
 		const headerSetting = new Setting(containerEl)
 			.setName("Syncthing Integration for Obsidian")
@@ -97,75 +91,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 			);
 
 		// API Key setting.
-		const apiKeySetting = new Setting(containerEl);
-		// Try to get the API key from the CLI.
-		await this.syncthingController.getAPIKey().then((key) => {
-			if (key instanceof Failure) {
-				return;
-			}
-			this.plugin.settings.api_key = key;
-			this.plugin.saveSettings();
-		});
-
-		// Display the API key setting.
-		apiKeySetting
-			.setName("Syncthing API Key")
-			.setDesc("Add your Syncthing API key here for the plugin to work.")
-			.addText(
-				(text) =>
-					(text
-						.setPlaceholder("Enter your API key here...")
-						.setValue(this.plugin.settings.api_key ?? "")
-						.onChange(async (value) => {
-							this.plugin.settings.api_key = value;
-							await this.plugin.saveSettings();
-						}).inputEl.type = "password")
-			);
-		// Show a button relative to the API key setting.
-		// If the API key is not set, show a button to get it.
-		// If the API key is set, show a button to remove it.
-		if (!this.plugin.settings.api_key) {
-			apiKeySetting.addButton((button) => {
-				button.setButtonText("Get API Key").onClick(async () => {
-					this.syncthingController.getAPIKey().then((key) => {
-						if (key instanceof Failure) {
-							new Notice(key.message);
-							return;
-						}
-						this.plugin.settings.api_key = key;
-						this.plugin.saveSettings();
-						this.display();
-					});
-				});
-			});
-		} else {
-			apiKeySetting.addButton((button) => {
-				button
-					.setButtonText("Clear API Key input")
-					.onClick(async () => {
-						this.plugin.settings.api_key = "";
-						this.plugin.saveSettings();
-						this.display();
-					});
-			});
-			apiKeySetting.addButton((button) => {
-				button.setIcon("eye").onClick(async () => {
-					apiKeySetting.components.forEach((component) => {
-						if (component instanceof TextComponent) {
-							component.inputEl.type =
-								component.inputEl.type === "password"
-									? "text"
-									: "password";
-							button.setIcon(
-								component.inputEl.type === "password"
-									? "eye"
-									: "eye-off"
-							);
-						}
-					});
-				});
-			});
-		}
+		await this.apiKeySetting(containerEl);
 
 		// To check the API status.
 		new Setting(containerEl)
@@ -341,6 +267,107 @@ export class SyncthingSettingTab extends PluginSettingTab {
 						this.plugin.onload();
 					});
 			});
+	}
+
+	private async configurationSetting(containerEl: HTMLElement) {
+		const configSetting = new Setting(containerEl)
+			.setName("Get Syncthing Configuration")
+			.setDesc(
+				"This button will get the configuration of the Syncthing instance for the vault."
+			);
+		configSetting.addButton((button) => {
+			button
+				.setIcon("sync")
+				.setCta()
+				.onClick(async () => {
+					const configuration =
+						await this.syncthingController.getConfiguration();
+					if (configuration instanceof Failure) {
+						configSetting
+							.setName("Error")
+							.setDesc(
+								"Error getting configuration. Please try again later."
+							);
+						new Notice(
+							"Error getting configuration. Please try again later."
+						);
+						return;
+					}
+					this.plugin.settings.configuration = configuration;
+				});
+		});
+	}
+
+	private async apiKeySetting(containerEl: HTMLElement) {
+		const apiKeySetting = new Setting(containerEl);
+		// Try to get the API key from the CLI.
+		await this.syncthingController.getAPIKey().then((key) => {
+			if (key instanceof Failure) {
+				return;
+			}
+			this.plugin.settings.api_key = key;
+			this.plugin.saveSettings();
+		});
+
+		// Display the API key setting.
+		apiKeySetting
+			.setName("Syncthing API Key")
+			.setDesc("Add your Syncthing API key here for the plugin to work.")
+			.addText(
+				(text) =>
+					(text
+						.setPlaceholder("Enter your API key here...")
+						.setValue(this.plugin.settings.api_key ?? "")
+						.onChange(async (value) => {
+							this.plugin.settings.api_key = value;
+							await this.plugin.saveSettings();
+						}).inputEl.type = "password")
+			);
+		// Show a button relative to the API key setting.
+		// If the API key is not set, show a button to get it.
+		// If the API key is set, show a button to remove it.
+		if (!this.plugin.settings.api_key) {
+			apiKeySetting.addButton((button) => {
+				button.setButtonText("Get API Key").onClick(async () => {
+					this.syncthingController.getAPIKey().then((key) => {
+						if (key instanceof Failure) {
+							new Notice(key.message);
+							return;
+						}
+						this.plugin.settings.api_key = key;
+						this.plugin.saveSettings();
+						this.display();
+					});
+				});
+			});
+		} else {
+			apiKeySetting.addButton((button) => {
+				button
+					.setButtonText("Clear API Key input")
+					.onClick(async () => {
+						this.plugin.settings.api_key = "";
+						this.plugin.saveSettings();
+						this.display();
+					});
+			});
+			apiKeySetting.addButton((button) => {
+				button.setIcon("eye").onClick(async () => {
+					apiKeySetting.components.forEach((component) => {
+						if (component instanceof TextComponent) {
+							component.inputEl.type =
+								component.inputEl.type === "password"
+									? "text"
+									: "password";
+							button.setIcon(
+								component.inputEl.type === "password"
+									? "eye"
+									: "eye-off"
+							);
+						}
+					});
+				});
+			});
+		}
 	}
 
 	private openMobileApp(containerEl: HTMLElement) {

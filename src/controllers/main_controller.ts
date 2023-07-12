@@ -98,10 +98,17 @@ export class SyncthingControllerImpl implements SyncthingController {
 		public plugin: SyncthingPlugin
 	) {}
 	async isRunning(): Promise<boolean> {
+		console.log("isRunning");
 		return this.syncthingFromREST
 			.ping()
-			.then((response) => true)
-			.catch((error) => false);
+			.then((response) => {
+				console.log(response);
+				return true;
+			})
+			.catch((error) => {
+				console.log(error);
+				return false;
+			});
 	}
 	async getCLIStatus(): Promise<string> {
 		return this.syncthingFromCLI

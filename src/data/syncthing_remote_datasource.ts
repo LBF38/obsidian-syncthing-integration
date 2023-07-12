@@ -48,6 +48,7 @@ export class SyncThingFromRESTimpl implements SyncThingFromREST {
 			this.plugin.settings.configuration.syncthingBaseUrl +
 				"/rest/system/ping"
 		);
+		console.log("REST - ping: ", response);
 		return response.json["ping"];
 	}
 	async getAllFolders(): Promise<SyncThingFolderModel[]> {
@@ -91,8 +92,8 @@ export class SyncThingFromRESTimpl implements SyncThingFromREST {
 	}
 
 	private async requestEndpoint(endpoint: string) {
-		return await requestUrl({
-			url: endpoint,
+		const request = requestUrl({
+			url: `http://${endpoint}`,
 			method: "GET",
 			headers: {
 				"X-API-Key": this.plugin.settings.api_key,
@@ -100,11 +101,19 @@ export class SyncThingFromRESTimpl implements SyncThingFromREST {
 				"Content-Type": "application/json",
 				"Access-Control-Allow-Origin": "*",
 			},
-		}).then((response) => {
-			if (response.status >= 400) {
-				throw new RestFailure(response.text);
-			}
-			return response;
 		});
+		console.log("requestEndpoint: ", this.plugin.settings.api_key);
+		return request
+			.then((response) => {
+				console.log("requestEndpoint response: ", response);
+				if (response.status >= 400) {
+					throw new RestFailure(response.text);
+				}
+				return response;
+			})
+			.catch((error) => {
+				console.error("requestEndpoint error: ", error);
+				throw new RestFailure(error);
+			});
 	}
 }
