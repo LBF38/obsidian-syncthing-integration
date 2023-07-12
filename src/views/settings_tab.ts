@@ -27,28 +27,13 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		// Banner
-		const banner = containerEl.createEl("p");
-		const link = banner.createEl("a", {
-			attr: {
-				href: "https://github.com/lbf38/obsidian-syncthing-integration",
-			},
-		});
-		const syncthingImg = containerEl.createEl("img", {
-			attr: {
-				src: SyncthingLogo,
-			},
-		});
-		const obsidianImg = containerEl.createEl("img", {
-			attr: {
-				src: ObsidianLogo,
-			},
-		});
-		syncthingImg.style.height = "50px";
-		obsidianImg.style.height = "50px";
-		banner.style.justifyContent = "center";
-		banner.style.display = "flex";
-		link.append(syncthingImg, obsidianImg);
-		banner.append(link);
+		this.createPluginBanner(containerEl);
+
+		// The UI should be simple depending on the platform.
+		// For desktop app => full UI and options. The plugin should be able to add all features and detect Syncthing.
+		// For mobile app => minimalist setup to redirect to the Syncthing app for better UI.
+		// therefore, usage of intent or URI to redirect to Syncthing. But not yet available in Syncthing app. So, for the moment, on mobile, we redirect to the Play Store's Syncthing page so that anyone can either install or open the app.
+		// => minimalist setup on mobile app for now.s
 
 		// Check if Syncthing is installed.
 		const hasSyncthing = await this.syncthingController.hasSyncThing();
@@ -269,6 +254,31 @@ export class SyncthingSettingTab extends PluginSettingTab {
 			});
 	}
 
+	private createPluginBanner(containerEl: HTMLElement) {
+		const banner = containerEl.createEl("p");
+		const link = banner.createEl("a", {
+			attr: {
+				href: "https://github.com/lbf38/obsidian-syncthing-integration",
+			},
+		});
+		const syncthingImg = containerEl.createEl("img", {
+			attr: {
+				src: SyncthingLogo,
+			},
+		});
+		const obsidianImg = containerEl.createEl("img", {
+			attr: {
+				src: ObsidianLogo,
+			},
+		});
+		syncthingImg.style.height = "50px";
+		obsidianImg.style.height = "50px";
+		banner.style.justifyContent = "center";
+		banner.style.display = "flex";
+		link.append(syncthingImg, obsidianImg);
+		banner.append(link);
+	}
+
 	private async configurationSetting(containerEl: HTMLElement) {
 		const configSetting = new Setting(containerEl)
 			.setName("Get Syncthing Configuration")
@@ -340,57 +350,56 @@ export class SyncthingSettingTab extends PluginSettingTab {
 					});
 				});
 			});
-		} else {
-			apiKeySetting.addButton((button) => {
-				button
-					.setButtonText("Clear API Key input")
-					.onClick(async () => {
-						this.plugin.settings.api_key = "";
-						this.plugin.saveSettings();
-						this.display();
-					});
+			return;
+		}
+		apiKeySetting.addButton((button) => {
+			button.setButtonText("Clear API Key input").onClick(async () => {
+				this.plugin.settings.api_key = "";
+				this.plugin.saveSettings();
+				this.display();
 			});
-			apiKeySetting.addButton((button) => {
-				button.setIcon("eye").onClick(async () => {
-					apiKeySetting.components.forEach((component) => {
-						if (component instanceof TextComponent) {
-							component.inputEl.type =
-								component.inputEl.type === "password"
-									? "text"
-									: "password";
-							button.setIcon(
-								component.inputEl.type === "password"
-									? "eye"
-									: "eye-off"
-							);
-						}
-					});
+		});
+		apiKeySetting.addButton((button) => {
+			button.setIcon("eye").onClick(async () => {
+				apiKeySetting.components.forEach((component) => {
+					if (component instanceof TextComponent) {
+						component.inputEl.type =
+							component.inputEl.type === "password"
+								? "text"
+								: "password";
+						button.setIcon(
+							component.inputEl.type === "password"
+								? "eye"
+								: "eye-off"
+						);
+					}
 				});
 			});
-		}
+		});
 	}
 
 	private openMobileApp(containerEl: HTMLElement) {
-		if (Platform.isMobileApp) {
-			new Setting(containerEl)
-				.setName("Open Syncthing mobile app")
-				.setDesc("Open the Syncthing mobile app.")
-				.addButton((button) => {
-					button
-						.setIcon("smartphone")
-						.setCta()
-						.onClick(async () => {
-							if (Platform.isAndroidApp) {
-								this.plugin.syncthingFromAndroid.openSyncthing();
-							} else {
-								new Notice(
-									"The feature is not implemented for your platform. Please open the Syncthing GUI in your browser. You can create an issue on GitHub if you want to request this feature.",
-									5000
-								);
-							}
-						});
-				});
+		if (!Platform.isMobileApp) {
+			return;
 		}
+		new Setting(containerEl)
+			.setName("Open Syncthing mobile app on Google Play Store.")
+			.setDesc("Open the Syncthing mobile app page on Google Play Store.")
+			.addButton((button) => {
+				button
+					.setIcon("play")
+					.setCta()
+					.onClick(async () => {
+						if (!Platform.isAndroidApp) {
+							new Notice(
+								"The feature is not implemented for your platform. Please open the Syncthing app for your platform. You can create an issue on GitHub if you want to request this feature.",
+								5000
+							);
+							return;
+						}
+						this.plugin.syncthingFromAndroid.openSyncthing();
+					});
+			});
 	}
 
 	/**
