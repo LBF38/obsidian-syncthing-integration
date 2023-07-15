@@ -4,7 +4,7 @@ import {
 	Platform,
 	PluginSettingTab,
 	Setting,
-	TextComponent,
+	TextComponent
 } from "obsidian";
 import { SyncthingController } from "src/controllers/main_controller";
 import SyncthingPlugin from "src/main";
@@ -28,12 +28,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 
 		// Banner
 		this.createPluginBanner(containerEl);
-
-		// The UI should be simple depending on the platform.
-		// For desktop app => full UI and options. The plugin should be able to add all features and detect Syncthing.
-		// For mobile app => minimalist setup to redirect to the Syncthing app for better UI.
-		// therefore, usage of intent or URI to redirect to Syncthing. But not yet available in Syncthing app. So, for the moment, on mobile, we redirect to the Play Store's Syncthing page so that anyone can either install or open the app.
-		// => minimalist setup on mobile app for now.s
+		this.pluginInformation(containerEl);
 
 		// Check if Syncthing is installed.
 		const hasSyncthing = await this.syncthingController.hasSyncThing();
@@ -54,29 +49,22 @@ export class SyncthingSettingTab extends PluginSettingTab {
 
 		// For mobile app
 		this.openMobileApp(containerEl);
-
-		// API Key setting
-		this.apiKeySetting(containerEl);
-
-		// Get the Syncthing configuration from CLI or API.
-		this.configurationSetting(containerEl);
-
-		const headerSetting = new Setting(containerEl)
-			.setName("Syncthing Integration for Obsidian")
-			.setHeading();
-		headerSetting.descEl
-			.createEl("p", {
-				text: "This plugin allows you to sync your vault with Syncthing.\nIt allows you to manage the sync process from within Obsidian.\nYou can only manage the folder you are in.\n\nTo use this plugin, you need to have Syncthing installed on your computer.\n\nYou can find more information about Syncthing here: ",
-			})
-			.appendChild(
-				containerEl.createEl("a", {
-					text: "https://syncthing.net/",
-					href: "https://syncthing.net/",
-				})
-			);
+		if (Platform.isMobileApp) {
+			const warningSetting = new Setting(containerEl)
+				.setName("Warning")
+				.setHeading()
+				.setDesc(
+					"The following settings are in beta. All plugin's features may not currently be available on mobile."
+				);
+			warningSetting.nameEl.style.color = "rgba(255, 0, 0, 0.8)";
+			warningSetting.descEl.style.color = "rgba(255, 0, 0, 0.8)";
+		}
 
 		// API Key setting.
 		await this.apiKeySetting(containerEl);
+
+		// Get the Syncthing configuration from CLI or API.
+		this.configurationSetting(containerEl);
 
 		// To check the API status.
 		new Setting(containerEl)
@@ -114,6 +102,59 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		}
 
 		// Open Syncthing GUI.
+		this.syncthingGUIsettings(containerEl);
+
+		// Syncthing configuration integration. This part should show the configuration of the Syncthing instance for the vault.
+		this.syncthingConfiguration(containerEl);
+
+		// Plugin's dev Mode.
+		this.pluginDevModeSetting(containerEl);
+	}
+
+	private syncthingConfiguration(containerEl: HTMLElement) {
+		new Setting(containerEl)
+			.setName("Syncthing Configuration")
+			.setHeading()
+			.setDesc(
+				"This section will show the configuration of the Syncthing instance for the vault."
+			);
+
+		new Setting(containerEl).setName("This part is not implemented yet.");
+
+		// containerEl.createEl("h2", { text: "This Device" });
+		// containerEl.createEl("p", {
+		// 	text: "This table will show the folders and devices that are configured on the Syncthing instance.",
+		// });
+		// this.initConfigTable(containerEl, configuration);
+		// containerEl.createEl("h2", { text: "Other Devices" });
+		// containerEl.createEl("p", {
+		// 	text: "This table will show the folders and devices that are configured on the Syncthing instance.",
+		// });
+
+		// // Folder infos.
+		// containerEl.createEl("h2", { text: "Folder Infos" });
+		// containerEl.createEl("p", {
+		// 	text: "This table will show the information concerning the syncthing shared folder, which corresponds to the current vault.",
+		// });
+	}
+
+	private pluginDevModeSetting(containerEl: HTMLElement) {
+		new Setting(containerEl).setName("Developer Mode").setHeading();
+		new Setting(containerEl)
+			.setName("Enable Plugin's Developer Mode")
+			.addToggle((toggle) => {
+				toggle
+					.setValue(this.plugin.settings.devMode)
+					.onChange(async (value) => {
+						this.plugin.settings.devMode = value;
+						await this.plugin.saveSettings();
+						this.plugin.onunload();
+						this.plugin.onload();
+					});
+			});
+	}
+
+	private syncthingGUIsettings(containerEl: HTMLElement) {
 		new Setting(containerEl).setName("Syncthing GUI").setHeading();
 		new Setting(containerEl)
 			.setName("Set GUI address")
@@ -208,50 +249,22 @@ export class SyncthingSettingTab extends PluginSettingTab {
 						window.open(url);
 					});
 			});
+	}
 
-		// For mobile app
-		this.openMobileApp(containerEl);
-
-		// Syncthing configuration integration. This part should show the configuration of the Syncthing instance for the vault.
-		new Setting(containerEl)
-			.setName("Syncthing Configuration")
-			.setHeading()
-			.setDesc(
-				"This section will show the configuration of the Syncthing instance for the vault."
+	private pluginInformation(containerEl: HTMLElement) {
+		const headerSetting = new Setting(containerEl)
+			.setName("Syncthing Integration for Obsidian")
+			.setHeading();
+		headerSetting.descEl
+			.createEl("p", {
+				text: "This plugin allows you to sync your vault with Syncthing.\nIt allows you to manage the sync process from within Obsidian.\nYou can only manage the folder you are in.\n\nTo use this plugin, you need to have Syncthing installed on your computer.\n\nYou can find more information about Syncthing here: ",
+			})
+			.appendChild(
+				containerEl.createEl("a", {
+					text: "https://syncthing.net/",
+					href: "https://syncthing.net/",
+				})
 			);
-
-		new Setting(containerEl).setName("This part is not implemented yet.");
-
-		// containerEl.createEl("h2", { text: "This Device" });
-		// containerEl.createEl("p", {
-		// 	text: "This table will show the folders and devices that are configured on the Syncthing instance.",
-		// });
-		// this.initConfigTable(containerEl, configuration);
-		// containerEl.createEl("h2", { text: "Other Devices" });
-		// containerEl.createEl("p", {
-		// 	text: "This table will show the folders and devices that are configured on the Syncthing instance.",
-		// });
-
-		// // Folder infos.
-		// containerEl.createEl("h2", { text: "Folder Infos" });
-		// containerEl.createEl("p", {
-		// 	text: "This table will show the information concerning the syncthing shared folder, which corresponds to the current vault.",
-		// });
-
-		// Plugin's dev Mode.
-		new Setting(containerEl).setName("Developer Mode").setHeading();
-		new Setting(containerEl)
-			.setName("Enable Plugin's Developer Mode")
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.devMode)
-					.onChange(async (value) => {
-						this.plugin.settings.devMode = value;
-						await this.plugin.saveSettings();
-						this.plugin.onunload();
-						this.plugin.onload();
-					});
-			});
 	}
 
 	private createPluginBanner(containerEl: HTMLElement) {
