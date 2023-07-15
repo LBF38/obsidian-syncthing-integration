@@ -102,7 +102,7 @@ export class SyncThingFromRESTimpl implements SyncThingFromREST {
 				"Access-Control-Allow-Origin": "*",
 			},
 		});
-		console.log("requestEndpoint: ", this.plugin.settings.api_key);
+		// console.log("requestEndpoint: ", this.plugin.settings.api_key);
 		return request
 			.then((response) => {
 				console.log("requestEndpoint response: ", response);
