@@ -1,7 +1,6 @@
-import { exec } from "child_process";
 import { SyncThingConfigurationModel } from "../models/models";
-import { promisify } from "util";
 import { CliFailure } from "src/models/failures";
+import { Platform } from "obsidian";
 
 /**
  * Interface for using the CLI of Syncthing.
@@ -82,6 +81,13 @@ export class SyncThingFromCLIimpl implements SyncThingFromCLI {
 	private async runSyncthingCommand(
 		command: string
 	): Promise<string | Error> {
+		if (Platform.isMobileApp) {
+			return Error("CLI not supported on mobile.");
+		}
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const { promisify } = require("util");
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const { exec } = require("child_process");
 		const execPromise = promisify(exec);
 		const result = await execPromise(command);
 		if (result.stderr) {
