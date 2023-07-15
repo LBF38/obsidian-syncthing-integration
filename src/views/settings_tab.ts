@@ -4,7 +4,7 @@ import {
 	Platform,
 	PluginSettingTab,
 	Setting,
-	TextComponent,
+	TextComponent
 } from "obsidian";
 import { SyncthingController } from "src/controllers/main_controller";
 import SyncthingPlugin from "src/main";
@@ -27,35 +27,15 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		// Banner
-		const banner = containerEl.createEl("p");
-		const link = banner.createEl("a", {
-			attr: {
-				href: "https://github.com/lbf38/obsidian-syncthing-integration",
-			},
-		});
-		const syncthingImg = containerEl.createEl("img", {
-			attr: {
-				src: SyncthingLogo,
-			},
-		});
-		const obsidianImg = containerEl.createEl("img", {
-			attr: {
-				src: ObsidianLogo,
-			},
-		});
-		syncthingImg.style.height = "50px";
-		obsidianImg.style.height = "50px";
-		banner.style.justifyContent = "center";
-		banner.style.display = "flex";
-		link.append(syncthingImg, obsidianImg);
-		banner.append(link);
+		this.createPluginBanner(containerEl);
+		this.pluginInformation(containerEl);
 
 		// Check if Syncthing is installed.
 		const hasSyncthing = await this.syncthingController.hasSyncThing();
 		if (!hasSyncthing) {
 			new Setting(containerEl)
 				.setName("Syncthing is not installed.")
-				.setDesc("Please install Syncthing at the following URL. ")
+				.setDesc("Please install Syncthing at the following URL.")
 				.addButton((button) => {
 					button
 						.setIcon("link")
@@ -67,100 +47,24 @@ export class SyncthingSettingTab extends PluginSettingTab {
 			return;
 		}
 
-		// Get the Syncthing configuration from CLI or API.
-		const configuration = await this.syncthingController.getConfiguration();
-		if (configuration instanceof Failure) {
-			new Setting(containerEl)
-				.setName("Error")
+		// For mobile app
+		this.openMobileApp(containerEl);
+		if (Platform.isMobileApp) {
+			const warningSetting = new Setting(containerEl)
+				.setName("Warning")
+				.setHeading()
 				.setDesc(
-					"Error getting configuration. Please try again later."
+					"The following settings are in beta. All plugin's features may not currently be available on mobile."
 				);
-			return;
+			warningSetting.nameEl.style.color = "rgba(255, 0, 0, 0.8)";
+			warningSetting.descEl.style.color = "rgba(255, 0, 0, 0.8)";
 		}
-		this.plugin.settings.configuration = configuration;
-
-		const headerSetting = new Setting(containerEl)
-			.setName("Syncthing Integration for Obsidian")
-			.setHeading();
-		headerSetting.descEl
-			.createEl("p", {
-				text: "This plugin allows you to sync your vault with Syncthing.\nIt allows you to manage the sync process from within Obsidian.\nYou can only manage the folder you are in.\n\nTo use this plugin, you need to have Syncthing installed on your computer.\n\nYou can find more information about Syncthing here: ",
-			})
-			.appendChild(
-				containerEl.createEl("a", {
-					text: "https://syncthing.net/",
-					href: "https://syncthing.net/",
-				})
-			);
 
 		// API Key setting.
-		const apiKeySetting = new Setting(containerEl);
-		// Try to get the API key from the CLI.
-		await this.syncthingController.getAPIKey().then((key) => {
-			if (key instanceof Failure) {
-				return;
-			}
-			this.plugin.settings.api_key = key;
-			this.plugin.saveSettings();
-		});
+		await this.apiKeySetting(containerEl);
 
-		// Display the API key setting.
-		apiKeySetting
-			.setName("Syncthing API Key")
-			.setDesc("Add your Syncthing API key here for the plugin to work.")
-			.addText(
-				(text) =>
-					(text
-						.setPlaceholder("Enter your API key here...")
-						.setValue(this.plugin.settings.api_key ?? "")
-						.onChange(async (value) => {
-							this.plugin.settings.api_key = value;
-							await this.plugin.saveSettings();
-						}).inputEl.type = "password")
-			);
-		// Show a button relative to the API key setting.
-		// If the API key is not set, show a button to get it.
-		// If the API key is set, show a button to remove it.
-		if (!this.plugin.settings.api_key) {
-			apiKeySetting.addButton((button) => {
-				button.setButtonText("Get API Key").onClick(async () => {
-					this.syncthingController.getAPIKey().then((key) => {
-						if (key instanceof Failure) {
-							new Notice(key.message);
-							return;
-						}
-						this.plugin.settings.api_key = key;
-						this.plugin.saveSettings();
-						this.display();
-					});
-				});
-			});
-		} else {
-			apiKeySetting.addButton((button) => {
-				button.setButtonText("Remove API Key").onClick(async () => {
-					this.plugin.settings.api_key = "";
-					this.plugin.saveSettings();
-					this.display();
-				});
-			});
-			apiKeySetting.addButton((button) => {
-				button.setIcon("eye").onClick(async () => {
-					apiKeySetting.components.forEach((component) => {
-						if (component instanceof TextComponent) {
-							component.inputEl.type =
-								component.inputEl.type === "password"
-									? "text"
-									: "password";
-							button.setIcon(
-								component.inputEl.type === "password"
-									? "eye"
-									: "eye-off"
-							);
-						}
-					});
-				});
-			});
-		}
+		// Get the Syncthing configuration from CLI or API.
+		this.configurationSetting(containerEl);
 
 		// To check the API status.
 		new Setting(containerEl)
@@ -198,6 +102,59 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		}
 
 		// Open Syncthing GUI.
+		this.syncthingGUIsettings(containerEl);
+
+		// Syncthing configuration integration. This part should show the configuration of the Syncthing instance for the vault.
+		this.syncthingConfiguration(containerEl);
+
+		// Plugin's dev Mode.
+		this.pluginDevModeSetting(containerEl);
+	}
+
+	private syncthingConfiguration(containerEl: HTMLElement) {
+		new Setting(containerEl)
+			.setName("Syncthing Configuration")
+			.setHeading()
+			.setDesc(
+				"This section will show the configuration of the Syncthing instance for the vault."
+			);
+
+		new Setting(containerEl).setName("This part is not implemented yet.");
+
+		// containerEl.createEl("h2", { text: "This Device" });
+		// containerEl.createEl("p", {
+		// 	text: "This table will show the folders and devices that are configured on the Syncthing instance.",
+		// });
+		// this.initConfigTable(containerEl, configuration);
+		// containerEl.createEl("h2", { text: "Other Devices" });
+		// containerEl.createEl("p", {
+		// 	text: "This table will show the folders and devices that are configured on the Syncthing instance.",
+		// });
+
+		// // Folder infos.
+		// containerEl.createEl("h2", { text: "Folder Infos" });
+		// containerEl.createEl("p", {
+		// 	text: "This table will show the information concerning the syncthing shared folder, which corresponds to the current vault.",
+		// });
+	}
+
+	private pluginDevModeSetting(containerEl: HTMLElement) {
+		new Setting(containerEl).setName("Developer Mode").setHeading();
+		new Setting(containerEl)
+			.setName("Enable Plugin's Developer Mode")
+			.addToggle((toggle) => {
+				toggle
+					.setValue(this.plugin.settings.devMode)
+					.onChange(async (value) => {
+						this.plugin.settings.devMode = value;
+						await this.plugin.saveSettings();
+						this.plugin.onunload();
+						this.plugin.onload();
+					});
+			});
+	}
+
+	private syncthingGUIsettings(containerEl: HTMLElement) {
 		new Setting(containerEl).setName("Syncthing GUI").setHeading();
 		new Setting(containerEl)
 			.setName("Set GUI address")
@@ -279,7 +236,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 							Platform.isMobileApp
 						) {
 							new Notice(
-								"Please set your GUI credentials first."
+								"Please set your GUI credentials first. There are needed on mobile app."
 							);
 							return;
 						}
@@ -292,45 +249,168 @@ export class SyncthingSettingTab extends PluginSettingTab {
 						window.open(url);
 					});
 			});
+	}
 
-		// Syncthing configuration integration. This part should show the configuration of the Syncthing instance for the vault.
-		new Setting(containerEl)
-			.setName("Syncthing Configuration")
-			.setHeading()
-			.setDesc(
-				"This section will show the configuration of the Syncthing instance for the vault."
+	private pluginInformation(containerEl: HTMLElement) {
+		const headerSetting = new Setting(containerEl)
+			.setName("Syncthing Integration for Obsidian")
+			.setHeading();
+		headerSetting.descEl
+			.createEl("p", {
+				text: "This plugin allows you to sync your vault with Syncthing.\nIt allows you to manage the sync process from within Obsidian.\nYou can only manage the folder you are in.\n\nTo use this plugin, you need to have Syncthing installed on your computer.\n\nYou can find more information about Syncthing here: ",
+			})
+			.appendChild(
+				containerEl.createEl("a", {
+					text: "https://syncthing.net/",
+					href: "https://syncthing.net/",
+				})
 			);
+	}
 
-		new Setting(containerEl).setName("This part is not implemented yet.");
+	private createPluginBanner(containerEl: HTMLElement) {
+		const banner = containerEl.createEl("p");
+		const link = banner.createEl("a", {
+			attr: {
+				href: "https://github.com/lbf38/obsidian-syncthing-integration",
+			},
+		});
+		const syncthingImg = containerEl.createEl("img", {
+			attr: {
+				src: SyncthingLogo,
+			},
+		});
+		const obsidianImg = containerEl.createEl("img", {
+			attr: {
+				src: ObsidianLogo,
+			},
+		});
+		syncthingImg.style.height = "50px";
+		obsidianImg.style.height = "50px";
+		banner.style.justifyContent = "center";
+		banner.style.display = "flex";
+		link.append(syncthingImg, obsidianImg);
+		banner.append(link);
+	}
 
-		// containerEl.createEl("h2", { text: "This Device" });
-		// containerEl.createEl("p", {
-		// 	text: "This table will show the folders and devices that are configured on the Syncthing instance.",
-		// });
-		// this.initConfigTable(containerEl, configuration);
-		// containerEl.createEl("h2", { text: "Other Devices" });
-		// containerEl.createEl("p", {
-		// 	text: "This table will show the folders and devices that are configured on the Syncthing instance.",
-		// });
+	private async configurationSetting(containerEl: HTMLElement) {
+		const configSetting = new Setting(containerEl)
+			.setName("Get Syncthing Configuration")
+			.setDesc(
+				"This button will get the configuration of the Syncthing instance for the vault."
+			);
+		configSetting.addButton((button) => {
+			button
+				.setIcon("sync")
+				.setCta()
+				.onClick(async () => {
+					const configuration =
+						await this.syncthingController.getConfiguration();
+					if (configuration instanceof Failure) {
+						configSetting
+							.setName("Error")
+							.setDesc(
+								"Error getting configuration. Please try again later."
+							);
+						new Notice(
+							"Error getting configuration. Please try again later."
+						);
+						return;
+					}
+					this.plugin.settings.configuration = configuration;
+				});
+		});
+	}
 
-		// // Folder infos.
-		// containerEl.createEl("h2", { text: "Folder Infos" });
-		// containerEl.createEl("p", {
-		// 	text: "This table will show the information concerning the syncthing shared folder, which corresponds to the current vault.",
-		// });
+	private async apiKeySetting(containerEl: HTMLElement) {
+		const apiKeySetting = new Setting(containerEl);
+		// Try to get the API key from the CLI.
+		await this.syncthingController.getAPIKey().then((key) => {
+			if (key instanceof Failure) {
+				return;
+			}
+			this.plugin.settings.api_key = key;
+			this.plugin.saveSettings();
+		});
 
-		// Plugin's dev Mode.
-		new Setting(containerEl).setName("Developer Mode").setHeading();
+		// Display the API key setting.
+		apiKeySetting
+			.setName("Syncthing API Key")
+			.setDesc("Add your Syncthing API key here for the plugin to work.")
+			.addText(
+				(text) =>
+					(text
+						.setPlaceholder("Enter your API key here...")
+						.setValue(this.plugin.settings.api_key ?? "")
+						.onChange(async (value) => {
+							this.plugin.settings.api_key = value;
+							await this.plugin.saveSettings();
+						}).inputEl.type = "password")
+			);
+		// Show a button relative to the API key setting.
+		// If the API key is not set, show a button to get it.
+		// If the API key is set, show a button to remove it.
+		if (!this.plugin.settings.api_key) {
+			apiKeySetting.addButton((button) => {
+				button.setButtonText("Get API Key").onClick(async () => {
+					this.syncthingController.getAPIKey().then((key) => {
+						if (key instanceof Failure) {
+							new Notice(key.message);
+							return;
+						}
+						this.plugin.settings.api_key = key;
+						this.plugin.saveSettings();
+						this.display();
+					});
+				});
+			});
+			return;
+		}
+		apiKeySetting.addButton((button) => {
+			button.setButtonText("Clear API Key input").onClick(async () => {
+				this.plugin.settings.api_key = "";
+				this.plugin.saveSettings();
+				this.display();
+			});
+		});
+		apiKeySetting.addButton((button) => {
+			button.setIcon("eye").onClick(async () => {
+				apiKeySetting.components.forEach((component) => {
+					if (component instanceof TextComponent) {
+						component.inputEl.type =
+							component.inputEl.type === "password"
+								? "text"
+								: "password";
+						button.setIcon(
+							component.inputEl.type === "password"
+								? "eye"
+								: "eye-off"
+						);
+					}
+				});
+			});
+		});
+	}
+
+	private openMobileApp(containerEl: HTMLElement) {
+		if (!Platform.isMobileApp) {
+			return;
+		}
 		new Setting(containerEl)
-			.setName("Enable Plugin's Developer Mode")
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.devMode)
-					.onChange(async (value) => {
-						this.plugin.settings.devMode = value;
-						await this.plugin.saveSettings();
-						this.plugin.onunload();
-						this.plugin.onload();
+			.setName("Open Syncthing mobile app on Google Play Store.")
+			.setDesc("Open the Syncthing mobile app page on Google Play Store.")
+			.addButton((button) => {
+				button
+					.setIcon("play")
+					.setCta()
+					.onClick(async () => {
+						if (!Platform.isAndroidApp) {
+							new Notice(
+								"The feature is not implemented for your platform. Please open the Syncthing app for your platform. You can create an issue on GitHub if you want to request this feature.",
+								5000
+							);
+							return;
+						}
+						this.plugin.syncthingFromAndroid.openSyncthing();
 					});
 			});
 	}

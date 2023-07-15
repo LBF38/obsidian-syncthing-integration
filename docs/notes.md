@@ -65,3 +65,40 @@ And it should be possible to do it from the plugin's settings, more easily than 
 
 - `file.basename` : file name without extension
 - `file.name` : file name with extension
+
+## Notes on the plugin's settings tab
+
+ The UI should be simple depending on the platform :
+
+- For desktop app => full UI and options. The plugin should be able to add all features and detect Syncthing.
+- For mobile app => minimalist setup to redirect to the Syncthing app for better UI. Therefore, usage of intent or URI to redirect to Syncthing. But not yet available in Syncthing app. So, for the moment, on mobile, we redirect to the Play Store's Syncthing page so that anyone can either install or open the app.
+
+=> minimalist setup on mobile app for now
+
+Let's make some notes on the UI needs for desktop and mobile. These should be the bare minimum for the easiest user workflow.
+
+### Desktop UI
+
+On desktop, we have more space and more capabilities in Obsidian. (we can use all NodeJS APIs and more). Therefore, the user should be able to do everything to manage its Syncthing configuration and status.
+So, here are the main features that the user should be able to do:
+
+- [ ] Start/stop Syncthing through commands/settings tab.
+- [ ] Add/remove devices through commands/settings tab.
+- [ ] See files conflicts and resolve them through an editor UI pane. => can integrate the [Monaco editor](https://microsoft.github.io/monaco-editor/) in a pane.
+- [ ] See the status of the synchronization of the vault with other devices.
+- [ ] Add/remove folders or files to the Syncthing configuration through commands/settings tab. => can choose which files are synchronized with other devices.
+
+### Mobile UI
+
+The mobile UI should be minimalist by design. In the plugin's logic, I think that the user synchronizes its notes on mobile to mainly be able to read them on the go. Moreover, he could take some notes and synchronize them with other devices. But the mobile isn't confortable enough to show diffs and resolve conflicts. So, the mobile UI should be minimalist and redirect to the Syncthing app for better UI.
+
+> **Note:** Mobile UI concerns all smartphones and also tablets. So, on tablets, there is more space for resolving conflicts and showing diffs. Therefore, it could be possible to integrate the editor pane for resolving conflicts on tablets. It will be considered in future versions.
+
+Here are the main features that the mobile UI should have :
+
+- [ ] Start/stop Syncthing through commands/settings tab. => leveraging URIs to Syncthing app.
+- [ ] Add/remove devices through commands/settings tab. => leveraging URIs to Syncthing app.
+- [ ] Open the Syncthing app.
+  - [ ] Through opening the Play Store app page.
+  - [ ] Through opening the Syncthing app if installed.
+- [ ] Add/remove folders and/or files to the Syncthing configuration through commands/settings tab. => can choose which files are synchronized with other devices. (usage of the `.stignore` file)
