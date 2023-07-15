@@ -6,15 +6,13 @@ on:
       - master
 
 permissions:
-  contents: read
+  contents: write # for GH Release
+  issues: write # comment on released issues
+  pull-requests: write # comment on released PRs
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # for GH Release
-      issues: write # comment on released issues
-      pull-requests: write # comment on released PRs
     steps:
       - name: Checkout
         uses: actions/checkout@v3
