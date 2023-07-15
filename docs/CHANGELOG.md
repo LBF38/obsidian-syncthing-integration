@@ -1,3 +1,11 @@
+## [1.1.2](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.1.1...1.1.2) (2023-07-15)
+
+
+### Bug Fixes
+
+* **gh actions:** :green_heart: fix permissions ([2cc0885](https://github.com/LBF38/obsidian-syncthing-integration/commit/2cc0885433dffd9212fdc03c60b641001de028e4))
+* **project:** :ambulance: plugin's compliances for community release ([#67](https://github.com/LBF38/obsidian-syncthing-integration/issues/67)) ([c9683f8](https://github.com/LBF38/obsidian-syncthing-integration/commit/c9683f88dd4e810de5ec4dcb9cc735214a8c1521))
+
 ## [1.1.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.1.0...1.1.1) (2023-06-25)
 
 
