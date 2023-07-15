@@ -10,7 +10,7 @@ export class SyncThingConfigurationModel extends SyncThingConfiguration {
 		version: string,
 		folders: SyncThingFolder[],
 		devices: SyncThingDevice[],
-		syncthingBaseUrl = "http://localhost:8384"
+		syncthingBaseUrl = "localhost:8384"
 	) {
 		super(version, folders, devices, syncthingBaseUrl);
 	}

@@ -3,7 +3,7 @@
 	"name": "Syncthing Integration",
 	"version": "1.1.1",
 	"minAppVersion": "1.0.0",
-	"description": "This is a plugin for synchronizing your vault with Syncthing. It aims to integrate most syncthing features into Obsidian.",
+	"description": "Integrates most of Syncthing features into Obsidian.",
 	"author": "LBF38",
 	"authorUrl": "https://github.com/LBF38",
 	"fundingUrl": "https://github.com/sponsors/LBF38",

@@ -1,9 +1,9 @@
 <p align=center>
  <a href="https://github.com/lbf38/obsidian-syncthing-integration">
   <img src="assets/syncthing-logo-horizontal.svg" height=100>
-  <img src="assets/Obsidian_software_logo.svg" height=100>
+  <img src="assets/obsidian-logo-gradient.svg" height=100>
  </a>
- <h1 align=center>Obsidian SyncThing integration</h1>
+ <h1 align=center>Obsidian Syncthing integration</h1>
 </p>
 
 This plugin allows you to synchronize your Obsidian vault with a remote device using [Syncthing](https://syncthing.net/).
@@ -14,7 +14,7 @@ This plugin allows you to synchronize your Obsidian vault with a remote device u
 <!-- markdownlint-disable MD051 -->
 [![All Contributors](https://img.shields.io/github/all-contributors/lbf38/obsidian-syncthing-integration?color=ee8449&style=flat-square)](#✨-contributors)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/lbf38/obsidian-syncthing-integration?logo=github&color=ee8449&style=flat-square)](https://github.com/LBF38/obsidian-syncthing-integration/releases/latest)
-[![Obsidian plugin release](https://img.shields.io/badge/Obsidian%20plugin%20release-purple?logo=obsidian&style=flat-square)](https://obsidian.md/plugins?id=obsidian-syncthing-integration)
+[![Obsidian plugin release](https://img.shields.io/badge/Obsidian%20plugin%20release-purple?logo=obsidian&style=flat-square)](https://obsidian.md/plugins?id=syncthing-integration)
 [![Join the Community : GitHub Discussions badge](https://img.shields.io/badge/Join%20the%20community-on%20GitHub%20Discussions-blue?style=flat-square)][discussions]
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release&style=flat-square)](https://github.com/semantic-release/semantic-release)
 

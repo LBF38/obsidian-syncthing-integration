@@ -18,17 +18,21 @@ import {
 	DevModeModal,
 	PluginDevModeController,
 } from "./controllers/plugin_dev_mode";
-
-//! Remember to rename these classes and interfaces!
+import {
+	SyncthingFromAndroid,
+	SyncthingFromAndroidImpl,
+} from "./data/syncthing_android_datasource";
 
 interface SyncthingPluginSettings {
 	api_key: string;
+	gui_username: string;
+	gui_password: string;
 	configuration: SyncThingConfiguration | Partial<SyncThingConfiguration>;
 	devMode: boolean;
 }
 
 const DEFAULT_SETTINGS: Partial<SyncthingPluginSettings> = {
-	configuration: { syncthingBaseUrl: "http://localhost:8384" },
+	configuration: { syncthingBaseUrl: "localhost:8384" },
 	devMode: false,
 };
 
@@ -38,9 +42,11 @@ export default class SyncthingPlugin extends Plugin {
 	pluginsElements: HTMLElement[] = [];
 	syncthingFromCLI: SyncThingFromCLI = new SyncThingFromCLIimpl();
 	syncthingFromREST: SyncThingFromREST = new SyncThingFromRESTimpl(this);
+	syncthingFromAndroid: SyncthingFromAndroid = new SyncthingFromAndroidImpl();
 	syncthingController: SyncthingController = new SyncthingControllerImpl(
 		this.syncthingFromCLI,
 		this.syncthingFromREST,
+		this.syncthingFromAndroid,
 		this
 	);
 	devModeController: PluginDevModeController = new PluginDevModeController(
@@ -48,18 +54,19 @@ export default class SyncthingPlugin extends Plugin {
 	);
 
 	async onload() {
+		// For devMode issue. (adding/removing commands when loading/unloading plugin)
 		SyncthingPlugin.loadCount++;
 		await this.loadSettings();
 
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
+		// Status bar. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();
 		statusBarItemEl.setText("SyncThing status");
 		statusBarItemEl.onClickEvent(() => {
 			new Notice("SyncThing integration is not yet implemented.");
 		});
 
+		// Settings tab
 		const pluginSettingTab = new SyncthingSettingTab(this.app, this);
-		// This adds a settings tab so the user can configure various aspects of the plugin
 		if (SyncthingPlugin.loadCount === 1)
 			this.addSettingTab(pluginSettingTab);
 
@@ -70,6 +77,7 @@ export default class SyncthingPlugin extends Plugin {
 				new ConflictsModal(this.app, this.syncthingController).open();
 			}
 		);
+
 		if (this.settings.devMode) {
 			new Notice("Dev mode is enabled.");
 			const devModeGenerator = this.addRibbonIcon(
