@@ -1,8 +1,16 @@
-import { Notice, Plugin } from "obsidian";
+import { Notice, Plugin, addIcon } from "obsidian";
 import {
 	SyncthingController,
 	SyncthingControllerImpl,
 } from "./controllers/main_controller";
+import {
+	DevModeModal,
+	PluginDevModeController,
+} from "./controllers/plugin_dev_mode";
+import {
+	SyncthingFromAndroid,
+	SyncthingFromAndroidImpl,
+} from "./data/syncthing_android_datasource";
 import {
 	SyncThingFromCLI,
 	SyncThingFromCLIimpl,
@@ -13,15 +21,9 @@ import {
 } from "./data/syncthing_remote_datasource";
 import { SyncThingConfiguration } from "./models/entities";
 import { ConflictsModal } from "./views/conflicts_modal";
+import { MonacoEditorModal } from "./views/monaco_editor";
 import { SyncthingSettingTab } from "./views/settings_tab";
-import {
-	DevModeModal,
-	PluginDevModeController,
-} from "./controllers/plugin_dev_mode";
-import {
-	SyncthingFromAndroid,
-	SyncthingFromAndroidImpl,
-} from "./data/syncthing_android_datasource";
+import { SyncthingLogoSVG } from "./views/logos";
 
 interface SyncthingPluginSettings {
 	api_key: string;
@@ -58,6 +60,14 @@ export default class SyncthingPlugin extends Plugin {
 		SyncthingPlugin.loadCount++;
 		await this.loadSettings();
 
+		// Load Syncthing icon
+		addIcon("syncthing", SyncthingLogoSVG); // FIXME: fix this
+
+		// Trying the monaco editor modal
+		this.addRibbonIcon("file-diff", "Open Monaco Editor modal", () => {
+			new MonacoEditorModal(this.app).open();
+		});
+
 		// Status bar. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();
 		statusBarItemEl.setText("SyncThing status");
@@ -71,7 +81,7 @@ export default class SyncthingPlugin extends Plugin {
 			this.addSettingTab(pluginSettingTab);
 
 		const syncthingConflictManager = this.addRibbonIcon(
-			"construction",
+			"syncthing",
 			"Open Syncthing conflict manager modal",
 			() => {
 				new ConflictsModal(this.app, this.syncthingController).open();

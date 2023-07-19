@@ -400,7 +400,7 @@ const context = await esbuild.context({
 	banner: {
 		js: banner,
 	},
-	entryPoints: ["src/main.ts", "src/styles.scss"],
+	entryPoints: ["src/main.ts", "src/styles.scss", "src/monaco-editor.scss"],
 	bundle: true,
 	external: [
 		"obsidian",
@@ -426,7 +426,7 @@ const context = await esbuild.context({
 	treeShaking: true,
 	outdir: outdir,
 	plugins: [copyManifest, copyMinifiedCSS],
-	loader: { ".scss": "text" },
+	loader: { ".scss": "text", ".ttf": "text" },
 });
 
 if (prod) {
