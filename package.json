@@ -44,6 +44,7 @@
 		"obsidian": "latest",
 		"sass": "^1.62.1",
 		"semantic-release": "^21.0.5",
+		"style-mod": "^4.0.3",
 		"tslib": "2.6.0",
 		"typescript": "^5.0.0"
 	},

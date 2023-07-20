@@ -89,6 +89,9 @@ devDependencies:
   semantic-release:
     specifier: ^21.0.5
     version: 21.0.5
+  style-mod:
+    specifier: ^4.0.3
+    version: 4.0.3
   tslib:
     specifier: 2.6.0
     version: 2.6.0

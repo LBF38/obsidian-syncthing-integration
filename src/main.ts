@@ -76,7 +76,11 @@ export default class SyncthingPlugin extends Plugin {
 
 		// Trying the monaco editor modal
 		this.addRibbonIcon("file-diff", "Open CodeMirror Editor modal", () => {
-			new CodeMirrorEditorModal(this.app).open();
+			new CodeMirrorEditorModal(
+				this.app,
+				"original content",
+				"modified content"
+			).open();
 		});
 
 		// Status bar. Does not work on mobile apps.
