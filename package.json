@@ -16,6 +16,7 @@
 	"author": "LBF38",
 	"license": "MIT",
 	"devDependencies": {
+		"@codemirror/merge": "^6.1.1",
 		"@codemirror/state": "^6.2.1",
 		"@codemirror/view": "^6.13.0",
 		"@commitlint/config-conventional": "^17.6.5",
@@ -29,6 +30,7 @@
 		"@typescript-eslint/parser": "5.61.0",
 		"builtin-modules": "3.3.0",
 		"child_process": "^1.0.2",
+		"codemirror": "^6.0.1",
 		"css-minify": "^2.0.0",
 		"diff": "^5.1.0",
 		"diff2html": "^3.4.35",
@@ -38,6 +40,7 @@
 		"highlight.js": "^11.8.0",
 		"husky": "^8.0.0",
 		"lorem-ipsum": "^2.0.8",
+		"monaco-editor": "0.40.0",
 		"obsidian": "latest",
 		"sass": "^1.62.1",
 		"semantic-release": "^21.0.5",
@@ -47,8 +50,5 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/LBF38/obsidian-syncthing-integration.git"
-	},
-	"dependencies": {
-		"monaco-editor": "0.40.0"
 	}
 }

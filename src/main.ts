@@ -24,6 +24,7 @@ import { ConflictsModal } from "./views/conflicts_modal";
 import { MonacoEditorModal } from "./views/monaco_editor";
 import { SyncthingSettingTab } from "./views/settings_tab";
 import { SyncthingLogoSVG } from "./views/logos";
+import { CodeMirrorEditorModal } from "./views/codemirror_editor";
 
 interface SyncthingPluginSettings {
 	api_key: string;
@@ -65,7 +66,17 @@ export default class SyncthingPlugin extends Plugin {
 
 		// Trying the monaco editor modal
 		this.addRibbonIcon("file-diff", "Open Monaco Editor modal", () => {
-			new MonacoEditorModal(this.app).open();
+			new MonacoEditorModal(
+				this.app,
+				this,
+				"some text",
+				"diff text"
+			).open();
+		});
+
+		// Trying the monaco editor modal
+		this.addRibbonIcon("file-diff", "Open CodeMirror Editor modal", () => {
+			new CodeMirrorEditorModal(this.app).open();
 		});
 
 		// Status bar. Does not work on mobile apps.

@@ -1,0 +1,28 @@
+.monaco-editor-container {
+	height: 100%;
+	width: 100%;
+	margin: 1%;
+	border: darkblue solid 1px;
+}
+
+.syncthing-monaco-editor {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+
+.syncthing-monaco-editor-modal {
+	width: 100%;
+	height: 100%;
+	padding: 7% 5%;
+	align-items: center;
+}
+
+.syncthing-monaco-editor-tools {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 75%;
+}
