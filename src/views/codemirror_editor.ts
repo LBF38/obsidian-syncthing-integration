@@ -19,11 +19,11 @@ export class CodeMirrorEditorModal extends Modal {
 		this.modalEl.addClass("syncthing-codemirror-editor-modal");
 		contentEl.addClass("syncthing-codemirror-editor");
 		this.titleEl.setText("File name for this diff");
-		let container = contentEl.createDiv({
+		const container = contentEl.createDiv({
 			cls: "syncthing-codemirror-editor-container",
 		});
 
-		this.editor = new MergeView({
+		const mergeEditor = new MergeView({
 			a: {
 				doc: this.originalContent,
 				extensions: [basicSetup, EditorView.darkTheme.of(true)],
@@ -40,8 +40,8 @@ export class CodeMirrorEditorModal extends Modal {
 			parent: container,
 		});
 
-		let result = new EditorView({
-			doc: `\n${this.editor.a.state.doc}\n${this.editor.b.state.doc}\n`,
+		const result = new EditorView({
+			doc: `\n${mergeEditor.a.state.doc}\n${mergeEditor.b.state.doc}\n`,
 			extensions: [
 				basicSetup,
 				EditorView.editable.of(false),
@@ -52,10 +52,27 @@ export class CodeMirrorEditorModal extends Modal {
 					},
 				}),
 			],
+			dispatch(transaction, view) {
+				updateResultEditor();
+			},
 			parent: contentEl.createDiv({
 				cls: "syncthing-codemirror-editor-container",
 			}),
 		});
+
+		function updateResultEditor() {
+			const leftSide = mergeEditor.a.state.doc;
+			const rightSide = mergeEditor.b.state.doc;
+			const resultDoc = `\n${leftSide}\n${rightSide}\n`;
+			const transaction = result.state.update({
+				changes: {
+					from: 0,
+					insert: resultDoc,
+				},
+			});
+			result.dispatch(transaction);
+			console.log("updateResultEditor");
+		}
 
 		const tools = contentEl.createDiv({
 			cls: "syncthing-codemirror-editor-tools",

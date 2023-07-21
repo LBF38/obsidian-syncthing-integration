@@ -1,5 +1,5 @@
-import { App, ButtonComponent, Modal, Setting } from "obsidian";
 import * as monaco from "monaco-editor";
+import { App, ButtonComponent, Modal } from "obsidian";
 import SyncthingPlugin from "src/main";
 
 /**
@@ -77,6 +77,8 @@ export class MonacoEditorModal extends Modal {
 				theme: "vs-dark",
 			}
 		);
+
+		resultEditor.layout();
 
 		const tools = contentEl.createDiv({
 			cls: "syncthing-monaco-editor-tools",
