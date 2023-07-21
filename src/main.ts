@@ -1,6 +1,6 @@
 import { Notice, Plugin, addIcon } from "obsidian";
 import {
-	SyncthingController,
+	type SyncthingController,
 	SyncthingControllerImpl,
 } from "./controllers/main_controller";
 import {
@@ -8,15 +8,15 @@ import {
 	PluginDevModeController,
 } from "./controllers/plugin_dev_mode";
 import {
-	SyncthingFromAndroid,
+	type SyncthingFromAndroid,
 	SyncthingFromAndroidImpl,
 } from "./data/syncthing_android_datasource";
 import {
-	SyncThingFromCLI,
+	type SyncThingFromCLI,
 	SyncThingFromCLIimpl,
 } from "./data/syncthing_local_datasource";
 import {
-	SyncThingFromREST,
+	type SyncThingFromREST,
 	SyncThingFromRESTimpl,
 } from "./data/syncthing_remote_datasource";
 import { SyncThingConfiguration } from "./models/entities";
