@@ -2,16 +2,19 @@
 	import { MergeView } from "@codemirror/merge";
 	import { EditorState } from "@codemirror/state";
 	import { EditorView, basicSetup } from "codemirror";
+	import { Setting } from "obsidian";
 	import { onMount } from "svelte";
 
 	let divEditor: HTMLDivElement;
 	let mergeEditorEl: HTMLDivElement;
+	let settings: HTMLDivElement;
 
 	let originalContent = "Original Content";
 	let modifiedContent = "Modified Content";
 	let editorContent: string = "Hello World";
 	let editor: EditorView;
 	let mergeEditor: MergeView;
+	let settingToggle: boolean = false;
 
 	onMount(() => {
 		editor = new EditorView({
@@ -35,6 +38,17 @@
 			},
 			parent: mergeEditorEl,
 		});
+
+		new Setting(settings).setName("Header setting").setHeading();
+		new Setting(settings)
+			.setName("This is a setting")
+			.setDesc("This is a description")
+			.addToggle((toggle) =>
+				toggle.setValue(settingToggle).onChange((value) => {
+					console.log(value);
+					settingToggle = value;
+				})
+			);
 	});
 	$: console.log("editorContent", editor?.state);
 
@@ -48,6 +62,10 @@
 <!-- {@html editor.dom} -->
 <div bind:this={divEditor} class="container" />
 <div bind:this={mergeEditorEl} class="container" />
+<div bind:this={settings} />
+{#if settingToggle}
+	<p>Setting activated !!</p>
+{/if}
 
 <style>
 	.container {

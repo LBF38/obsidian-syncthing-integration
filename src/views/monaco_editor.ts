@@ -1,6 +1,7 @@
 import * as monaco from "monaco-editor";
 import { App, ButtonComponent, Modal } from "obsidian";
 import SyncthingPlugin from "src/main";
+import DiffEditor from "../components/diff_editor.svelte";
 
 /**
  * Modal to display the Monaco Editor for the user to edit files that are in conflict.
@@ -94,6 +95,10 @@ export class MonacoEditorModal extends Modal {
 		});
 
 		// TODO: to implement
+
+		new DiffEditor({
+			target: contentEl,
+		});
 	}
 
 	async onClose() {

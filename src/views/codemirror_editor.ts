@@ -50,6 +50,7 @@ export class CodeMirrorEditorModal extends Modal {
 			extensions: [
 				basicSetup,
 				EditorView.darkTheme.of(true),
+				EditorView.lineWrapping,
 				unifiedMergeView({
 					original: this.originalContent,
 					gutter: true,

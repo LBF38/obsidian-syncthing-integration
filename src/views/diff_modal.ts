@@ -4,6 +4,7 @@ import { App, ButtonComponent, Modal, Notice, Setting, TFile } from "obsidian";
 import { type SyncthingController } from "src/controllers/main_controller";
 import { type ConflictFilename } from "src/models/entities";
 import { Failure } from "src/models/failures";
+import { CodeMirrorEditorModal } from "./codemirror_editor";
 
 export class DiffModal extends Modal {
 	d2hUI?: string;
@@ -222,7 +223,14 @@ export class DiffModal extends Modal {
 		new ButtonComponent(buttonsContainer)
 			.setButtonText("Open files in new panes")
 			.setCta()
-			.onClick(this.buildManualDiffPanes);
+			// .onClick(this.buildManualDiffPanes);
+			.onClick(async () => {
+				new CodeMirrorEditorModal(
+					this.app,
+					await this.app.vault.read(this.originalFile),
+					await this.app.vault.read(this.currentConflictFile)
+				).open();
+			});
 
 		// CSS styling for the modal.
 		this.modalEl.setCssStyles({
