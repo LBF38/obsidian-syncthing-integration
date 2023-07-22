@@ -3,6 +3,7 @@ import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { basicSetup } from "codemirror";
 import { App, ButtonComponent, Modal } from "obsidian";
+import DiffEditor from "../components/diff_editor.svelte";
 
 export class CodeMirrorEditorModal extends Modal {
 	private editor?: MergeView;
@@ -73,6 +74,10 @@ export class CodeMirrorEditorModal extends Modal {
 			result.dispatch(transaction);
 			console.log("updateResultEditor");
 		}
+
+		new DiffEditor({
+			target: contentEl,
+		});
 
 		const tools = contentEl.createDiv({
 			cls: "syncthing-codemirror-editor-tools",
