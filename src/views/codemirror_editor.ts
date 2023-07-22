@@ -1,4 +1,4 @@
-import { MergeView } from "@codemirror/merge";
+import { MergeView, unifiedMergeView } from "@codemirror/merge";
 import { Annotation, EditorState, Transaction } from "@codemirror/state";
 import { EditorView, Panel } from "@codemirror/view";
 import { basicSetup } from "codemirror";
@@ -35,10 +35,43 @@ export class CodeMirrorEditorModal extends Modal {
 					EditorView.editable.of(false),
 					EditorState.readOnly.of(true),
 					EditorView.darkTheme.of(true),
+					unifiedMergeView({
+						original: this.originalContent,
+						gutter: true,
+						mergeControls: true,
+					}),
 				],
 			},
 			parent: container,
 		});
+
+		const unifiedEditor: EditorView = new EditorView({
+			doc: this.modifiedContent,
+			extensions: [
+				basicSetup,
+				EditorView.darkTheme.of(true),
+				unifiedMergeView({
+					original: this.originalContent,
+					gutter: true,
+					mergeControls: true,
+				}),
+			],
+			dispatch: (transaction) =>
+				syncDispatch(
+					transaction,
+					unifiedEditor,
+					result,
+					editorA,
+					editorB
+				),
+			parent: contentEl.appendChild(
+				container.cloneNode(false)
+			) as HTMLElement,
+		});
+		// const unifiedMergeExtension = unifiedMergeView({
+		// 	original: "test",
+		// 	gutter: true,
+		// });
 
 		// setInterval(() => console.log("mergeEditor", mergeEditor), 2000);
 		// mergeEditor.a.dispatch = (transaction) =>
@@ -49,7 +82,7 @@ export class CodeMirrorEditorModal extends Modal {
 		// 		: undefined;
 
 		const startState = EditorState.create({
-			doc: "shared state",
+			doc: this.modifiedContent,
 			extensions: [basicSetup, EditorView.darkTheme.of(true)],
 		});
 
@@ -57,17 +90,31 @@ export class CodeMirrorEditorModal extends Modal {
 			state: startState,
 			extensions: [basicSetup, EditorView.darkTheme.of(true)],
 			dispatch: (transaction) =>
-				syncDispatch(transaction, editorA, result, editorB),
+				syncDispatch(
+					transaction,
+					editorA,
+					result,
+					editorB,
+					unifiedEditor
+				),
 			parent: contentEl.appendChild(
 				container.cloneNode(false)
 			) as HTMLElement,
 		});
 
+		console.log("editorA", editorA);
+
 		const editorB: EditorView = new EditorView({
 			state: startState,
 			extensions: [basicSetup, EditorView.darkTheme.of(true)],
 			dispatch: (transaction) =>
-				syncDispatch(transaction, editorB, result, editorA),
+				syncDispatch(
+					transaction,
+					editorB,
+					result,
+					editorA,
+					unifiedEditor
+				),
 			parent: contentEl.appendChild(
 				container.cloneNode(false)
 			) as HTMLElement,
@@ -87,7 +134,13 @@ export class CodeMirrorEditorModal extends Modal {
 				}),
 			],
 			dispatch: (transaction) =>
-				syncDispatch(transaction, result, editorA, editorB),
+				syncDispatch(
+					transaction,
+					result,
+					editorA,
+					editorB,
+					unifiedEditor
+				),
 			parent: contentEl.createDiv({
 				cls: "syncthing-codemirror-editor-container",
 			}),
@@ -142,6 +195,17 @@ export class CodeMirrorEditorModal extends Modal {
 				);
 			}
 		}
+
+		// mergeEditor.b.dispatch = (transaction) =>
+		// 	syncConflict(transaction, mergeEditor.b, editorA, editorB, result);
+
+		// function syncConflict(
+		// 	transaction: TransactionSpec,
+		// 	view: EditorView,
+		// 	...others: EditorView[]
+		// ) {
+		// 	view.dispatch(transaction);
+		// }
 
 		const tools = contentEl.createDiv({
 			cls: "syncthing-codemirror-editor-tools",
