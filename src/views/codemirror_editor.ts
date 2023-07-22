@@ -1,6 +1,6 @@
 import { MergeView } from "@codemirror/merge";
 import { Annotation, EditorState, Transaction } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
+import { EditorView, Panel } from "@codemirror/view";
 import { basicSetup } from "codemirror";
 import { App, ButtonComponent, Modal } from "obsidian";
 
@@ -39,7 +39,8 @@ export class CodeMirrorEditorModal extends Modal {
 			},
 			parent: container,
 		});
-		console.log(mergeEditor);
+
+		// setInterval(() => console.log("mergeEditor", mergeEditor), 2000);
 		// mergeEditor.a.dispatch = (transaction) =>
 		// 	syncDispatch(transaction, mergeEditor.a, result);
 		// mergeEditor.a.dispatch = (transaction) =>
@@ -91,6 +92,30 @@ export class CodeMirrorEditorModal extends Modal {
 				cls: "syncthing-codemirror-editor-container",
 			}),
 		});
+
+		// Add panels to editors.
+		const panelA: Panel = {
+			dom: createDiv({ text: "Merge editor Panel A" }),
+			top: true,
+		};
+		mergeEditor.a.dom.parentElement?.insertBefore(
+			panelA.dom,
+			mergeEditor.a.dom
+		);
+		const panelB: Panel = {
+			dom: createDiv({ text: "Merge editor Panel B" }),
+			top: true,
+		};
+		mergeEditor.b.dom.parentElement?.insertBefore(
+			panelB.dom,
+			mergeEditor.b.dom
+		);
+
+		const resultPanel: Panel = {
+			dom: createDiv({ text: "Result Panel" }),
+			top: true,
+		};
+		result.dom.parentElement?.insertBefore(resultPanel.dom, result.dom);
 		const syncAnnotation = Annotation.define<boolean>();
 
 		function syncDispatch(
