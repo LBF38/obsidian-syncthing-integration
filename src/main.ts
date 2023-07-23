@@ -21,7 +21,6 @@ import {
 } from "./data/syncthing_remote_datasource";
 import { SyncThingConfiguration } from "./models/entities";
 import { ConflictsModal } from "./views/conflicts_modal";
-import { MonacoEditorModal } from "./views/monaco_editor";
 import { SyncthingSettingTab } from "./views/settings_tab";
 import { SyncthingLogoSVG } from "./views/logos";
 import { CodeMirrorEditorModal } from "./views/codemirror_editor";
@@ -64,17 +63,7 @@ export default class SyncthingPlugin extends Plugin {
 		// Load Syncthing icon
 		addIcon("syncthing", SyncthingLogoSVG); // FIXME: fix this
 
-		// Trying the monaco editor modal
-		this.addRibbonIcon("file-diff", "Open Monaco Editor modal", () => {
-			new MonacoEditorModal(
-				this.app,
-				this,
-				"some text",
-				"diff text"
-			).open();
-		});
-
-		// Trying the monaco editor modal
+		// Try CodeMirror editor for file diff and conflicts resolution.
 		this.addRibbonIcon("file-diff", "Open CodeMirror Editor modal", () => {
 			new CodeMirrorEditorModal(
 				this.app,
