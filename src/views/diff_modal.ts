@@ -227,8 +227,8 @@ export class DiffModal extends Modal {
 			.onClick(async () => {
 				new CodeMirrorEditorModal(
 					this.app,
-					await this.app.vault.read(this.originalFile),
-					await this.app.vault.read(this.currentConflictFile)
+					this.originalFile,
+					this.currentConflictFile
 				).open();
 			});
 

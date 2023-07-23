@@ -67,8 +67,8 @@ export default class SyncthingPlugin extends Plugin {
 		this.addRibbonIcon("file-diff", "Open CodeMirror Editor modal", () => {
 			new CodeMirrorEditorModal(
 				this.app,
-				"original content\nFor more multiline content",
-				"modified content\nFor more multiline content"
+				this.app.vault.getMarkdownFiles()[0],
+				this.app.vault.getMarkdownFiles()[1]
 			).open();
 		});
 

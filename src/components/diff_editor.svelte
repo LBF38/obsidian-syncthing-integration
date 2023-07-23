@@ -1,74 +1,121 @@
 <script lang="ts">
-	import { MergeView } from "@codemirror/merge";
-	import { EditorState } from "@codemirror/state";
+	import { unifiedMergeView } from "@codemirror/merge";
+	import { Annotation, StateField, Transaction } from "@codemirror/state";
 	import { EditorView, basicSetup } from "codemirror";
-	import { Setting } from "obsidian";
-	import { onMount } from "svelte";
+	import { diffChars } from "diff";
+	import { html } from "diff2html";
+	import { ButtonComponent, Notice } from "obsidian";
+	import { CodeMirrorEditorModal } from "src/views/codemirror_editor";
+	import { onDestroy, onMount } from "svelte";
+	export let cmEditorModal: CodeMirrorEditorModal;
 
-	let divEditor: HTMLDivElement;
-	let mergeEditorEl: HTMLDivElement;
-	let settings: HTMLDivElement;
+	let mergeEditorContainer: HTMLDivElement;
+	let resultEditorContainer: HTMLDivElement;
+	let toolsEl: HTMLDivElement;
+	let unifiedEditor: EditorView;
+	let resultEditor: EditorView;
 
-	let originalContent = "Original Content";
-	let modifiedContent = "Modified Content";
-	let editorContent: string = "Hello World";
-	let editor: EditorView;
-	let mergeEditor: MergeView;
-	let settingToggle: boolean = false;
-
-	onMount(() => {
-		editor = new EditorView({
-			doc: editorContent,
-			extensions: [basicSetup, EditorView.darkTheme.of(true)],
-			parent: divEditor,
-		});
-		mergeEditor = new MergeView({
-			a: {
-				doc: originalContent,
-				extensions: [basicSetup, EditorView.darkTheme.of(true)],
-			},
-			b: {
-				doc: modifiedContent,
-				extensions: [
-					basicSetup,
-					EditorView.editable.of(false),
-					EditorState.readOnly.of(true),
-					EditorView.darkTheme.of(true),
-				],
-			},
-			parent: mergeEditorEl,
+	onMount(async () => {
+		unifiedEditor = new EditorView({
+			doc: await cmEditorModal.app.vault.read(cmEditorModal.modifiedFile),
+			extensions: [
+				basicSetup,
+				EditorView.darkTheme.of(true),
+				EditorView.lineWrapping,
+				unifiedMergeView({
+					original: await cmEditorModal.app.vault.read(
+						cmEditorModal.originalFile
+					),
+					gutter: true,
+					mergeControls: true,
+				}),
+			],
+			dispatch: (transaction) =>
+				syncDispatch(transaction, unifiedEditor, resultEditor),
+			parent: mergeEditorContainer,
 		});
 
-		new Setting(settings).setName("Header setting").setHeading();
-		new Setting(settings)
-			.setName("This is a setting")
-			.setDesc("This is a description")
-			.addToggle((toggle) =>
-				toggle.setValue(settingToggle).onChange((value) => {
-					console.log(value);
-					settingToggle = value;
+		resultEditor = new EditorView({
+			doc: await cmEditorModal.app.vault.read(cmEditorModal.modifiedFile),
+			extensions: [
+				basicSetup,
+				EditorView.darkTheme.of(true),
+				EditorView.lineWrapping,
+			],
+			dispatch: (transaction) =>
+				syncDispatch(transaction, resultEditor, unifiedEditor),
+			parent: resultEditorContainer,
+		});
+		new ButtonComponent(toolsEl).setIcon("checkmark").onClick(() => {
+			console.log(
+				"saved content to file from unifiedEditor:\n",
+				unifiedEditor.state.doc
+			);
+			new Notice("TODO: Save changes");
+			// cmEditorModal.modifiedContent = unifiedEditor.state.doc.toString();
+			// cmEditorModal.close();
+		});
+		new ButtonComponent(toolsEl)
+			.setIcon("cross")
+			.setTooltip("Cancel")
+			.onClick(() => {
+				new Notice("TODO: Revert changes");
+				// cmEditorModal.close();
+			});
+		new ButtonComponent(toolsEl).setIcon("pencil").onClick(() => {
+			new Notice("TODO: Edit in CodeMirror");
+		});
+	});
+
+	const syncAnnotation = Annotation.define<boolean>();
+
+	function syncDispatch(
+		transaction: Transaction,
+		view: EditorView,
+		...others: EditorView[]
+	) {
+		view.update([transaction]);
+		if (
+			!transaction.changes.empty &&
+			!transaction.annotation(syncAnnotation)
+		) {
+			const annotations: Annotation<string | boolean>[] = [
+				syncAnnotation.of(true),
+			];
+			const userEvent = transaction.annotation(Transaction.userEvent);
+			if (userEvent)
+				annotations.push(Transaction.userEvent.of(userEvent));
+			others.map((editor) =>
+				editor.dispatch({
+					changes: transaction.changes,
+					annotations,
 				})
 			);
-	});
-	$: console.log("editorContent", editor?.state);
+			// console.log("syncDispatch", transaction.changes);
+		}
+	}
 
-	// document.insertAfter(document.body, editor.dom);
-	let text = "Hello World";
+	onDestroy(() => {
+		unifiedEditor.destroy();
+		resultEditor.destroy();
+	});
 </script>
 
-<h1>This is the diff editor.</h1>
-<textarea bind:value={text} />
-<p>{@html text}</p>
-<!-- {@html editor.dom} -->
-<div bind:this={divEditor} class="container" />
-<div bind:this={mergeEditorEl} class="container" />
-<div bind:this={settings} />
-{#if settingToggle}
-	<p>Setting activated !!</p>
+<div
+	bind:this={mergeEditorContainer}
+	class="syncthing-codemirror-editor-container"
+/>
+<div
+	bind:this={resultEditorContainer}
+	class="syncthing-codemirror-editor-container"
+/>
+{#if unifiedEditor}
+	<div class="preview">{unifiedEditor.state.doc.toString()}</div>
 {/if}
+<div bind:this={toolsEl} class="syncthing-codemirror-editor-tools" />
 
 <style>
-	.container {
+	* {
 		width: 100%;
 		height: 100%;
 	}
