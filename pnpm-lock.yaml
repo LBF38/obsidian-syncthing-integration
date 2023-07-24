@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -35,6 +35,9 @@ devDependencies:
   '@types/diff':
     specifier: ^5.0.3
     version: 5.0.3
+  '@types/marked':
+    specifier: ^5.0.1
+    version: 5.0.1
   '@types/node':
     specifier: ^18.0.0
     version: 18.0.0
@@ -83,6 +86,9 @@ devDependencies:
   lorem-ipsum:
     specifier: ^2.0.8
     version: 2.0.8
+  marked:
+    specifier: ^5.1.1
+    version: 5.1.1
   monaco-editor:
     specifier: 0.40.0
     version: 0.40.0
@@ -883,6 +889,10 @@ packages:
 
   /@types/json-schema@7.0.12:
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
+    dev: true
+
+  /@types/marked@5.0.1:
+    resolution: {integrity: sha512-Y3pAUzHKh605fN6fvASsz5FDSWbZcs/65Q6xYRmnIP9ZIYz27T4IOmXfH9gWJV1dpi7f1e7z7nBGUTx/a0ptpA==}
     dev: true
 
   /@types/minimist@1.2.2:
@@ -2721,7 +2731,7 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /marked-terminal@5.2.0(marked@5.1.0):
+  /marked-terminal@5.2.0(marked@5.1.1):
     resolution: {integrity: sha512-Piv6yNwAQXGFjZSaiNljyNFw7jKDdGrw70FSbtxEyldLsyeuV5ZHm/1wW++kWbrOF1VPnUgYOhB2oLL0ZpnekA==}
     engines: {node: '>=14.13.1 || >=16.0.0'}
     peerDependencies:
@@ -2731,13 +2741,13 @@ packages:
       cardinal: 2.1.1
       chalk: 5.2.0
       cli-table3: 0.6.3
-      marked: 5.1.0
+      marked: 5.1.1
       node-emoji: 1.11.0
       supports-hyperlinks: 2.3.0
     dev: true
 
-  /marked@5.1.0:
-    resolution: {integrity: sha512-z3/nBe7aTI8JDszlYLk7dDVNpngjw0o1ZJtrA9kIfkkHcIF+xH7mO23aISl4WxP83elU+MFROgahqdpd05lMEQ==}
+  /marked@5.1.1:
+    resolution: {integrity: sha512-bTmmGdEINWmOMDjnPWDxGPQ4qkDLeYorpYbEtFOXzOruTwUE671q4Guiuchn4N8h/v6NGd7916kXsm3Iz4iUSg==}
     engines: {node: '>= 18'}
     hasBin: true
     dev: true
@@ -3830,8 +3840,8 @@ packages:
       hook-std: 3.0.0
       hosted-git-info: 6.1.1
       lodash-es: 4.17.21
-      marked: 5.1.0
-      marked-terminal: 5.2.0(marked@5.1.0)
+      marked: 5.1.1
+      marked-terminal: 5.2.0(marked@5.1.1)
       micromatch: 4.0.5
       p-each-series: 3.0.0
       p-reduce: 3.0.0

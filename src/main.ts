@@ -77,7 +77,11 @@ export default class SyncthingPlugin extends Plugin {
 			"code",
 			"Open the test diff editor component",
 			() => {
-				new TestModal(this.app).open();
+				new TestModal(
+					this.app,
+					this.app.vault.getMarkdownFiles()[0],
+					this.app.vault.getMarkdownFiles()[1]
+				).open();
 			}
 		);
 
