@@ -1,29 +1,30 @@
 import { Notice, Plugin, addIcon } from "obsidian";
 import {
-	type SyncthingController,
 	SyncthingControllerImpl,
+	type SyncthingController,
 } from "./controllers/main_controller";
 import {
 	DevModeModal,
 	PluginDevModeController,
 } from "./controllers/plugin_dev_mode";
 import {
-	type SyncthingFromAndroid,
 	SyncthingFromAndroidImpl,
+	type SyncthingFromAndroid,
 } from "./data/syncthing_android_datasource";
 import {
-	type SyncThingFromCLI,
 	SyncThingFromCLIimpl,
+	type SyncThingFromCLI,
 } from "./data/syncthing_local_datasource";
 import {
-	type SyncThingFromREST,
 	SyncThingFromRESTimpl,
+	type SyncThingFromREST,
 } from "./data/syncthing_remote_datasource";
 import { SyncThingConfiguration } from "./models/entities";
-import { ConflictsModal } from "./views/conflicts_modal";
-import { SyncthingSettingTab } from "./views/settings_tab";
-import { SyncthingLogoSVG } from "./views/logos";
 import { CodeMirrorEditorModal } from "./views/codemirror_editor";
+import { ConflictsModal } from "./views/conflicts_modal";
+import { SyncthingLogoSVG } from "./views/logos";
+import { SyncthingSettingTab } from "./views/settings_tab";
+import { TestModal } from "./views/test_editor";
 
 interface SyncthingPluginSettings {
 	api_key: string;
@@ -71,6 +72,14 @@ export default class SyncthingPlugin extends Plugin {
 				this.app.vault.getMarkdownFiles()[1]
 			).open();
 		});
+		// For the test diff editor component
+		this.addRibbonIcon(
+			"code",
+			"Open the test diff editor component",
+			() => {
+				new TestModal(this.app).open();
+			}
+		);
 
 		// Status bar. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();

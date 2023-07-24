@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { unifiedMergeView } from "@codemirror/merge";
-	import { Annotation, StateField, Transaction } from "@codemirror/state";
+	import { Annotation, Transaction } from "@codemirror/state";
 	import { EditorView, basicSetup } from "codemirror";
-	import { diffChars } from "diff";
-	import { html } from "diff2html";
 	import { ButtonComponent, Notice } from "obsidian";
 	import { CodeMirrorEditorModal } from "src/views/codemirror_editor";
 	import { onDestroy, onMount } from "svelte";
@@ -14,20 +12,37 @@
 	let toolsEl: HTMLDivElement;
 	let unifiedEditor: EditorView;
 	let resultEditor: EditorView;
+	console.log("cmEditorModal", cmEditorModal);
 
 	onMount(async () => {
 		unifiedEditor = new EditorView({
-			doc: await cmEditorModal.app.vault.read(cmEditorModal.modifiedFile),
+			doc: await cmEditorModal.app.vault.read(cmEditorModal.originalFile),
 			extensions: [
 				basicSetup,
 				EditorView.darkTheme.of(true),
 				EditorView.lineWrapping,
 				unifiedMergeView({
 					original: await cmEditorModal.app.vault.read(
-						cmEditorModal.originalFile
+						cmEditorModal.modifiedFile
 					),
 					gutter: true,
 					mergeControls: true,
+				}),
+				EditorView.updateListener.of((update) => {
+					if (
+						update.docChanged &&
+						update.startState.doc !== update.state.doc
+					)
+						console.log(
+							"\nupdateListener",
+							update,
+							"\ndocChanged ?",
+							update.docChanged,
+							"\nstartState",
+							update.startState,
+							"\nstate",
+							update.state
+						);
 				}),
 			],
 			dispatch: (transaction) =>
