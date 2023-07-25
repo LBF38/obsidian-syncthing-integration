@@ -1,10 +1,10 @@
 import { createTwoFilesPatch } from "diff";
-import { type Diff2HtmlConfig, html } from "diff2html";
+import { html, type Diff2HtmlConfig } from "diff2html";
 import { App, ButtonComponent, Modal, Notice, Setting, TFile } from "obsidian";
 import { type SyncthingController } from "src/controllers/main_controller";
 import { type ConflictFilename } from "src/models/entities";
 import { Failure } from "src/models/failures";
-import { CodeMirrorEditorModal } from "./codemirror_editor";
+import { TestModal } from "./test_editor";
 
 export class DiffModal extends Modal {
 	d2hUI?: string;
@@ -225,7 +225,7 @@ export class DiffModal extends Modal {
 			.setCta()
 			// .onClick(this.buildManualDiffPanes);
 			.onClick(async () => {
-				new CodeMirrorEditorModal(
+				new TestModal(
 					this.app,
 					this.originalFile,
 					this.currentConflictFile

@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { MergeView } from "@codemirror/merge";
-	import { Text } from "@codemirror/state";
+	import { EditorState, Text } from "@codemirror/state";
 	import { EditorView, basicSetup } from "codemirror";
 	import { marked } from "marked";
 	import { ButtonComponent, Modal, Notice } from "obsidian";
 	import { onMount } from "svelte";
 
-	// TODO: implement logic for diff editor.
-	// Objectif : recréer, de manière simple, un 3-way editor.
 	export let originalContent: string = "this is the original text";
 	export let modifiedContent: string = "this is the modified text";
 	export let parentModal: Modal;
@@ -27,7 +25,6 @@
 					EditorView.darkTheme.of(true),
 					EditorView.updateListener.of((viewUpdate) => {
 						if (viewUpdate.docChanged) {
-							console.log("viewUpdate A", viewUpdate);
 							contentEditorA = viewUpdate.state.doc;
 						}
 					}),
@@ -41,13 +38,14 @@
 					EditorView.darkTheme.of(true),
 					EditorView.updateListener.of((viewUpdate) => {
 						if (viewUpdate.docChanged) {
-							console.log("viewUpdate B", viewUpdate);
 							contentEditorB = viewUpdate.state.doc;
 						}
 					}),
 					EditorView.editable.of(false),
+					EditorState.readOnly.of(true),
 				],
 			},
+			revertControls: "b-to-a",
 			parent: mergeEditorContainer,
 		});
 		new ButtonComponent(toolsContainer)
@@ -61,8 +59,6 @@
 					return;
 				}
 				new Notice("Saved file");
-				console.log("contentEditorA", contentEditorA.toString());
-				console.log("contentEditorB", contentEditorB.toString());
 			}).buttonEl.style.margin = "1%";
 		new ButtonComponent(toolsContainer)
 			.setButtonText("Cancel merge")
@@ -100,12 +96,9 @@
 <div bind:this={toolsContainer} class="tools" />
 
 <style>
-	/* TODO: Add style for diff editor. If necessary. */
 	.diff {
 		border-radius: 5px;
-		/* min-height: 20%; */
 		height: 35%;
-		/* margin: 2%; */
 		overflow: scroll;
 	}
 
@@ -113,7 +106,6 @@
 		background-color: gray;
 		color: black;
 		border-radius: 5px;
-		/* min-height: 20%; */
 		height: 35%;
 		overflow: scroll;
 		padding: 1%;
