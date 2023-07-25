@@ -1,27 +1,28 @@
-import { Notice, Plugin } from "obsidian";
+import { Notice, Plugin, addIcon } from "obsidian";
 import {
-	SyncthingController,
 	SyncthingControllerImpl,
+	type SyncthingController,
 } from "./controllers/main_controller";
-import {
-	SyncThingFromCLI,
-	SyncThingFromCLIimpl,
-} from "./data/syncthing_local_datasource";
-import {
-	SyncThingFromREST,
-	SyncThingFromRESTimpl,
-} from "./data/syncthing_remote_datasource";
-import { SyncThingConfiguration } from "./models/entities";
-import { ConflictsModal } from "./views/conflicts_modal";
-import { SyncthingSettingTab } from "./views/settings_tab";
 import {
 	DevModeModal,
 	PluginDevModeController,
 } from "./controllers/plugin_dev_mode";
 import {
-	SyncthingFromAndroid,
 	SyncthingFromAndroidImpl,
+	type SyncthingFromAndroid,
 } from "./data/syncthing_android_datasource";
+import {
+	SyncThingFromCLIimpl,
+	type SyncThingFromCLI,
+} from "./data/syncthing_local_datasource";
+import {
+	SyncThingFromRESTimpl,
+	type SyncThingFromREST,
+} from "./data/syncthing_remote_datasource";
+import { SyncThingConfiguration } from "./models/entities";
+import { ConflictsModal } from "./views/conflicts_modal";
+import { SyncthingLogoSVG } from "./views/logos";
+import { SyncthingSettingTab } from "./views/settings_tab";
 
 interface SyncthingPluginSettings {
 	api_key: string;
@@ -58,6 +59,9 @@ export default class SyncthingPlugin extends Plugin {
 		SyncthingPlugin.loadCount++;
 		await this.loadSettings();
 
+		// Load Syncthing icon
+		addIcon("syncthing", SyncthingLogoSVG);
+
 		// Status bar. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();
 		statusBarItemEl.setText("SyncThing status");
@@ -71,7 +75,7 @@ export default class SyncthingPlugin extends Plugin {
 			this.addSettingTab(pluginSettingTab);
 
 		const syncthingConflictManager = this.addRibbonIcon(
-			"construction",
+			"syncthing",
 			"Open Syncthing conflict manager modal",
 			() => {
 				new ConflictsModal(this.app, this.syncthingController).open();

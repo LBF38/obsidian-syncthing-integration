@@ -1,15 +1,15 @@
 import { Platform, TFile } from "obsidian";
 import SyncthingPlugin from "src/main";
 import {
-	ConflictFilename,
+	type ConflictFilename,
 	SyncThingConfiguration,
 	SyncThingDevice,
 	SyncThingFolder,
 } from "src/models/entities";
 import { CliFailure, Failure, RestFailure } from "src/models/failures";
-import { SyncThingFromCLI } from "src/data/syncthing_local_datasource";
-import { SyncThingFromREST } from "src/data/syncthing_remote_datasource";
-import { SyncthingFromAndroid } from "src/data/syncthing_android_datasource";
+import { type SyncThingFromCLI } from "src/data/syncthing_local_datasource";
+import { type SyncThingFromREST } from "src/data/syncthing_remote_datasource";
+import { type SyncthingFromAndroid } from "src/data/syncthing_android_datasource";
 
 export interface SyncthingController {
 	/**

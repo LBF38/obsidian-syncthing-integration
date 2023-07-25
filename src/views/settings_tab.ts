@@ -4,9 +4,9 @@ import {
 	Platform,
 	PluginSettingTab,
 	Setting,
-	TextComponent
+	TextComponent,
 } from "obsidian";
-import { SyncthingController } from "src/controllers/main_controller";
+import { type SyncthingController } from "src/controllers/main_controller";
 import SyncthingPlugin from "src/main";
 import { SyncThingConfiguration, SyncThingDevice } from "src/models/entities";
 import { Failure } from "src/models/failures";

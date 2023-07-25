@@ -1,6 +1,6 @@
 import { App, Modal, Setting } from "obsidian";
 import { Failure } from "src/models/failures";
-import { SyncthingController } from "../controllers/main_controller";
+import { type SyncthingController } from "../controllers/main_controller";
 import { DiffModal } from "./diff_modal";
 
 /**

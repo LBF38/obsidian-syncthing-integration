@@ -1,9 +1,10 @@
 import { createTwoFilesPatch } from "diff";
-import { Diff2HtmlConfig, html } from "diff2html";
+import { html, type Diff2HtmlConfig } from "diff2html";
 import { App, ButtonComponent, Modal, Notice, Setting, TFile } from "obsidian";
-import { SyncthingController } from "src/controllers/main_controller";
-import { ConflictFilename } from "src/models/entities";
+import { type SyncthingController } from "src/controllers/main_controller";
+import { type ConflictFilename } from "src/models/entities";
 import { Failure } from "src/models/failures";
+import { MergeModal } from "./merge_editor";
 
 export class DiffModal extends Modal {
 	d2hUI?: string;
@@ -222,7 +223,14 @@ export class DiffModal extends Modal {
 		new ButtonComponent(buttonsContainer)
 			.setButtonText("Open files in new panes")
 			.setCta()
-			.onClick(this.buildManualDiffPanes);
+			// .onClick(this.buildManualDiffPanes);
+			.onClick(async () => {
+				new MergeModal(
+					this.app,
+					this.originalFile,
+					this.currentConflictFile
+				).open();
+			});
 
 		// CSS styling for the modal.
 		this.modalEl.setCssStyles({
