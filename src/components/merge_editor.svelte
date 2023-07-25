@@ -3,12 +3,14 @@
 	import { EditorState, Text } from "@codemirror/state";
 	import { EditorView, basicSetup } from "codemirror";
 	import { marked } from "marked";
-	import { ButtonComponent, Modal, Notice } from "obsidian";
+	import { ButtonComponent, Notice } from "obsidian";
+	import { ConfirmModal } from "src/views/confirm_modal";
+	import { MergeModal } from "src/views/merge_editor";
 	import { onMount } from "svelte";
 
 	export let originalContent: string = "this is the original text";
 	export let modifiedContent: string = "this is the modified text";
-	export let parentModal: Modal;
+	export let parentModal: MergeModal;
 	let mergeEditor: MergeView;
 	let mergeEditorContainer: HTMLDivElement;
 	let contentEditorA: Text;
@@ -51,14 +53,33 @@
 		new ButtonComponent(toolsContainer)
 			.setButtonText("Save merged file")
 			.setCta()
-			.onClick(() => {
+			.onClick(async () => {
 				if (mergeEditor.chunks.length > 0) {
 					new Notice(
 						"There is still some merge conflicts. Please resolve them."
 					);
+					new ConfirmModal(
+						parentModal.app,
+						"Are you sure you want to save the file?\nThere are still some merge conflicts.\nThis action will save the previewed file in the original file and delete the conflicting file.",
+						async () => {
+							new Notice("Saved file");
+							await parentModal.app.vault.delete(
+								parentModal.modifiedFile
+							);
+							new Notice("Deleted conflicting file");
+							parentModal.close();
+						}
+					).open();
 					return;
 				}
+				await parentModal.app.vault.modify(
+					parentModal.originalFile,
+					contentEditorA.toString()
+				);
 				new Notice("Saved file");
+				await parentModal.app.vault.delete(parentModal.modifiedFile);
+				new Notice("Deleted conflicting file");
+				parentModal.close();
 			}).buttonEl.style.margin = "1%";
 		new ButtonComponent(toolsContainer)
 			.setButtonText("Cancel merge")
@@ -68,15 +89,29 @@
 					new Notice(
 						"There is still some merge conflicts. Please resolve them."
 					);
+					new ConfirmModal(
+						parentModal.app,
+						"Are you sure you want to cancel the merge?\nThere are still some merge conflicts.\nThis will keep the original file and the conflicting file.",
+						() => {
+							new Notice("Closing the merge editor.");
+							parentModal.close();
+						}
+					).open();
 					return;
 				}
-				new Notice("Closing the merge editor.");
-				parentModal.close();
+				new ConfirmModal(
+					parentModal.app,
+					"Are you sure you want to cancel the merge?\nYou have resolved the conflicts but your modifications will not be saved.\nThis will keep the original file and the conflicting file.",
+					() => {
+						new Notice("Closing the merge editor.");
+						parentModal.close();
+					}
+				).open();
 			}).buttonEl.style.margin = "1% 0";
 	});
 </script>
 
-<div class="diff" bind:this={mergeEditorContainer} />
+<div class="merge" bind:this={mergeEditorContainer} />
 
 <h3>Preview the merged file</h3>
 <div class="review">
@@ -96,7 +131,7 @@
 <div bind:this={toolsContainer} class="tools" />
 
 <style>
-	.diff {
+	.merge {
 		border-radius: 5px;
 		height: 35%;
 		overflow: scroll;

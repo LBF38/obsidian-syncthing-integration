@@ -20,11 +20,9 @@ import {
 	type SyncThingFromREST,
 } from "./data/syncthing_remote_datasource";
 import { SyncThingConfiguration } from "./models/entities";
-import { CodeMirrorEditorModal } from "./views/codemirror_editor";
 import { ConflictsModal } from "./views/conflicts_modal";
 import { SyncthingLogoSVG } from "./views/logos";
 import { SyncthingSettingTab } from "./views/settings_tab";
-import { TestModal } from "./views/test_editor";
 
 interface SyncthingPluginSettings {
 	api_key: string;
@@ -62,28 +60,7 @@ export default class SyncthingPlugin extends Plugin {
 		await this.loadSettings();
 
 		// Load Syncthing icon
-		addIcon("syncthing", SyncthingLogoSVG); // FIXME: fix this
-
-		// Try CodeMirror editor for file diff and conflicts resolution.
-		this.addRibbonIcon("file-diff", "Open CodeMirror Editor modal", () => {
-			new CodeMirrorEditorModal(
-				this.app,
-				this.app.vault.getMarkdownFiles()[0],
-				this.app.vault.getMarkdownFiles()[1]
-			).open();
-		});
-		// For the test diff editor component
-		this.addRibbonIcon(
-			"code",
-			"Open the test diff editor component",
-			() => {
-				new TestModal(
-					this.app,
-					this.app.vault.getMarkdownFiles()[0],
-					this.app.vault.getMarkdownFiles()[1]
-				).open();
-			}
-		);
+		addIcon("syncthing", SyncthingLogoSVG);
 
 		// Status bar. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();

@@ -4,7 +4,7 @@ import { App, ButtonComponent, Modal, Notice, Setting, TFile } from "obsidian";
 import { type SyncthingController } from "src/controllers/main_controller";
 import { type ConflictFilename } from "src/models/entities";
 import { Failure } from "src/models/failures";
-import { TestModal } from "./test_editor";
+import { MergeModal } from "./merge_editor";
 
 export class DiffModal extends Modal {
 	d2hUI?: string;
@@ -225,7 +225,7 @@ export class DiffModal extends Modal {
 			.setCta()
 			// .onClick(this.buildManualDiffPanes);
 			.onClick(async () => {
-				new TestModal(
+				new MergeModal(
 					this.app,
 					this.originalFile,
 					this.currentConflictFile

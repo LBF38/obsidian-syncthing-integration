@@ -1,8 +1,8 @@
-import TestEditor from "../components/test_editor.svelte";
+import MergeEditor from "../components/merge_editor.svelte";
 import { App, Modal, TFile } from "obsidian";
 
-export class TestModal extends Modal {
-	private component?: TestEditor;
+export class MergeModal extends Modal {
+	private component?: MergeEditor;
 	private originalContent?: string;
 	private modifiedContent?: string;
 	constructor(
@@ -16,7 +16,7 @@ export class TestModal extends Modal {
 	async onOpen() {
 		this.originalContent = await this.app.vault.read(this.originalFile);
 		this.modifiedContent = await this.app.vault.read(this.modifiedFile);
-		this.component = new TestEditor({
+		this.component = new MergeEditor({
 			target: this.contentEl,
 			props: {
 				parentModal: this,
@@ -24,8 +24,8 @@ export class TestModal extends Modal {
 				modifiedContent: this.modifiedContent,
 			},
 		});
-		this.modalEl.addClass("syncthing-diff-editor-modal");
-		this.contentEl.addClass("syncthing-diff-editor");
+		this.modalEl.addClass("syncthing-merge-editor-modal");
+		this.contentEl.addClass("syncthing-merge-editor");
 		this.titleEl.setText(
 			`Resolve conflicts - ${this.originalFile.basename}`
 		);
