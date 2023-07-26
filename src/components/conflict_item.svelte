@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { TFile } from "obsidian";
-	import ConflictFileDetails from "./conflict_file_details.svelte";
 	import { SyncthingController } from "src/controllers/main_controller";
 	import { Failure } from "src/models/failures";
-	import { DiffModal } from "src/views/diff_modal";
 	import { ConflictsModal } from "src/views/conflicts_modal";
-	import { formatBytes } from "src/controllers/utils";
+	import { DiffModal } from "src/views/diff_modal";
+	import ConflictFileDetails from "./conflict_file_details.svelte";
 
 	export let conflicts: TFile[];
 	export let syncthingController: SyncthingController;
@@ -49,17 +48,11 @@
 		{#if i !== 0}
 			<div class="divider" />
 		{/if}
-		Conflict information
-		<ConflictFileDetails file={conflict} {syncthingController} />
-		File information
-		<ul>
-			<li>
-				extension: <code>{conflict.extension}</code>
-			</li>
-			<li>size: {formatBytes(conflict.stat.size, 1)}</li>
-			<li>created: {new Date(conflict.stat.ctime).toLocaleString()}</li>
-			<li>modified: {new Date(conflict.stat.mtime).toLocaleString()}</li>
-		</ul>
+		<ConflictFileDetails
+			file={conflict}
+			{syncthingController}
+			counter={i}
+		/>
 	{/each}
 </details>
 
