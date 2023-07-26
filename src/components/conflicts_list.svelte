@@ -3,8 +3,8 @@
 	import { ConflictsModal } from "src/views/conflicts_modal";
 	import { onMount } from "svelte";
 	import ConflictItem from "./conflict_item.svelte";
+	import { sortFilesBy } from "src/controllers/utils";
 
-	// TODO
 	export let parentModal: ConflictsModal;
 	export let conflicts: Map<string, TFile[]>;
 	let sortSettingContainer: HTMLDivElement;
@@ -21,13 +21,19 @@
 			.addDropdown((dropdown) => {
 				dropdown.addOptions(sortOptions);
 				dropdown.onChange((value) => {
-					conflicts = parentModal.sortFilesBy(
+					conflicts = sortFilesBy(
 						conflicts,
-						value as keyof typeof sortOptions
+						value as keyof typeof sortOptions,
+						parentModal.syncthingController
 					);
 					console.log("dropdown", conflicts);
 				});
 			});
+		conflicts = sortFilesBy(
+			conflicts,
+			"recent",
+			parentModal.syncthingController
+		);
 	});
 
 	parentModal.titleEl.setText("Syncthing Conflicts");
@@ -35,16 +41,18 @@
 </script>
 
 <div bind:this={sortSettingContainer} />
-{#each conflicts.keys() as conflictNames, i}
-	{#if i !== 0}
-		<div class="divider" />
-	{/if}
-	<ConflictItem
-		conflicts={conflicts.get(conflictNames) ?? []}
-		syncthingController={parentModal.syncthingController}
-		{parentModal}
-	/>
-{/each}
+{#key conflicts}
+	{#each conflicts.keys() as conflictNames, i}
+		{#if i !== 0}
+			<div class="divider" />
+		{/if}
+		<ConflictItem
+			conflicts={conflicts.get(conflictNames) ?? []}
+			syncthingController={parentModal.syncthingController}
+			{parentModal}
+		/>
+	{/each}
+{/key}
 
 <style>
 	.divider {
