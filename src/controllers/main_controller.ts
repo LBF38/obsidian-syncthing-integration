@@ -10,6 +10,7 @@ import { CliFailure, Failure, RestFailure } from "src/models/failures";
 import { type SyncThingFromCLI } from "src/data/syncthing_local_datasource";
 import { type SyncThingFromREST } from "src/data/syncthing_remote_datasource";
 import { type SyncthingFromAndroid } from "src/data/syncthing_android_datasource";
+import { sortByConflictDate } from "./utils";
 
 export interface SyncthingController {
 	/**
@@ -173,6 +174,13 @@ export class SyncthingControllerImpl implements SyncthingController {
 			if (conflictsFilesMap.has(filename)) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				conflictsFilesMap.get(filename)!.push(file);
+				conflictsFilesMap.set(
+					filename,
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					conflictsFilesMap
+						.get(filename)!
+						.sort((a, b) => sortByConflictDate(a, b, this))
+				);
 				continue;
 			}
 			conflictsFilesMap.set(filename, [file]);
