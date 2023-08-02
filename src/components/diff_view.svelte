@@ -8,7 +8,7 @@
 	import FileDetails from "./file_details.svelte";
 	import { MergeModal } from "src/views/merge_editor";
 	import { marked } from "marked";
-	import { TFile } from "obsidian";
+	import { Notice, TFile } from "obsidian";
 
 	export let parentModal: DiffModal;
 	let unifiedMergeViewContainer: HTMLDivElement;
@@ -44,16 +44,58 @@
 		});
 	});
 
-	function acceptConflict() {
-		console.log("accept conflict");
-		// TODO: implement.
+	async function acceptConflict() {
+		const noticeTime = 2000;
+		new Notice("Resolving conflict : Accepting left", noticeTime);
+		const filenamePath = parentModal.originalFile.path;
+		setTimeout(
+			() => new Notice(`Deleting ${filenamePath}...`, noticeTime),
+			500
+		);
+		await parentModal.app.vault.delete(parentModal.originalFile, true);
+		new Notice("Original file deleted", 2000);
+		setTimeout(() => {
+			new Notice(
+				`Renaming ${currentConflict.path} to ${filenamePath}...`,
+				noticeTime
+			);
+		}, 1000);
+		await parentModal.app.fileManager.renameFile(
+			currentConflict,
+			filenamePath
+		);
+		removeCurrentConflictFromList();
+		new Notice(`Conflict resolved : Accepted left`, noticeTime);
+		parentModal.originalFile = currentConflict;
+		closeIfNoMoreConflicts();
+		currentConflict = parentModal.conflictingFiles[0];
 	}
-	function acceptOriginal() {
-		console.log("accept original");
-		// TODO: implement
+
+	async function acceptOriginal() {
+		new Notice("Resolving conflict : Accepting original", 5000);
+		setTimeout(
+			() => new Notice(`Deleting ${currentConflict.path}...`, 5000),
+			1000
+		);
+		await parentModal.app.vault.delete(currentConflict);
+		new Notice("Conflict resolved", 5000);
+		removeCurrentConflictFromList(); // for reactivity
+		closeIfNoMoreConflicts();
+		currentConflict = parentModal.conflictingFiles[0];
 	}
+
+	function removeCurrentConflictFromList() {
+		parentModal.conflictingFiles.remove(currentConflict);
+		parentModal.conflictingFiles = parentModal.conflictingFiles;
+	}
+
+	function closeIfNoMoreConflicts() {
+		if (parentModal.conflictingFiles.length === 0) {
+			parentModal.close();
+		}
+	}
+
 	function openMergeEditor() {
-		console.log("open merge editor");
 		new MergeModal(
 			parentModal.app,
 			parentModal.originalFile,
