@@ -114,7 +114,7 @@
 <div class="merge" bind:this={mergeEditorContainer} />
 
 <h3>Preview the merged file</h3>
-<div class="review">
+<div class="preview">
 	{#if contentEditorA}
 		{@html marked(contentEditorA.toString(), {
 			mangle: false,
@@ -137,9 +137,8 @@
 		overflow: scroll;
 	}
 
-	.review {
-		background-color: gray;
-		color: black;
+	.preview {
+		border: 1px solid var(--background-modifier-border);
 		border-radius: 5px;
 		height: 35%;
 		overflow: scroll;
