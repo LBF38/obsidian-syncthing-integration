@@ -1,3 +1,18 @@
+# [1.2.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.1.2...1.2.0) (2023-08-03)
+
+
+### Bug Fixes
+
+* **gh actions:** :green_heart: make it executable! ([3cb71e8](https://github.com/LBF38/obsidian-syncthing-integration/commit/3cb71e893395522cdf793cdb8ca864d34f770233))
+* **gh actions:** :green_heart: run script on bash ([61c34fb](https://github.com/LBF38/obsidian-syncthing-integration/commit/61c34fb00d770e4fd41855c60af1a960b94fcce5))
+
+
+### Features
+
+* **ui:** :sparkles: conflicts per file ([#91](https://github.com/LBF38/obsidian-syncthing-integration/issues/91)) ([271ae57](https://github.com/LBF38/obsidian-syncthing-integration/commit/271ae57150f90f45d4b14076faf3397d554ef327))
+* **ui:** :sparkles: merge editor ([#79](https://github.com/LBF38/obsidian-syncthing-integration/issues/79)) ([9147dab](https://github.com/LBF38/obsidian-syncthing-integration/commit/9147dabec5b6e068d94be176a6dc98e4cdc876e2))
+* **ui:** ✨ conflicts list modal ([#84](https://github.com/LBF38/obsidian-syncthing-integration/issues/84)) ([401337e](https://github.com/LBF38/obsidian-syncthing-integration/commit/401337e798ed9da4d3ece9e7aff192b340001638))
+
 ## [1.1.2](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.1.1...1.1.2) (2023-07-15)
 
 
