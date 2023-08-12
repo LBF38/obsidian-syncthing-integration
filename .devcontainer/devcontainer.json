@@ -28,7 +28,9 @@
 				"GitHub.vscode-pull-request-github",
 				"vivaxy.vscode-conventional-commits",
 				"mhutchie.git-graph",
-				"ms-azuretools.vscode-docker"
+				"ms-azuretools.vscode-docker",
+				"svelte.svelte-vscode",
+				"1YiB.svelte-bundle"
 			]
 		}
 	}
