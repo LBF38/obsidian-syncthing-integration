@@ -26,39 +26,39 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		// Banner
-		this.createPluginBanner(containerEl);
-		this.pluginInformation(containerEl);
+		// // Banner
+		// this.createPluginBanner(containerEl);
+		// this.pluginInformation(containerEl);
 
-		// Check if Syncthing is installed.
-		const hasSyncthing = await this.syncthingController.hasSyncThing();
-		if (!hasSyncthing) {
-			new Setting(containerEl)
-				.setName("Syncthing is not installed.")
-				.setDesc("Please install Syncthing at the following URL.")
-				.addButton((button) => {
-					button
-						.setIcon("link")
-						.setCta()
-						.onClick(() => {
-							open("https://syncthing.net/downloads", "_blank");
-						});
-				});
-			return;
-		}
+		// // Check if Syncthing is installed.
+		// const hasSyncthing = await this.syncthingController.hasSyncThing();
+		// if (!hasSyncthing) {
+		// 	new Setting(containerEl)
+		// 		.setName("Syncthing is not installed.")
+		// 		.setDesc("Please install Syncthing at the following URL.")
+		// 		.addButton((button) => {
+		// 			button
+		// 				.setIcon("link")
+		// 				.setCta()
+		// 				.onClick(() => {
+		// 					open("https://syncthing.net/downloads", "_blank");
+		// 				});
+		// 		});
+		// 	return;
+		// }
 
-		// For mobile app
-		this.openMobileApp(containerEl);
-		if (Platform.isMobileApp) {
-			const warningSetting = new Setting(containerEl)
-				.setName("Warning")
-				.setHeading()
-				.setDesc(
-					"The following settings are in beta. All plugin's features may not currently be available on mobile."
-				);
-			warningSetting.nameEl.style.color = "rgba(255, 0, 0, 0.8)";
-			warningSetting.descEl.style.color = "rgba(255, 0, 0, 0.8)";
-		}
+		// // For mobile app
+		// this.openMobileApp(containerEl);
+		// if (Platform.isMobileApp) {
+		// 	const warningSetting = new Setting(containerEl)
+		// 		.setName("Warning")
+		// 		.setHeading()
+		// 		.setDesc(
+		// 			"The following settings are in beta. All plugin's features may not currently be available on mobile."
+		// 		);
+		// 	warningSetting.nameEl.style.color = "rgba(255, 0, 0, 0.8)";
+		// 	warningSetting.descEl.style.color = "rgba(255, 0, 0, 0.8)";
+		// }
 
 		// API Key setting.
 		await this.apiKeySetting(containerEl);
