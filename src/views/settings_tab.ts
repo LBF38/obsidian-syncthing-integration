@@ -11,6 +11,7 @@ import SyncthingPlugin from "src/main";
 import { SyncThingConfiguration, SyncThingDevice } from "src/models/entities";
 import { Failure } from "src/models/failures";
 import { ObsidianLogo, SyncthingLogo } from "./logos";
+import SettingView from "../components/settings_view.svelte";
 
 export class SyncthingSettingTab extends PluginSettingTab {
 	plugin: SyncthingPlugin;
@@ -25,6 +26,13 @@ export class SyncthingSettingTab extends PluginSettingTab {
 	async display(): Promise<void> {
 		const { containerEl } = this;
 		containerEl.empty();
+
+		new SettingView({
+			target: containerEl,
+			props: {
+				parent: this
+			}
+		})
 
 		// // Banner
 		// this.createPluginBanner(containerEl);
@@ -61,54 +69,54 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		// }
 
 		// API Key setting.
-		await this.apiKeySetting(containerEl);
+		// await this.apiKeySetting(containerEl);
 
 		// Get the Syncthing configuration from CLI or API.
-		this.configurationSetting(containerEl);
+		// this.configurationSetting(containerEl);
 
 		// To check the API status.
-		new Setting(containerEl)
-			.setName("Syncthing API Status")
-			.addButton((button) => {
-				button.setButtonText("Check API Status").onClick(async () => {
-					this.syncthingController
-						.getAPIStatus()
-						.then((status) => {
-							new Notice(`Syncthing Ping : ${status}`);
-						})
-						.catch((error) => {
-							new Notice(error);
-						});
-				});
-			});
+		// new Setting(containerEl)
+		// 	.setName("Syncthing API Status")
+		// 	.addButton((button) => {
+		// 		button.setButtonText("Check API Status").onClick(async () => {
+		// 			this.syncthingController
+		// 				.getAPIStatus()
+		// 				.then((status) => {
+		// 					new Notice(`Syncthing Ping : ${status}`);
+		// 				})
+		// 				.catch((error) => {
+		// 					new Notice(error);
+		// 				});
+		// 		});
+		// 	});
 
 		// To check the Syncthing CLI status.
-		if (Platform.isDesktopApp) {
-			new Setting(containerEl)
-				.setName("Syncthing CLI Status")
-				.addButton((button) => {
-					button
-						.setButtonText("Check CLI Status")
-						.onClick(async () => {
-							this.syncthingController
-								.getCLIStatus()
-								.then((status) => {
-									new Notice(
-										`Syncthing CLI Status : ${status}`
-									);
-								});
-						});
-				});
-		}
+		// if (Platform.isDesktopApp) {
+		// 	new Setting(containerEl)
+		// 		.setName("Syncthing CLI Status")
+		// 		.addButton((button) => {
+		// 			button
+		// 				.setButtonText("Check CLI Status")
+		// 				.onClick(async () => {
+		// 					this.syncthingController
+		// 						.getCLIStatus()
+		// 						.then((status) => {
+		// 							new Notice(
+		// 								`Syncthing CLI Status : ${status}`
+		// 							);
+		// 						});
+		// 				});
+		// 		});
+		// }
 
 		// Open Syncthing GUI.
-		this.syncthingGUIsettings(containerEl);
+		// this.syncthingGUIsettings(containerEl);
 
 		// Syncthing configuration integration. This part should show the configuration of the Syncthing instance for the vault.
-		this.syncthingConfiguration(containerEl);
+		// this.syncthingConfiguration(containerEl);
 
 		// Plugin's dev Mode.
-		this.pluginDevModeSetting(containerEl);
+		// this.pluginDevModeSetting(containerEl);
 	}
 
 	private syncthingConfiguration(containerEl: HTMLElement) {
@@ -165,7 +173,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 				text.setPlaceholder("Enter your GUI address here...")
 					.setValue(
 						this.plugin.settings.configuration.syncthingBaseUrl ??
-							""
+						""
 					)
 					.onChange(async (value) => {
 						this.plugin.settings.configuration.syncthingBaseUrl =
@@ -240,12 +248,10 @@ export class SyncthingSettingTab extends PluginSettingTab {
 							);
 							return;
 						}
-						const url = `http://${
-							this.plugin.settings.gui_username
-						}:${this.plugin.settings.gui_password}@${
-							this.plugin.settings.configuration
+						const url = `http://${this.plugin.settings.gui_username
+							}:${this.plugin.settings.gui_password}@${this.plugin.settings.configuration
 								.syncthingBaseUrl ?? "localhost:8384"
-						}`;
+							}`;
 						window.open(url);
 					});
 			});
@@ -338,13 +344,13 @@ export class SyncthingSettingTab extends PluginSettingTab {
 			.setDesc("Add your Syncthing API key here for the plugin to work.")
 			.addText(
 				(text) =>
-					(text
-						.setPlaceholder("Enter your API key here...")
-						.setValue(this.plugin.settings.api_key ?? "")
-						.onChange(async (value) => {
-							this.plugin.settings.api_key = value;
-							await this.plugin.saveSettings();
-						}).inputEl.type = "password")
+				(text
+					.setPlaceholder("Enter your API key here...")
+					.setValue(this.plugin.settings.api_key ?? "")
+					.onChange(async (value) => {
+						this.plugin.settings.api_key = value;
+						await this.plugin.saveSettings();
+					}).inputEl.type = "password")
 			);
 		// Show a button relative to the API key setting.
 		// If the API key is not set, show a button to get it.
