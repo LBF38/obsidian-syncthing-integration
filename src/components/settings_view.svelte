@@ -1,15 +1,29 @@
 <script lang="ts">
-	import { Notice, Platform } from "obsidian";
+	import { Notice, Platform, getIcon } from "obsidian";
 	import { ObsidianLogo, SyncthingLogo } from "src/views/logos";
 	import { SyncthingSettingTab } from "src/views/settings_tab";
 	import { onMount } from "svelte";
 	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
+	import { Failure } from "src/models/failures";
+	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	export let parent: SyncthingSettingTab;
 	let hasSyncthing: boolean = false;
+	let apiInputType = "password";
 
 	onMount(async () => {
-		// hasSyncthing = await parent.syncthingController.hasSyncThing();
+		hasSyncthing = await parent.syncthingController.hasSyncThing();
 	});
+
+	async function getAPIkey() {
+		parent.syncthingController.getAPIKey().then((key) => {
+			if (key instanceof Failure) {
+				new Notice(key.message);
+				return;
+			}
+			parent.plugin.settings.api_key = key;
+			parent.plugin.saveSettings();
+		});
+	}
 </script>
 
 <!-- Banner -->
@@ -38,7 +52,6 @@
 		heading={true}
 		error={true}
 		name="Syncthing is not found"
-		class="warning"
 	>
 		<div slot="description">
 			Syncthing is not installed or not found on your device. Please
@@ -63,24 +76,42 @@
 	<p slot="description">
 		Add your Syncthing API key here for the plugin to work.
 	</p>
-	<div slot="control">
-		{#await parent.syncthingController.getAPIKey()}
-			<p>Waiting for API key...</p>
-		{:then key}
-			<input
-				type="text"
-				name="apikey"
-				id="apikey"
-				value={key}
-				placeholder="Enter your API key here..."
-				on:change={async (event) => {
-					parent.plugin.settings.api_key = event.currentTarget.value;
+	<div slot="control" class="control">
+		<input
+			type={apiInputType}
+			name="apikey"
+			id="apikey"
+			value={parent.plugin.settings.api_key}
+			placeholder="Enter your API key here..."
+			on:change={async (event) => {
+				parent.plugin.settings.api_key = event.currentTarget.value;
+				await parent.plugin.saveSettings();
+			}}
+		/>
+		{#if !parent.plugin.settings.api_key}
+			<button on:click={getAPIkey}> Get API key </button>
+		{:else}
+			<button
+				on:click={() => {
+					apiInputType =
+						apiInputType === "password" ? "text" : "password";
+				}}
+			>
+				{#if apiInputType === "password"}
+					<ObsidianLucideIcon name="eye" />
+				{:else}
+					<ObsidianLucideIcon name="eye-off" />
+				{/if}
+			</button>
+			<button
+				on:click={async () => {
+					parent.plugin.settings.api_key = "";
 					await parent.plugin.saveSettings();
 				}}
-			/>
-		{:catch error}
-			<p class="warning">Something went wrong: {error.message}</p>
-		{/await}
+			>
+				<ObsidianLucideIcon name="eraser" />
+			</button>
+		{/if}
 	</div>
 </ObsidianSettingsItem>
 
@@ -206,8 +237,14 @@
 	.banner img {
 		height: 2em;
 	}
-	.warning {
+	/* .warning {
 		color: var(--text-error);
+	} */
+	.control {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5em;
 	}
 	.footer {
 		display: flex;
