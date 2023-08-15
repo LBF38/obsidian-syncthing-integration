@@ -10,7 +10,6 @@ import { type SyncthingController } from "src/controllers/main_controller";
 import SyncthingPlugin from "src/main";
 import { SyncThingConfiguration, SyncThingDevice } from "src/models/entities";
 import { Failure } from "src/models/failures";
-import { ObsidianLogo, SyncthingLogo } from "./logos";
 import SettingView from "../components/settings_view.svelte";
 
 export class SyncthingSettingTab extends PluginSettingTab {
@@ -33,90 +32,6 @@ export class SyncthingSettingTab extends PluginSettingTab {
 				parent: this
 			}
 		})
-
-		// // Banner
-		// this.createPluginBanner(containerEl);
-		// this.pluginInformation(containerEl);
-
-		// // Check if Syncthing is installed.
-		// const hasSyncthing = await this.syncthingController.hasSyncThing();
-		// if (!hasSyncthing) {
-		// 	new Setting(containerEl)
-		// 		.setName("Syncthing is not installed.")
-		// 		.setDesc("Please install Syncthing at the following URL.")
-		// 		.addButton((button) => {
-		// 			button
-		// 				.setIcon("link")
-		// 				.setCta()
-		// 				.onClick(() => {
-		// 					open("https://syncthing.net/downloads", "_blank");
-		// 				});
-		// 		});
-		// 	return;
-		// }
-
-		// // For mobile app
-		// this.openMobileApp(containerEl);
-		// if (Platform.isMobileApp) {
-		// 	const warningSetting = new Setting(containerEl)
-		// 		.setName("Warning")
-		// 		.setHeading()
-		// 		.setDesc(
-		// 			"The following settings are in beta. All plugin's features may not currently be available on mobile."
-		// 		);
-		// 	warningSetting.nameEl.style.color = "rgba(255, 0, 0, 0.8)";
-		// 	warningSetting.descEl.style.color = "rgba(255, 0, 0, 0.8)";
-		// }
-
-		// API Key setting.
-		// await this.apiKeySetting(containerEl);
-
-		// Get the Syncthing configuration from CLI or API.
-		// this.configurationSetting(containerEl);
-
-		// To check the API status.
-		// new Setting(containerEl)
-		// 	.setName("Syncthing API Status")
-		// 	.addButton((button) => {
-		// 		button.setButtonText("Check API Status").onClick(async () => {
-		// 			this.syncthingController
-		// 				.getAPIStatus()
-		// 				.then((status) => {
-		// 					new Notice(`Syncthing Ping : ${status}`);
-		// 				})
-		// 				.catch((error) => {
-		// 					new Notice(error);
-		// 				});
-		// 		});
-		// 	});
-
-		// To check the Syncthing CLI status.
-		// if (Platform.isDesktopApp) {
-		// 	new Setting(containerEl)
-		// 		.setName("Syncthing CLI Status")
-		// 		.addButton((button) => {
-		// 			button
-		// 				.setButtonText("Check CLI Status")
-		// 				.onClick(async () => {
-		// 					this.syncthingController
-		// 						.getCLIStatus()
-		// 						.then((status) => {
-		// 							new Notice(
-		// 								`Syncthing CLI Status : ${status}`
-		// 							);
-		// 						});
-		// 				});
-		// 		});
-		// }
-
-		// Open Syncthing GUI.
-		// this.syncthingGUIsettings(containerEl);
-
-		// Syncthing configuration integration. This part should show the configuration of the Syncthing instance for the vault.
-		// this.syncthingConfiguration(containerEl);
-
-		// Plugin's dev Mode.
-		// this.pluginDevModeSetting(containerEl);
 	}
 
 	private syncthingConfiguration(containerEl: HTMLElement) {
@@ -257,47 +172,6 @@ export class SyncthingSettingTab extends PluginSettingTab {
 			});
 	}
 
-	private pluginInformation(containerEl: HTMLElement) {
-		const headerSetting = new Setting(containerEl)
-			.setName("Syncthing Integration for Obsidian")
-			.setHeading();
-		headerSetting.descEl
-			.createEl("p", {
-				text: "This plugin allows you to sync your vault with Syncthing.\nIt allows you to manage the sync process from within Obsidian.\nYou can only manage the folder you are in.\n\nTo use this plugin, you need to have Syncthing installed on your computer.\n\nYou can find more information about Syncthing here: ",
-			})
-			.appendChild(
-				containerEl.createEl("a", {
-					text: "https://syncthing.net/",
-					href: "https://syncthing.net/",
-				})
-			);
-	}
-
-	private createPluginBanner(containerEl: HTMLElement) {
-		const banner = containerEl.createEl("p");
-		const link = banner.createEl("a", {
-			attr: {
-				href: "https://github.com/lbf38/obsidian-syncthing-integration",
-			},
-		});
-		const syncthingImg = containerEl.createEl("img", {
-			attr: {
-				src: SyncthingLogo,
-			},
-		});
-		const obsidianImg = containerEl.createEl("img", {
-			attr: {
-				src: ObsidianLogo,
-			},
-		});
-		syncthingImg.style.height = "50px";
-		obsidianImg.style.height = "50px";
-		banner.style.justifyContent = "center";
-		banner.style.display = "flex";
-		link.append(syncthingImg, obsidianImg);
-		banner.append(link);
-	}
-
 	private async configurationSetting(containerEl: HTMLElement) {
 		const configSetting = new Setting(containerEl)
 			.setName("Get Syncthing Configuration")
@@ -324,76 +198,6 @@ export class SyncthingSettingTab extends PluginSettingTab {
 					}
 					this.plugin.settings.configuration = configuration;
 				});
-		});
-	}
-
-	private async apiKeySetting(containerEl: HTMLElement) {
-		const apiKeySetting = new Setting(containerEl);
-		// Try to get the API key from the CLI.
-		await this.syncthingController.getAPIKey().then((key) => {
-			if (key instanceof Failure) {
-				return;
-			}
-			this.plugin.settings.api_key = key;
-			this.plugin.saveSettings();
-		});
-
-		// Display the API key setting.
-		apiKeySetting
-			.setName("Syncthing API Key")
-			.setDesc("Add your Syncthing API key here for the plugin to work.")
-			.addText(
-				(text) =>
-				(text
-					.setPlaceholder("Enter your API key here...")
-					.setValue(this.plugin.settings.api_key ?? "")
-					.onChange(async (value) => {
-						this.plugin.settings.api_key = value;
-						await this.plugin.saveSettings();
-					}).inputEl.type = "password")
-			);
-		// Show a button relative to the API key setting.
-		// If the API key is not set, show a button to get it.
-		// If the API key is set, show a button to remove it.
-		if (!this.plugin.settings.api_key) {
-			apiKeySetting.addButton((button) => {
-				button.setButtonText("Get API Key").onClick(async () => {
-					this.syncthingController.getAPIKey().then((key) => {
-						if (key instanceof Failure) {
-							new Notice(key.message);
-							return;
-						}
-						this.plugin.settings.api_key = key;
-						this.plugin.saveSettings();
-						this.display();
-					});
-				});
-			});
-			return;
-		}
-		apiKeySetting.addButton((button) => {
-			button.setButtonText("Clear API Key input").onClick(async () => {
-				this.plugin.settings.api_key = "";
-				this.plugin.saveSettings();
-				this.display();
-			});
-		});
-		apiKeySetting.addButton((button) => {
-			button.setIcon("eye").onClick(async () => {
-				apiKeySetting.components.forEach((component) => {
-					if (component instanceof TextComponent) {
-						component.inputEl.type =
-							component.inputEl.type === "password"
-								? "text"
-								: "password";
-						button.setIcon(
-							component.inputEl.type === "password"
-								? "eye"
-								: "eye-off"
-						);
-					}
-				});
-			});
 		});
 	}
 
