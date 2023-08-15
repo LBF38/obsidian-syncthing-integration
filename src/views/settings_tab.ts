@@ -61,22 +61,6 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		// });
 	}
 
-	private pluginDevModeSetting(containerEl: HTMLElement) {
-		new Setting(containerEl).setName("Developer Mode").setHeading();
-		new Setting(containerEl)
-			.setName("Enable Plugin's Developer Mode")
-			.addToggle((toggle) => {
-				toggle
-					.setValue(this.plugin.settings.devMode)
-					.onChange(async (value) => {
-						this.plugin.settings.devMode = value;
-						await this.plugin.saveSettings();
-						this.plugin.onunload();
-						this.plugin.onload();
-					});
-			});
-	}
-
 	private syncthingGUIsettings(containerEl: HTMLElement) {
 		new Setting(containerEl).setName("Syncthing GUI").setHeading();
 		new Setting(containerEl)

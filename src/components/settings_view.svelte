@@ -6,6 +6,7 @@
 	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
 	import { Failure } from "src/models/failures";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
+	import ObsidianToggle from "./obsidian_toggle.svelte";
 	export let parent: SyncthingSettingTab;
 	let hasSyncthing: boolean = false;
 	let apiInputType = "password";
@@ -115,6 +116,7 @@
 	</div>
 </ObsidianSettingsItem>
 
+<!-- Syncthing status -->
 <ObsidianSettingsItem name="Syncthing API Status">
 	<div slot="control">
 		<button
@@ -154,11 +156,8 @@
 		</div>
 	</ObsidianSettingsItem>
 {/if}
-<ObsidianSettingsItem
-	name="In construction"
-	description="This part is in construction."
-/>
 
+<!-- Mobile settings -->
 {#if Platform.isMobileApp}
 	<ObsidianSettingsItem
 		name="Warning"
@@ -210,9 +209,26 @@
 <!-- Plugin developer mode -->
 <ObsidianSettingsItem name="Plugin's Dev Mode" heading={true} />
 <ObsidianSettingsItem
-	name="In construction"
-	description="This part is in construction."
-/>
+	name="Enable Plugin's Developer Mode"
+	description="For the moment, the developer mode contains a Syncthing conflicts generator. It allows to test the plugin's conflict resolution system."
+>
+	<div slot="description">
+		For the moment, the developer mode contains a Syncthing conflicts
+		generator.
+		<br />
+		It allows to test the plugin's conflict resolution system.
+	</div>
+	<ObsidianToggle
+		callback={async (value) => {
+			parent.plugin.settings.devMode = value;
+			await parent.plugin.saveSettings();
+			// TODO: Refactor using the unload command workaround.
+			parent.plugin.onunload();
+			parent.plugin.onload();
+		}}
+		slot="control"
+	/>
+</ObsidianSettingsItem>
 
 <!-- Footer -->
 <ObsidianSettingsItem heading={true}>
@@ -237,9 +253,6 @@
 	.banner img {
 		height: 2em;
 	}
-	/* .warning {
-		color: var(--text-error);
-	} */
 	.control {
 		display: flex;
 		align-items: center;
