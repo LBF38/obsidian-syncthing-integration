@@ -29,7 +29,7 @@
 		"@types/marked": "^5.0.1",
 		"@types/node": "^18.0.0",
 		"@typescript-eslint/eslint-plugin": "5.61.0",
-		"@typescript-eslint/parser": "5.61.0",
+		"@typescript-eslint/parser": "5.62.0",
 		"builtin-modules": "3.3.0",
 		"child_process": "^1.0.2",
 		"codemirror": "^6.0.1",
