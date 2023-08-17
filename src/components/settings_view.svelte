@@ -54,30 +54,30 @@
 		error={true}
 		name="Syncthing is not found"
 	>
-		<div slot="description">
+		<svelte:fragment slot="description">
 			Syncthing is not installed or not found on your device. Please
 			install it at the following URL:
 			<a href="https://syncthing.net/downloads" target="_blank">
 				https://syncthing.net/downloads
 			</a>
-		</div>
+		</svelte:fragment>
 	</ObsidianSettingsItem>
 	<ObsidianSettingsItem
 		name="Retry"
 		description="If you want to retry connecting, after setting the API key. This might resolve the issue."
 	>
-		<div slot="control">
+		<svelte:fragment slot="control">
 			<button class="mod-cta">Connect to Syncthing via API.</button>
-		</div>
+		</svelte:fragment>
 	</ObsidianSettingsItem>
 {/if}
 
 <!-- API Key setting -->
 <ObsidianSettingsItem name="Syncthing API Key" heading={true}>
-	<p slot="description">
+	<svelte:fragment slot="description">
 		Add your Syncthing API key here for the plugin to work.
-	</p>
-	<div slot="control" class="control">
+	</svelte:fragment>
+	<svelte:fragment slot="control">
 		<input
 			type={apiInputType}
 			name="apikey"
@@ -113,12 +113,12 @@
 				<ObsidianLucideIcon name="eraser" />
 			</button>
 		{/if}
-	</div>
+	</svelte:fragment>
 </ObsidianSettingsItem>
 
 <!-- Syncthing status -->
 <ObsidianSettingsItem name="Syncthing API Status">
-	<div slot="control">
+	<svelte:fragment slot="control">
 		<button
 			on:click={async () => {
 				parent.syncthingController
@@ -133,12 +133,12 @@
 		>
 			Check API Status
 		</button>
-	</div>
+	</svelte:fragment>
 </ObsidianSettingsItem>
 
 {#if Platform.isDesktopApp}
 	<ObsidianSettingsItem name="Syncthing CLI Status">
-		<div slot="control">
+		<svelte:fragment slot="control">
 			<button
 				on:click={async () => {
 					parent.syncthingController
@@ -153,7 +153,7 @@
 			>
 				Check CLI Status
 			</button>
-		</div>
+		</svelte:fragment>
 	</ObsidianSettingsItem>
 {/if}
 
@@ -168,7 +168,7 @@
 		name="Open Syncthing mobile app"
 		description="Open the Syncthing mobile app, if not it opens the Google Play Store page."
 	>
-		<div slot="control">
+		<svelte:fragment slot="control">
 			<button
 				on:click={() => {
 					if (!Platform.isAndroidApp) {
@@ -188,7 +188,7 @@
 					Open Syncthing on Mobile.
 				</a>
 			</button>
-		</div>
+		</svelte:fragment>
 	</ObsidianSettingsItem>
 {/if}
 
@@ -212,12 +212,12 @@
 	name="Enable Plugin's Developer Mode"
 	description="For the moment, the developer mode contains a Syncthing conflicts generator. It allows to test the plugin's conflict resolution system."
 >
-	<div slot="description">
+	<svelte:fragment slot="description">
 		For the moment, the developer mode contains a Syncthing conflicts
 		generator.
 		<br />
 		It allows to test the plugin's conflict resolution system.
-	</div>
+	</svelte:fragment>
 	<ObsidianToggle
 		callback={async (value) => {
 			parent.plugin.settings.devMode = value;
@@ -275,12 +275,6 @@
 	}
 	.banner img {
 		height: 2em;
-	}
-	.control {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.5em;
 	}
 	.footer {
 		display: flex;
