@@ -36,7 +36,7 @@
 		"css-minify": "^2.0.0",
 		"diff": "^5.1.0",
 		"diff2html": "^3.4.35",
-		"esbuild": "0.18.11",
+		"esbuild": "0.19.2",
 		"esbuild-svelte": "^0.7.4",
 		"eslint": "^8.42.0",
 		"fs": "0.0.1-security",
