@@ -8,7 +8,7 @@
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import ObsidianToggle from "./obsidian_toggle.svelte";
 	export let parent: SyncthingSettingTab;
-	let hasSyncthing: boolean = false;
+	let hasSyncthing: boolean = true;
 	let apiInputType = "password";
 	let guiPasswordInputType = "password";
 
@@ -165,32 +165,6 @@
 		description="The following settings are in beta. All plugin's features may not currently be available on mobile."
 		error={true}
 	/>
-	<ObsidianSettingsItem
-		name="Open Syncthing mobile app"
-		description="Open the Syncthing mobile app, if not it opens the Google Play Store page."
-	>
-		<svelte:fragment slot="control">
-			<button
-				on:click={() => {
-					if (!Platform.isAndroidApp) {
-						new Notice(
-							"The feature is not implemented for your platform. Please open the Syncthing app for your platform. You can create an issue on GitHub if you want to request this feature.",
-							5000
-						);
-						return;
-					}
-					parent.plugin.syncthingFromAndroid.openSyncthing();
-				}}
-			>
-				<a
-					href="intent://syncthing.net/#Intent;scheme=https;package=com.nutomic.syncthingandroid;end"
-					target="_blank"
-				>
-					Open Syncthing on Mobile.
-				</a>
-			</button>
-		</svelte:fragment>
-	</ObsidianSettingsItem>
 {/if}
 
 <!-- GUI Setting -->
@@ -302,28 +276,56 @@
 />
 
 <!-- Plugin developer mode -->
-<ObsidianSettingsItem name="Plugin's Dev Mode" heading={true} />
-<ObsidianSettingsItem
-	name="Enable Plugin's Developer Mode"
-	description="For the moment, the developer mode contains a Syncthing conflicts generator. It allows to test the plugin's conflict resolution system."
->
-	<svelte:fragment slot="description">
-		For the moment, the developer mode contains a Syncthing conflicts
-		generator.
-		<br />
-		It allows to test the plugin's conflict resolution system.
-	</svelte:fragment>
-	<ObsidianToggle
-		callback={async (value) => {
-			parent.plugin.settings.devMode = value;
-			await parent.plugin.saveSettings();
-			// TODO: Refactor using the unload command workaround.
-			parent.plugin.onunload();
-			parent.plugin.onload();
-		}}
-		slot="control"
-	/>
-</ObsidianSettingsItem>
+{#if Platform.isDesktopApp}
+	<ObsidianSettingsItem name="Plugin's Dev Mode" heading={true} />
+	<ObsidianSettingsItem
+		name="Enable Plugin's Developer Mode"
+		description="For the moment, the developer mode contains a Syncthing conflicts generator. It allows to test the plugin's conflict resolution system."
+	>
+		<svelte:fragment slot="description">
+			For the moment, the developer mode contains a Syncthing conflicts
+			generator.
+			<br />
+			It allows to test the plugin's conflict resolution system.
+		</svelte:fragment>
+		<ObsidianToggle
+			callback={async (value) => {
+				parent.plugin.settings.devMode = value;
+				await parent.plugin.saveSettings();
+				// TODO: Refactor using the unload command workaround.
+				parent.plugin.onunload();
+				parent.plugin.onload();
+			}}
+			slot="control"
+		/>
+	</ObsidianSettingsItem>
+{/if}
+
+<!-- Open Mobile app -->
+{#if Platform.isMobileApp}
+	<ObsidianSettingsItem name="Open Mobile app" heading={true} />
+	<ObsidianSettingsItem
+		name="Open Syncthing mobile app"
+		description="Open the Syncthing mobile app, if not it opens the Google Play Store page."
+	>
+		<svelte:fragment slot="control">
+			<button
+				on:click={() => {
+					if (!Platform.isAndroidApp) {
+						new Notice(
+							"The feature is not implemented for your platform. Please open the Syncthing app for your platform. You can create an issue on GitHub if you want to request this feature.",
+							5000
+						);
+						return;
+					}
+					parent.plugin.syncthingFromAndroid.openSyncthing();
+				}}
+			>
+				Open Syncthing on Mobile.
+			</button>
+		</svelte:fragment>
+	</ObsidianSettingsItem>
+{/if}
 
 <!-- Footer -->
 <ObsidianSettingsItem heading={true}>

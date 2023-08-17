@@ -1,7 +1,6 @@
 import {
 	App,
 	Notice,
-	Platform,
 	PluginSettingTab,
 	Setting
 } from "obsidian";
@@ -87,30 +86,6 @@ export class SyncthingSettingTab extends PluginSettingTab {
 					this.plugin.settings.configuration = configuration;
 				});
 		});
-	}
-
-	private openMobileApp(containerEl: HTMLElement) {
-		if (!Platform.isMobileApp) {
-			return;
-		}
-		new Setting(containerEl)
-			.setName("Open Syncthing mobile app on Google Play Store.")
-			.setDesc("Open the Syncthing mobile app page on Google Play Store.")
-			.addButton((button) => {
-				button
-					.setIcon("play")
-					.setCta()
-					.onClick(async () => {
-						if (!Platform.isAndroidApp) {
-							new Notice(
-								"The feature is not implemented for your platform. Please open the Syncthing app for your platform. You can create an issue on GitHub if you want to request this feature.",
-								5000
-							);
-							return;
-						}
-						this.plugin.syncthingFromAndroid.openSyncthing();
-					});
-			});
 	}
 
 	/**
