@@ -233,9 +233,32 @@
 <!-- Footer -->
 <ObsidianSettingsItem heading={true}>
 	<div slot="control" class="footer">
-		<button>Sponsor</button>
-		<button>GitHub repo</button>
-		<button>Report a bug</button>
+		<button
+			on:click={() => {
+				open("https://github.com/sponsors/LBF38");
+			}}
+		>
+			<ObsidianLucideIcon name="heart" />
+			Sponsor
+		</button>
+		<button
+			on:click={() => {
+				open("https://github.com/LBF38/obsidian-syncthing-integration");
+			}}
+		>
+			<ObsidianLucideIcon name="github" />
+			GitHub repo
+		</button>
+		<button
+			on:click={() => {
+				open(
+					"https://github.com/LBF38/obsidian-syncthing-integration/issues/new/choose"
+				);
+			}}
+		>
+			<ObsidianLucideIcon name="bug" />
+			Report a bug
+		</button>
 	</div>
 </ObsidianSettingsItem>
 
@@ -263,5 +286,12 @@
 		display: flex;
 		justify-content: space-between;
 		width: 100%;
+	}
+	.footer button {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		gap: 0.5em;
+		justify-content: space-around;
 	}
 </style>

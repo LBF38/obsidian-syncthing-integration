@@ -10,4 +10,4 @@
 	});
 </script>
 
-<div bind:this={element} {...$$restProps}/>
+<div bind:this={element} {...$$restProps} />
