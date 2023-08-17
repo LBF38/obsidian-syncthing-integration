@@ -3,8 +3,7 @@ import {
 	Notice,
 	Platform,
 	PluginSettingTab,
-	Setting,
-	TextComponent,
+	Setting
 } from "obsidian";
 import { type SyncthingController } from "src/controllers/main_controller";
 import SyncthingPlugin from "src/main";
@@ -59,101 +58,6 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		// containerEl.createEl("p", {
 		// 	text: "This table will show the information concerning the syncthing shared folder, which corresponds to the current vault.",
 		// });
-	}
-
-	private syncthingGUIsettings(containerEl: HTMLElement) {
-		new Setting(containerEl).setName("Syncthing GUI").setHeading();
-		new Setting(containerEl)
-			.setName("Set GUI address")
-			.setDesc(
-				"Please set your Syncthing GUI address here. This address will be used to open the Syncthing GUI in your browser."
-			)
-			.addText((text) => {
-				text.setPlaceholder("Enter your GUI address here...")
-					.setValue(
-						this.plugin.settings.configuration.syncthingBaseUrl ??
-						""
-					)
-					.onChange(async (value) => {
-						this.plugin.settings.configuration.syncthingBaseUrl =
-							value;
-						await this.plugin.saveSettings();
-					});
-			});
-
-		if (Platform.isMobileApp) {
-			const guiSetting = new Setting(containerEl)
-				.setName("Set GUI Credentials")
-				.setDesc(
-					"Please set your Syncthing GUI credentials here. These credentials will be used to open the Syncthing GUI in your browser."
-				);
-			guiSetting
-				.addText((text) => {
-					text.setPlaceholder("Enter your GUI username here...")
-						.setValue(this.plugin.settings.gui_username ?? "")
-						.onChange(async (value) => {
-							this.plugin.settings.gui_username = value;
-							await this.plugin.saveSettings();
-						});
-					text.inputEl.setAttribute("id", "gui-username");
-				})
-				.addText((text) => {
-					text
-						.setPlaceholder("Enter your GUI password here...")
-						.setValue(this.plugin.settings.gui_password ?? "")
-						.onChange(async (value) => {
-							this.plugin.settings.gui_password = value;
-							await this.plugin.saveSettings();
-						}).inputEl.type = "password";
-					text.inputEl.setAttribute("id", "gui-password");
-				})
-				.addButton((button) => {
-					button.setIcon("eye").onClick(async () => {
-						guiSetting.components.forEach((component) => {
-							if (
-								component instanceof TextComponent &&
-								component.inputEl.id === "gui-password"
-							) {
-								component.inputEl.type =
-									component.inputEl.type === "password"
-										? "text"
-										: "password";
-								button.setIcon(
-									component.inputEl.type === "password"
-										? "eye"
-										: "eye-off"
-								);
-							}
-						});
-					});
-				});
-		}
-
-		new Setting(containerEl)
-			.setName("Open Syncthing GUI")
-			.setDesc("Open the Syncthing GUI in your browser.")
-			.addButton((button) => {
-				button
-					.setIcon("link")
-					.setCta()
-					.onClick(async () => {
-						if (
-							(!this.plugin.settings.gui_username ||
-								!this.plugin.settings.gui_password) &&
-							Platform.isMobileApp
-						) {
-							new Notice(
-								"Please set your GUI credentials first. There are needed on mobile app."
-							);
-							return;
-						}
-						const url = `http://${this.plugin.settings.gui_username
-							}:${this.plugin.settings.gui_password}@${this.plugin.settings.configuration
-								.syncthingBaseUrl ?? "localhost:8384"
-							}`;
-						window.open(url);
-					});
-			});
 	}
 
 	private async configurationSetting(containerEl: HTMLElement) {

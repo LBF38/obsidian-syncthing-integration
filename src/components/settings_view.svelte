@@ -10,6 +10,7 @@
 	export let parent: SyncthingSettingTab;
 	let hasSyncthing: boolean = false;
 	let apiInputType = "password";
+	let guiPasswordInputType = "password";
 
 	onMount(async () => {
 		hasSyncthing = await parent.syncthingController.hasSyncThing();
@@ -195,9 +196,103 @@
 <!-- GUI Setting -->
 <ObsidianSettingsItem name="Syncthing GUI" heading={true} />
 <ObsidianSettingsItem
-	name="In construction"
-	description="This part is in construction."
-/>
+	name="Set GUI address"
+	description="Please set your Syncthing GUI address here. This address will be used to open the Syncthing GUI in your browser. It is required on mobile app."
+>
+	<input
+		type="text"
+		placeholder="Enter your GUI address here..."
+		bind:value={parent.plugin.settings.configuration.syncthingBaseUrl}
+		on:change={async (event) => {
+			parent.plugin.settings.configuration.syncthingBaseUrl =
+				event.currentTarget.value;
+			await parent.plugin.saveSettings();
+		}}
+		slot="control"
+	/>
+</ObsidianSettingsItem>
+<ObsidianSettingsItem
+	name="Set GUI Credentials"
+	description="Please set your Syncthing GUI credentials here. These credentials will be used to open the Syncthing GUI in your browser."
+>
+	<svelte:fragment slot="control">
+		<input
+			type="text"
+			placeholder="Enter your GUI username here..."
+			id="gui-username"
+			bind:value={parent.plugin.settings.gui_username}
+			on:change={async (event) => {
+				parent.plugin.settings.gui_username = event.currentTarget.value;
+				await parent.plugin.saveSettings();
+			}}
+			required={Platform.isMobileApp}
+		/>
+		<input
+			type={guiPasswordInputType}
+			placeholder="Enter your GUI password here..."
+			id="gui-password"
+			value={parent.plugin.settings.gui_password ?? ""}
+			on:change={async (event) => {
+				parent.plugin.settings.gui_password = event.currentTarget.value;
+				await parent.plugin.saveSettings();
+			}}
+			required={Platform.isMobileApp}
+		/>
+		<button
+			on:click={() => {
+				guiPasswordInputType =
+					guiPasswordInputType === "password" ? "text" : "password";
+			}}
+		>
+			{#if guiPasswordInputType === "password"}
+				<ObsidianLucideIcon name="eye" />
+			{:else}
+				<ObsidianLucideIcon name="eye-off" />
+			{/if}
+		</button>
+	</svelte:fragment>
+</ObsidianSettingsItem>
+<ObsidianSettingsItem
+	name="Open Syncthing GUI"
+	description="Open the Syncthing GUI in your browser."
+>
+	<button
+		slot="control"
+		class="mod-cta"
+		on:click={async () => {
+			if (
+				(!parent.plugin.settings.gui_username ||
+					!parent.plugin.settings.gui_password) &&
+				Platform.isMobileApp
+			) {
+				new Notice(
+					"Please set your GUI credentials first. There are needed on mobile app."
+				);
+				return;
+			}
+			let url;
+			if (
+				parent.plugin.settings.gui_username &&
+				parent.plugin.settings.gui_password
+			) {
+				url = `https://${parent.plugin.settings.gui_username}:${
+					parent.plugin.settings.gui_password
+				}@${
+					parent.plugin.settings.configuration.syncthingBaseUrl ??
+					"localhost:8384"
+				}`;
+			} else {
+				url = `https://${
+					parent.plugin.settings.configuration.syncthingBaseUrl ??
+					"localhost:8384"
+				}`;
+			}
+			window.open(url);
+		}}
+	>
+		<ObsidianLucideIcon name="link" />
+	</button>
+</ObsidianSettingsItem>
 
 <!-- Configuration display -->
 <ObsidianSettingsItem name="Syncthing Configuration" heading={true} />
