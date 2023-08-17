@@ -9,7 +9,7 @@
 		"build": "pnpm lint && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"prepare": "husky install",
-		"lint": "tsc -noEmit -skipLibCheck && eslint . --ext .ts",
+		"lint": "tsc -noEmit -skipLibCheck && eslint . --ext .ts,.svelte src",
 		"release": "pnpm build && semantic-release"
 	},
 	"keywords": [],
@@ -39,6 +39,7 @@
 		"esbuild": "0.19.2",
 		"esbuild-svelte": "^0.7.4",
 		"eslint": "^8.42.0",
+		"eslint-plugin-svelte": "^2.32.4",
 		"fs": "0.0.1-security",
 		"highlight.js": "^11.8.0",
 		"husky": "^8.0.0",

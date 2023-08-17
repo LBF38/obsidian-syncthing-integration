@@ -1,23 +1,47 @@
 {
-    "root": true,
-    "parser": "@typescript-eslint/parser",
-    "env": { "node": true },
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/eslint-recommended",
-      "plugin:@typescript-eslint/recommended"
-    ], 
-    "parserOptions": {
-        "sourceType": "module"
-    },
-    "rules": {
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": ["error", { "args": "none" }],
-      "@typescript-eslint/ban-ts-comment": "off",
-      "no-prototype-builtins": "off",
-      "@typescript-eslint/no-empty-function": "off"
-    } 
-  }
+	"root": true,
+	"parser": "@typescript-eslint/parser",
+	"env": {
+		"node": true
+	},
+	"plugins": [
+		"@typescript-eslint"
+	],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:svelte/recommended"
+	],
+	"parserOptions": {
+		"sourceType": "module",
+		"project": "./tsconfig.json",
+		"extraFileExtensions": [
+			".svelte"
+		] // This is a required setting in `@typescript-eslint/parser` v4.24.0.
+	},
+	"overrides": [
+		{
+			"files": [
+				"*.svelte"
+			],
+			"parser": "svelte-eslint-parser",
+			// Parse the `<script>` in `.svelte` as TypeScript by adding the following configuration.
+			"parserOptions": {
+				"parser": "@typescript-eslint/parser"
+			}
+		}
+	],
+	"rules": {
+		"no-unused-vars": "off",
+		"@typescript-eslint/no-unused-vars": [
+			"error",
+			{
+				"args": "none"
+			}
+		],
+		"@typescript-eslint/ban-ts-comment": "off",
+		"no-prototype-builtins": "off",
+		"@typescript-eslint/no-empty-function": "off"
+	}
+}
