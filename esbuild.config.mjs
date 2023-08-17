@@ -431,11 +431,11 @@ const context = await esbuild.context({
 		copyManifest,
 		copyMinifiedCSS,
 		esbuildSvelte({
-			compilerOptions: { css: true },
+			compilerOptions: { css: "injected", dev: !prod },
 			preprocess: sveltePreprocess(),
 		}),
 	],
-	loader: { ".scss": "text", ".ttf": "text" },
+	loader: { ".scss": "text", ".ttf": "text", ".svg": "file" },
 });
 
 if (prod) {
