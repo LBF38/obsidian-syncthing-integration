@@ -20,10 +20,7 @@ export class SyncthingFromREST {
 	 * This is used to check if Syncthing is installed.
 	 */
 	async ping(): Promise<"pong"> {
-		const response = await this.requestEndpoint(
-			this.plugin.settings.configuration.syncthingBaseUrl +
-				"/rest/system/ping"
-		);
+		const response = await this.requestEndpoint("/rest/system/ping");
 		console.log("REST - ping: ", response);
 		return response.json["ping"];
 	}
@@ -33,7 +30,7 @@ export class SyncthingFromREST {
 	 */
 	async getAllFolders(): Promise<SyncthingFolderModel[]> {
 		const response = await this.requestEndpoint(
-			`${this.plugin.settings.configuration.syncthingBaseUrl}/rest/system/config/folders`
+			"/rest/system/config/folders"
 		);
 		const foldersModel: SyncthingFolderModel[] = [];
 		for (const folder of await response.json()) {
@@ -63,7 +60,7 @@ export class SyncthingFromREST {
 	 */
 	async getDevices(): Promise<SyncthingDeviceModel[]> {
 		const response = await this.requestEndpoint(
-			`${this.plugin.settings.configuration.syncthingBaseUrl}/rest/system/config/devices`
+			"/rest/system/config/devices"
 		);
 		const devicesModel: SyncthingDeviceModel[] = [];
 		for (const device of await response.json()) {
@@ -78,16 +75,16 @@ export class SyncthingFromREST {
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
 	async getConfiguration(): Promise<SyncthingConfigurationModel> {
-		const response = await this.requestEndpoint(
-			`${this.plugin.settings.configuration.syncthingBaseUrl}/rest/system/config`
-		);
+		const response = await this.requestEndpoint("/rest/system/config");
 		return SyncthingConfigurationModel.fromJSON(await response.json());
 	}
 
 	private async requestEndpoint(endpoint: string) {
 		// FIXME: Fix the issue when connecting to the REST API. (error 403)
-		const request = requestUrl({
-			url: `http://${endpoint}`,
+		console.log("requestEndpoint: Endpoint", endpoint);
+		const url = `${this.plugin.settings.configuration.syncthingBaseUrl}/${endpoint}`;
+		const response = requestUrl({
+			url: url,
 			method: "GET",
 			headers: {
 				"X-API-Key": this.plugin.settings.api_key,
@@ -96,17 +93,21 @@ export class SyncthingFromREST {
 				"Access-Control-Allow-Origin": "*",
 			},
 		});
-		// console.log("requestEndpoint: ", this.plugin.settings.api_key);
-		return request
+		console.log(
+			"requestEndpoint: API Key set ?",
+			this.plugin.settings.api_key !== ""
+		);
+		console.log("requestEndpoint: url requested ", url);
+		return response
 			.then((response) => {
-				console.log("requestEndpoint response: ", response);
+				console.log("requestEndpoint: response ", response);
 				if (response.status >= 400) {
 					throw new RestFailure(response.text);
 				}
 				return response;
 			})
 			.catch((error) => {
-				console.error("requestEndpoint error: ", error);
+				console.error("requestEndpoint: error: ", error);
 				throw new RestFailure(error);
 			});
 	}
