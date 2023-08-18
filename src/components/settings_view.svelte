@@ -7,6 +7,7 @@
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
 	import ObsidianToggle from "./obsidian_toggle.svelte";
+	import { ConfigurationModal } from "src/views/configuration_modal";
 	export let parent: SyncthingSettingTab;
 	let hasSyncthing = true;
 	let apiInputType = "password";
@@ -348,7 +349,17 @@
 <ObsidianSettingsItem
 	name="In construction"
 	description="This part is in construction."
-/>
+>
+	<button
+		on:click={async (event) => {
+			new Notice("This part is in construction.");
+			new ConfigurationModal(parent.app).open();
+		}}
+		slot="control"
+	>
+		<ObsidianLucideIcon name="cog" />
+	</button>
+</ObsidianSettingsItem>
 
 <!-- Plugin developer mode -->
 {#if Platform.isDesktopApp}
