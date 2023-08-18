@@ -1,4 +1,4 @@
-import { SyncThingConfigurationModel } from "../models/models";
+import { SyncthingConfigurationModel } from "../models/models";
 import { CliFailure } from "src/models/failures";
 import { Platform } from "obsidian";
 
@@ -10,7 +10,7 @@ export class SyncthingFromCLI {
 	/**
 	 * Stop the Syncthing service using the CLI.
 	 */
-	async stopSyncThing(): Promise<boolean> {
+	async stopSyncthing(): Promise<boolean> {
 		const syncthingStop = "syncthing cli operations shutdown";
 		const response = this.runSyncthingCommand(syncthingStop);
 		if (response instanceof Error) {
@@ -22,7 +22,7 @@ export class SyncthingFromCLI {
 	/**
 	 * Start the Syncthing service using the CLI.
 	 */
-	async startSyncThing(): Promise<boolean> {
+	async startSyncthing(): Promise<boolean> {
 		const syncthingStart = "syncthing";
 		const response = await this.runSyncthingCommand(syncthingStart);
 		if (response instanceof Error) {
@@ -47,14 +47,14 @@ export class SyncthingFromCLI {
 	/**
 	 * Get the configuration of Syncthing installation using the CLI.
 	 */
-	async getConfiguration(): Promise<SyncThingConfigurationModel> {
+	async getConfiguration(): Promise<SyncthingConfigurationModel> {
 		const commandToGetConfig = "syncthing cli config dump-json";
 		const response = await this.runSyncthingCommand(commandToGetConfig);
 		if (response instanceof Error) {
 			throw new CliFailure(response.message);
 		}
 		console.log("Config version : " + JSON.parse(response)["version"]);
-		return SyncThingConfigurationModel.fromJSON(response);
+		return SyncthingConfigurationModel.fromJSON(response);
 	}
 
 	/**

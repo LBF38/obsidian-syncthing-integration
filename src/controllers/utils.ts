@@ -74,13 +74,13 @@ export function sortByConflictDate(
 }
 
 /**
- * Parses a SyncThing conflict filename.
+ * Parses a Syncthing conflict filename.
  * The filename format is as follow : `{filename}.sync-conflict-{date}-{time}-{modifiedBy}.{extension}`
  * The format of each part is as follow :
  * - `{filename}` : the filename of the file that is in conflict.
  * - `{date}` : the date of the conflict, in the format `YYYYMMDD`.
  * - `{time}` : the time of the conflict, in the format `HHMMSS`.
- * - `{modifiedBy}` : the device ID of the device that modified the file. it is a reduced version of {@linkcode SyncThingDevice.deviceID}
+ * - `{modifiedBy}` : the device ID of the device that modified the file. it is a reduced version of {@linkcode SyncthingDevice.deviceID}
  * - `{extension}` : the file extension of the file that is in conflict.
  * @param filename the filename to parse.
  * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes for the filename format.

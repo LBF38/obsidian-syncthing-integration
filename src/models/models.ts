@@ -1,15 +1,15 @@
 import {
-	ReducedSyncThingDevice,
-	SyncThingConfiguration,
-	SyncThingDevice,
-	SyncThingFolder,
+	ReducedSyncthingDevice,
+	SyncthingConfiguration,
+	SyncthingDevice,
+	SyncthingFolder,
 } from "src/models/entities";
 
-export class SyncThingConfigurationModel extends SyncThingConfiguration {
+export class SyncthingConfigurationModel extends SyncthingConfiguration {
 	constructor(
 		version: string,
-		folders: SyncThingFolder[],
-		devices: SyncThingDevice[],
+		folders: SyncthingFolder[],
+		devices: SyncthingDevice[],
 		syncthingBaseUrl = "localhost:8384"
 	) {
 		super(version, folders, devices, syncthingBaseUrl);
@@ -19,22 +19,22 @@ export class SyncThingConfigurationModel extends SyncThingConfiguration {
 	 * The static method to parse a JSON string and return a model object.
 	 * @param json - The JSON string to parse.
 	 */
-	static fromJSON(json: string): SyncThingConfigurationModel {
+	static fromJSON(json: string): SyncthingConfigurationModel {
 		const parsedJSON = JSON.parse(json);
-		const folders: SyncThingFolder[] = [];
+		const folders: SyncthingFolder[] = [];
 		for (const parsedFolder of parsedJSON["folders"]) {
 			console.log(parsedFolder);
 			folders.push(
-				SyncThingFolderModel.fromJSON(JSON.stringify(parsedFolder))
+				SyncthingFolderModel.fromJSON(JSON.stringify(parsedFolder))
 			);
 		}
-		const devices: SyncThingDevice[] = [];
+		const devices: SyncthingDevice[] = [];
 		for (const parsedDevice of parsedJSON["devices"]) {
 			devices.push(
-				SyncThingDeviceModel.fromJSON(JSON.stringify(parsedDevice))
+				SyncthingDeviceModel.fromJSON(JSON.stringify(parsedDevice))
 			);
 		}
-		return new SyncThingConfigurationModel(
+		return new SyncthingConfigurationModel(
 			parsedJSON["version"],
 			folders,
 			devices
@@ -49,20 +49,20 @@ export class SyncThingConfigurationModel extends SyncThingConfiguration {
 	}
 }
 
-export class SyncThingFolderModel extends SyncThingFolder {
-	static fromJSON(json: string): SyncThingFolderModel {
+export class SyncthingFolderModel extends SyncthingFolder {
+	static fromJSON(json: string): SyncthingFolderModel {
 		const parsedJSON = JSON.parse(json);
-		const reducedDeviceInfos: ReducedSyncThingDevice[] = [];
+		const reducedDeviceInfos: ReducedSyncthingDevice[] = [];
 		for (const device of parsedJSON["devices"]) {
 			reducedDeviceInfos.push(
-				new ReducedSyncThingDevice(
+				new ReducedSyncthingDevice(
 					device["deviceID"],
 					device["introducedBy"],
 					device["encryptionPassword"]
 				)
 			);
 		}
-		return new SyncThingFolderModel(
+		return new SyncthingFolderModel(
 			parsedJSON["id"],
 			parsedJSON["label"],
 			parsedJSON["path"],
@@ -78,10 +78,10 @@ export class SyncThingFolderModel extends SyncThingFolder {
 	}
 }
 
-export class SyncThingDeviceModel extends SyncThingDevice {
-	static fromJSON(json: string): SyncThingDeviceModel {
+export class SyncthingDeviceModel extends SyncthingDevice {
+	static fromJSON(json: string): SyncthingDeviceModel {
 		const parsedJSON = JSON.parse(json);
-		return new SyncThingDeviceModel(
+		return new SyncthingDeviceModel(
 			parsedJSON["deviceID"],
 			parsedJSON["introducedBy"],
 			parsedJSON["encryptionPassword"],

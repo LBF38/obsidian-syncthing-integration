@@ -4,9 +4,9 @@ import { SyncthingFromCLI } from "src/data/syncthing_local_datasource";
 import { SyncthingFromREST } from "src/data/syncthing_remote_datasource";
 import SyncthingPlugin from "src/main";
 import {
-	SyncThingConfiguration,
-	SyncThingDevice,
-	SyncThingFolder,
+	SyncthingConfiguration,
+	SyncthingDevice,
+	SyncthingFolder,
 	type ConflictFilename,
 } from "src/models/entities";
 import { CliFailure, Failure, RestFailure } from "src/models/failures";
@@ -66,7 +66,7 @@ export class SyncthingController {
 	}
 
 	/**
-	 * Gets the SyncThing API status.
+	 * Gets the Syncthing API status.
 	 */
 	async getAPIStatus(): Promise<string> {
 		if (!this.plugin.settings.api_key) {
@@ -79,9 +79,9 @@ export class SyncthingController {
 	}
 
 	/**
-	 * Checks if SyncThing is installed on the system.
+	 * Checks if Syncthing is installed on the system.
 	 */
-	async hasSyncThing(): Promise<boolean> {
+	async hasSyncthing(): Promise<boolean> {
 		// Mobile support
 		if (Platform.isAndroidApp) {
 			return await this.syncthingFromAndroid.hasSyncthing();
@@ -108,7 +108,7 @@ export class SyncthingController {
 	}
 
 	/**
-	 * Gets the SyncThing conflicting files for the ConflictsModal.
+	 * Gets the Syncthing conflicting files for the ConflictsModal.
 	 * It returns a list of all files that are in conflict.
 	 * (but only one version of each file, if applicable)
 	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes
@@ -148,7 +148,7 @@ export class SyncthingController {
 	}
 
 	/**
-	 * Gets the SyncThing conflicting files for the DiffModal.
+	 * Gets the Syncthing conflicting files for the DiffModal.
 	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes
 	 */
 	async getDiffFiles(file: TFile): Promise<{
@@ -210,7 +210,7 @@ export class SyncthingController {
 	}
 
 	/**
-	 * Gets the SyncThing API key from the CLI.
+	 * Gets the Syncthing API key from the CLI.
 	 */
 	async getAPIKey(): Promise<string | Failure> {
 		if (Platform.isMobileApp) {
@@ -234,9 +234,9 @@ export class SyncthingController {
 	}
 
 	/**
-	 * Gets the SyncThing configuration.
+	 * Gets the Syncthing configuration.
 	 */
-	async getConfiguration(): Promise<SyncThingConfiguration | Failure> {
+	async getConfiguration(): Promise<SyncthingConfiguration | Failure> {
 		if (!(await this.isRunning()))
 			return new Failure("Syncthing is not running.");
 		try {
@@ -253,30 +253,30 @@ export class SyncthingController {
 	}
 
 	/**
-	 * Gets the SyncThing devices.
+	 * Gets the Syncthing devices.
 	 */
-	async getDevices(): Promise<SyncThingDevice[]> {
+	async getDevices(): Promise<SyncthingDevice[]> {
 		return await this.syncthingFromREST.getDevices();
 	}
 
 	/**
-	 * Gets the SyncThing folders.
+	 * Gets the Syncthing folders.
 	 */
-	async getFolders(): Promise<SyncThingFolder[]> {
+	async getFolders(): Promise<SyncthingFolder[]> {
 		return await this.syncthingFromREST.getAllFolders();
 	}
 
 	/**
 	 * Starts the Syncthing service.
 	 */
-	async startSyncThing(): Promise<boolean> {
-		return this.syncthingFromCLI.startSyncThing();
+	async startSyncthing(): Promise<boolean> {
+		return this.syncthingFromCLI.startSyncthing();
 	}
 
 	/**
 	 * Stops the Syncthing service.
 	 */
-	async stopSyncThing(): Promise<boolean> {
-		return this.syncthingFromCLI.stopSyncThing();
+	async stopSyncthing(): Promise<boolean> {
+		return this.syncthingFromCLI.stopSyncthing();
 	}
 }

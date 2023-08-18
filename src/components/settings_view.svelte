@@ -13,7 +13,7 @@
 	let guiPasswordInputType = "password";
 
 	onMount(async () => {
-		hasSyncthing = await parent.syncthingController.hasSyncThing();
+		hasSyncthing = await parent.syncthingController.hasSyncthing();
 	});
 
 	async function getAPIkey() {
