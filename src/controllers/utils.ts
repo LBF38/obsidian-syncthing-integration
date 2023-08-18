@@ -138,3 +138,26 @@ export function formatBytes(bytes: number, decimals = 2): string {
 
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 }
+
+export function isArrayOf<T>(
+	value: unknown,
+	typeGuard: (value: unknown) => value is T
+): value is T[] {
+	if (!Array.isArray(value)) {
+		return false;
+	}
+	for (const item of value) {
+		if (!typeGuard(item)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+export function isStringArray(value: unknown): value is string[] {
+	return isArrayOf(value, (item): item is string => typeof item === "string");
+}
+
+export function isNumberArray(value: unknown) {
+	return isArrayOf(value, (item): item is number => typeof item === "number");
+}

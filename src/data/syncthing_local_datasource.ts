@@ -53,7 +53,6 @@ export class SyncthingFromCLI {
 		if (response instanceof Error) {
 			throw new CliFailure(response.message);
 		}
-		console.log("Config version : " + JSON.parse(response)["version"]);
 		return SyncthingConfigurationModel.fromJSON(response);
 	}
 

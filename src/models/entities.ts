@@ -22,7 +22,7 @@ export class SyncthingConfiguration {
  * Available sync types in Syncthing.
  * @see https://docs.syncthing.net/users/config.html#config-option-folder.type
  */
-type SyncTypes =
+export type SyncTypes =
 	| "sendreceive"
 	| "sendonly"
 	| "receiveonly"
