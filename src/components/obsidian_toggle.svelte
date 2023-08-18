@@ -2,7 +2,7 @@
 	import { ToggleComponent } from "obsidian";
 	import { onMount } from "svelte";
 
-	export let callback: (value: boolean) => any;
+	export let callback: (value: boolean) => unknown;
 
 	let element: HTMLDivElement;
 	onMount(() => {
