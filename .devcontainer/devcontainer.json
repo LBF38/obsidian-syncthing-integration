@@ -30,7 +30,8 @@
 				"mhutchie.git-graph",
 				"ms-azuretools.vscode-docker",
 				"svelte.svelte-vscode",
-				"1YiB.svelte-bundle"
+				"1YiB.svelte-bundle",
+				"Orta.vscode-twoslash-queries"
 			]
 		}
 	}
