@@ -128,7 +128,8 @@
 						new Notice(`Syncthing Ping : ${status}`);
 					})
 					.catch((error) => {
-						new Notice(error);
+						console.log("settings tab error: ", error);
+						new Notice(error.message);
 					});
 			}}
 		>
@@ -148,7 +149,7 @@
 							new Notice(`Syncthing Ping : ${status}`);
 						})
 						.catch((error) => {
-							new Notice(error);
+							new Notice(error.message);
 						});
 				}}
 			>

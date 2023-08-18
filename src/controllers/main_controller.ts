@@ -58,11 +58,8 @@ export class SyncthingController {
 	/**
 	 * Gets the Syncthing CLI status.
 	 */
-	async getCLIStatus(): Promise<string> {
-		return this.syncthingFromCLI
-			.getVersion()
-			.then((status) => status)
-			.catch((error) => "Error: " + error);
+	getCLIStatus(): Promise<string> {
+		return this.syncthingFromCLI.getVersion();
 	}
 
 	/**
@@ -72,10 +69,7 @@ export class SyncthingController {
 		if (!this.plugin.settings.api_key) {
 			return "API key is not set.";
 		}
-		return await this.syncthingFromREST
-			.ping()
-			.then((response) => response)
-			.catch((error) => "Error: " + error);
+		return this.syncthingFromREST.ping();
 	}
 
 	/**
