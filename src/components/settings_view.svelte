@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { Notice, Platform, getIcon } from "obsidian";
+	import { Notice, Platform } from "obsidian";
+	import { Failure } from "src/models/failures";
 	import { ObsidianLogo, SyncthingLogo } from "src/views/logos";
 	import { SyncthingSettingTab } from "src/views/settings_tab";
 	import { onMount } from "svelte";
-	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
-	import { Failure } from "src/models/failures";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
+	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
 	import ObsidianToggle from "./obsidian_toggle.svelte";
 	export let parent: SyncthingSettingTab;
-	let hasSyncthing: boolean = true;
+	let hasSyncthing = true;
 	let apiInputType = "password";
 	let guiPasswordInputType = "password";
 
 	onMount(async () => {
-		hasSyncthing = await parent.syncthingController.hasSyncThing();
+		hasSyncthing = await parent.syncthingController.hasSyncthing();
 	});
 
 	async function getAPIkey() {
@@ -261,7 +261,8 @@
 					"localhost:8384"
 				}`;
 			}
-			window.open(url);
+			// eslint-disable-next-line no-undef
+			open(url);
 		}}
 	>
 		<ObsidianLucideIcon name="link" />
@@ -332,6 +333,7 @@
 	<div slot="control" class="footer">
 		<button
 			on:click={() => {
+				// eslint-disable-next-line no-undef
 				open("https://github.com/sponsors/LBF38");
 			}}
 		>
@@ -340,6 +342,7 @@
 		</button>
 		<button
 			on:click={() => {
+				// eslint-disable-next-line no-undef
 				open("https://github.com/LBF38/obsidian-syncthing-integration");
 			}}
 		>
@@ -348,6 +351,7 @@
 		</button>
 		<button
 			on:click={() => {
+				// eslint-disable-next-line no-undef
 				open(
 					"https://github.com/LBF38/obsidian-syncthing-integration/issues/new/choose"
 				);

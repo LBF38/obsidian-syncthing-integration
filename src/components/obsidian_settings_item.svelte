@@ -1,9 +1,9 @@
 <script lang="ts">
-	export let name: string = "";
-	export let description: string = "";
-	export let heading: boolean = false;
-	export let error: boolean = false;
-	let className: string = "";
+	export let name = "";
+	export let description = "";
+	export let heading = false;
+	export let error = false;
+	let className = "";
 	export { className as class };
 </script>
 

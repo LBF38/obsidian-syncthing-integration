@@ -6,7 +6,7 @@ import {
 } from "obsidian";
 import { type SyncthingController } from "src/controllers/main_controller";
 import SyncthingPlugin from "src/main";
-import { SyncThingConfiguration, SyncThingDevice } from "src/models/entities";
+import { SyncthingConfiguration, SyncthingDevice } from "src/models/entities";
 import { Failure } from "src/models/failures";
 import SettingView from "../components/settings_view.svelte";
 
@@ -93,7 +93,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 	 */
 	private async initConfigTable(
 		containerEl: HTMLElement,
-		configuration: SyncThingConfiguration
+		configuration: SyncthingConfiguration
 	): Promise<HTMLTableElement> {
 		const configTable = containerEl.createEl("table");
 		configTable.appendChild(containerEl.createEl("tbody"));
@@ -115,7 +115,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 	 */
 	private addConfigRowToTable(
 		tableEl: HTMLTableElement,
-		deviceInfo: SyncThingDevice
+		deviceInfo: SyncthingDevice
 	) {
 		const rowEl = tableEl.appendChild(tableEl.createEl("tr"));
 		rowEl.appendChild(

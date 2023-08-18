@@ -1,25 +1,15 @@
 import { Notice, Plugin, addIcon } from "obsidian";
-import {
-	SyncthingControllerImpl,
-	type SyncthingController,
-} from "./controllers/main_controller";
+import { SyncthingController } from "./controllers/main_controller";
 import {
 	DevModeModal,
 	PluginDevModeController,
 } from "./controllers/plugin_dev_mode";
 import {
-	SyncthingFromAndroidImpl,
-	type SyncthingFromAndroid,
+	SyncthingFromAndroid
 } from "./data/syncthing_android_datasource";
-import {
-	SyncThingFromCLIimpl,
-	type SyncThingFromCLI,
-} from "./data/syncthing_local_datasource";
-import {
-	SyncThingFromRESTimpl,
-	type SyncThingFromREST,
-} from "./data/syncthing_remote_datasource";
-import { SyncThingConfiguration } from "./models/entities";
+import { SyncthingFromCLI } from "./data/syncthing_local_datasource";
+import { SyncthingFromREST } from "./data/syncthing_remote_datasource";
+import { SyncthingConfiguration } from "./models/entities";
 import { ConflictsModal } from "./views/conflicts_modal";
 import { SyncthingLogoSVG } from "./views/logos";
 import { SyncthingSettingTab } from "./views/settings_tab";
@@ -28,7 +18,7 @@ interface SyncthingPluginSettings {
 	api_key: string;
 	gui_username: string;
 	gui_password: string;
-	configuration: SyncThingConfiguration | Partial<SyncThingConfiguration>;
+	configuration: SyncthingConfiguration | Partial<SyncthingConfiguration>;
 	devMode: boolean;
 }
 
@@ -41,10 +31,10 @@ export default class SyncthingPlugin extends Plugin {
 	static loadCount = 0;
 	settings!: SyncthingPluginSettings;
 	pluginsElements: HTMLElement[] = [];
-	syncthingFromCLI: SyncThingFromCLI = new SyncThingFromCLIimpl();
-	syncthingFromREST: SyncThingFromREST = new SyncThingFromRESTimpl(this);
-	syncthingFromAndroid: SyncthingFromAndroid = new SyncthingFromAndroidImpl();
-	syncthingController: SyncthingController = new SyncthingControllerImpl(
+	syncthingFromCLI: SyncthingFromCLI = new SyncthingFromCLI();
+	syncthingFromREST: SyncthingFromREST = new SyncthingFromREST(this);
+	syncthingFromAndroid: SyncthingFromAndroid = new SyncthingFromAndroid();
+	syncthingController: SyncthingController = new SyncthingController(
 		this.syncthingFromCLI,
 		this.syncthingFromREST,
 		this.syncthingFromAndroid,
@@ -64,9 +54,9 @@ export default class SyncthingPlugin extends Plugin {
 
 		// Status bar. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText("SyncThing status");
+		statusBarItemEl.setText("Syncthing status");
 		statusBarItemEl.onClickEvent(() => {
-			new Notice("SyncThing integration is not yet implemented.");
+			new Notice("Syncthing integration is not yet implemented.");
 		});
 
 		// Settings tab

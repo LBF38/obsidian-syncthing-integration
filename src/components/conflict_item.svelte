@@ -5,13 +5,12 @@
 	import { ConflictsModal } from "src/views/conflicts_modal";
 	import { DiffModal } from "src/views/diff_modal";
 	import ConflictFileDetails from "./conflict_file_details.svelte";
+	import { parseConflictFilename } from "src/controllers/utils";
 
 	export let conflicts: TFile[];
 	export let syncthingController: SyncthingController;
 	export let parentModal: ConflictsModal;
-	let filenameProps = syncthingController.parseConflictFilename(
-		conflicts[0].name
-	);
+	let filenameProps = parseConflictFilename(conflicts[0].name);
 	if (filenameProps instanceof Failure) {
 		console.error(filenameProps);
 	}
@@ -48,11 +47,7 @@
 		{#if i !== 0}
 			<div class="divider" />
 		{/if}
-		<ConflictFileDetails
-			file={conflict}
-			{syncthingController}
-			counter={i}
-		/>
+		<ConflictFileDetails file={conflict} counter={i} />
 	{/each}
 </details>
 

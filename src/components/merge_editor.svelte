@@ -8,12 +8,13 @@
 	import { MergeModal } from "src/views/merge_editor";
 	import { onMount } from "svelte";
 
-	export let originalContent: string = "this is the original text";
-	export let modifiedContent: string = "this is the modified text";
+	export let originalContent = "this is the original text";
+	export let modifiedContent = "this is the modified text";
 	export let parentModal: MergeModal;
 	let mergeEditor: MergeView;
 	let mergeEditorContainer: HTMLDivElement;
 	let contentEditorA: Text;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let contentEditorB: Text;
 	let toolsContainer: HTMLDivElement;
 
@@ -116,11 +117,13 @@
 <h3>Preview the merged file</h3>
 <div class="preview">
 	{#if contentEditorA}
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html marked(contentEditorA.toString(), {
 			mangle: false,
 			headerIds: false,
 		})}
 	{:else}
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html marked(originalContent, {
 			mangle: false,
 			headerIds: false,

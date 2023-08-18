@@ -1,21 +1,19 @@
 <!-- This file is for providing a reusable component to display information about a sync conflict file. -->
 <script lang="ts">
 	import { TFile } from "obsidian";
-	import { SyncthingController } from "src/controllers/main_controller";
-	import { formatBytes } from "src/controllers/utils";
+	import { formatBytes, parseConflictFilename } from "src/controllers/utils";
 	import { Failure } from "src/models/failures";
 	import { createEventDispatcher } from "svelte";
 	import Error from "./error.svelte";
 
 	export let counter: number;
 	export let file: TFile;
-	export let syncthingController: SyncthingController;
 	export let styled = false;
 	export let isClicked = false;
 	let dispatch = createEventDispatcher<{
 		file: { file: TFile };
 	}>();
-	const filenameProps = syncthingController.parseConflictFilename(file.name);
+	const filenameProps = parseConflictFilename(file.name);
 	function handleClick() {
 		dispatch("file", { file: file });
 	}

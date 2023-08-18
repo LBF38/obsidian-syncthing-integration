@@ -1,103 +1,46 @@
 import { Platform, TFile } from "obsidian";
+import { type SyncthingFromAndroid } from "src/data/syncthing_android_datasource";
+import { SyncthingFromCLI } from "src/data/syncthing_local_datasource";
+import { SyncthingFromREST } from "src/data/syncthing_remote_datasource";
 import SyncthingPlugin from "src/main";
 import {
+	SyncthingConfiguration,
+	SyncthingDevice,
+	SyncthingFolder,
 	type ConflictFilename,
-	SyncThingConfiguration,
-	SyncThingDevice,
-	SyncThingFolder,
 } from "src/models/entities";
 import { CliFailure, Failure, RestFailure } from "src/models/failures";
-import { type SyncThingFromCLI } from "src/data/syncthing_local_datasource";
-import { type SyncThingFromREST } from "src/data/syncthing_remote_datasource";
-import { type SyncthingFromAndroid } from "src/data/syncthing_android_datasource";
-import { sortByConflictDate } from "./utils";
+import { parseConflictFilename, sortByConflictDate } from "./utils";
 
-export interface SyncthingController {
-	/**
-	 * The plugin instance.
-	 * To make it easier to call plugin's methods.
-	 * @see https://docs.obsidian.md/Reference/TypeScript+API/Plugin/Plugin
-	 */
-	plugin: SyncthingPlugin;
-	/**
-	 * Gets the SyncThing API status.
-	 */
-	getAPIStatus(): Promise<string>;
-	/**
-	 * Gets the Syncthing CLI status.
-	 */
-	getCLIStatus(): Promise<string>;
-	/**
-	 * Checks if SyncThing is installed on the system.
-	 */
-	hasSyncThing(): Promise<boolean>;
+/**
+ * Main controller of the plugin.
+ * Allows to easily connect with Syncthing.
+ */
+export class SyncthingController {
+	constructor(
+		/**
+		 * CLI datasource to Syncthing
+		 */
+		public syncthingFromCLI: SyncthingFromCLI,
+		/**
+		 * REST datasource to Syncthing
+		 */
+		public syncthingFromREST: SyncthingFromREST,
+		/**
+		 * Android datasource to Syncthing
+		 */
+		public syncthingFromAndroid: SyncthingFromAndroid,
+		/**
+		 * The plugin instance.
+		 * To make it easier to call plugin's methods.
+		 * @see https://docs.obsidian.md/Reference/TypeScript+API/Plugin/Plugin
+		 */
+		public plugin: SyncthingPlugin
+	) {}
+
 	/**
 	 * Checks if Syncthing is running.
 	 */
-	isRunning(): Promise<boolean>;
-	/**
-	 * Gets the SyncThing configuration.
-	 */
-	getConfiguration(): Promise<SyncThingConfiguration | Failure>;
-	/**
-	 * Gets the SyncThing conflicting files for the ConflictsModal.
-	 * It returns a list of all files that are in conflict.
-	 * (but only one version of each file, if applicable)
-	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes
-	 */
-	getConflicts(): Promise<Map<string, TFile[]> | Failure>;
-	/**
-	 * Gets the SyncThing conflicting files for the DiffModal.
-	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes
-	 */
-	getDiffFiles(file: TFile): Promise<{
-		originalFile: TFile;
-		conflictingFiles: TFile[] | Failure;
-		conflictingFilesProperties: Map<TFile, ConflictFilename | Failure>;
-	}>;
-	/**
-	 * Parses a SyncThing conflict filename.
-	 * The filename format is as follow : `{filename}.sync-conflict-{date}-{time}-{modifiedBy}.{extension}`
-	 * The format of each part is as follow :
-	 * - `{filename}` : the filename of the file that is in conflict.
-	 * - `{date}` : the date of the conflict, in the format `YYYYMMDD`.
-	 * - `{time}` : the time of the conflict, in the format `HHMMSS`.
-	 * - `{modifiedBy}` : the device ID of the device that modified the file. it is a reduced version of {@linkcode SyncThingDevice.deviceID}
-	 * - `{extension}` : the file extension of the file that is in conflict.
-	 * @param filename the filename to parse.
-	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes for the filename format.
-	 * @returns a {@linkcode ConflictFilename} object if the filename is valid, or a {@linkcode Failure} object if it is not.
-	 */
-	parseConflictFilename(filename: string): ConflictFilename | Failure;
-	/**
-	 * Gets the SyncThing API key from the CLI.
-	 */
-	getAPIKey(): Promise<string | Failure>;
-	/**
-	 * Gets the SyncThing devices.
-	 */
-	getDevices(): Promise<SyncThingDevice[] | Failure>;
-	/**
-	 * Gets the SyncThing folders.
-	 */
-	getFolders(): Promise<SyncThingFolder[] | Failure>;
-	/**
-	 * Starts the Syncthing service.
-	 */
-	startSyncThing(): Promise<boolean | Failure>;
-	/**
-	 * Stops the Syncthing service.
-	 */
-	stopSyncThing(): Promise<boolean | Failure>;
-}
-
-export class SyncthingControllerImpl implements SyncthingController {
-	constructor(
-		public syncthingFromCLI: SyncThingFromCLI,
-		public syncthingFromREST: SyncThingFromREST,
-		public syncthingFromAndroid: SyncthingFromAndroid,
-		public plugin: SyncthingPlugin
-	) {}
 	async isRunning(): Promise<boolean> {
 		console.log("isRunning");
 		return this.syncthingFromREST
@@ -111,6 +54,10 @@ export class SyncthingControllerImpl implements SyncthingController {
 				return false;
 			});
 	}
+
+	/**
+	 * Gets the Syncthing CLI status.
+	 */
 	async getCLIStatus(): Promise<string> {
 		return this.syncthingFromCLI
 			.getVersion()
@@ -118,6 +65,9 @@ export class SyncthingControllerImpl implements SyncthingController {
 			.catch((error) => "Error: " + error);
 	}
 
+	/**
+	 * Gets the Syncthing API status.
+	 */
 	async getAPIStatus(): Promise<string> {
 		if (!this.plugin.settings.api_key) {
 			return "API key is not set.";
@@ -128,7 +78,10 @@ export class SyncthingControllerImpl implements SyncthingController {
 			.catch((error) => "Error: " + error);
 	}
 
-	async hasSyncThing(): Promise<boolean> {
+	/**
+	 * Checks if Syncthing is installed on the system.
+	 */
+	async hasSyncthing(): Promise<boolean> {
 		// Mobile support
 		if (Platform.isAndroidApp) {
 			return await this.syncthingFromAndroid.hasSyncthing();
@@ -154,6 +107,12 @@ export class SyncthingControllerImpl implements SyncthingController {
 			});
 	}
 
+	/**
+	 * Gets the Syncthing conflicting files for the ConflictsModal.
+	 * It returns a list of all files that are in conflict.
+	 * (but only one version of each file, if applicable)
+	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes
+	 */
 	async getConflicts(): Promise<Map<string, TFile[]> | Failure> {
 		// Get all conflicting files
 		const allFiles = this.plugin.app.vault.getFiles();
@@ -166,7 +125,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 		// Reorder conflicting files by filename in a Map
 		const conflictsFilesMap = new Map<string, TFile[]>();
 		for (const file of conflictsFiles) {
-			const filenameProperties = this.parseConflictFilename(file.name);
+			const filenameProperties = parseConflictFilename(file.name);
 			if (filenameProperties instanceof Failure) {
 				return filenameProperties;
 			}
@@ -179,7 +138,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					conflictsFilesMap
 						.get(filename)!
-						.sort((a, b) => sortByConflictDate(a, b, this))
+						.sort((a, b) => sortByConflictDate(a, b))
 				);
 				continue;
 			}
@@ -188,34 +147,16 @@ export class SyncthingControllerImpl implements SyncthingController {
 		return conflictsFilesMap;
 	}
 
-	parseConflictFilename(filename: string): ConflictFilename | Failure {
-		const regex = new RegExp(
-			/(.*).sync-conflict-(\d{8})-(\d{6})-(\w+).(\w+)/
-		);
-		const match = regex.exec(filename);
-		if (!match) {
-			return new Failure(`Error parsing conflict filename : ${filename}`);
-		}
-		return {
-			filename: match[1],
-			date: match[2],
-			time: match[3],
-			dateTime: new Date(
-				`${match[2].slice(0, 4)}-${match[2].slice(
-					4,
-					6
-				)}-${match[2].slice(6, 8)}T${match[3].slice(
-					0,
-					2
-				)}:${match[3].slice(2, 4)}:${match[3].slice(4, 6)}`
-			),
-			modifiedBy: match[4],
-			extension: match[5],
-		};
-	}
-
-	async getDiffFiles(file: TFile) {
-		const filenameProperties = this.parseConflictFilename(file.name);
+	/**
+	 * Gets the Syncthing conflicting files for the DiffModal.
+	 * @see https://docs.syncthing.net/users/syncing.html#conflicting-changes
+	 */
+	async getDiffFiles(file: TFile): Promise<{
+		originalFile: TFile;
+		conflictingFiles: TFile[] | Failure;
+		conflictingFilesProperties: Map<TFile, ConflictFilename | Failure>;
+	}> {
+		const filenameProperties = parseConflictFilename(file.name);
 		if (filenameProperties instanceof Failure) {
 			return {
 				originalFile: file,
@@ -258,7 +199,7 @@ export class SyncthingControllerImpl implements SyncthingController {
 			Failure | ConflictFilename
 		>();
 		for (const conflictingFile of conflictsFiles) {
-			const properties = this.parseConflictFilename(conflictingFile.name);
+			const properties = parseConflictFilename(conflictingFile.name);
 			conflictingFilesProperties.set(conflictingFile, properties);
 		}
 		return {
@@ -268,6 +209,9 @@ export class SyncthingControllerImpl implements SyncthingController {
 		};
 	}
 
+	/**
+	 * Gets the Syncthing API key from the CLI.
+	 */
 	async getAPIKey(): Promise<string | Failure> {
 		if (Platform.isMobileApp) {
 			return new Failure(
@@ -289,7 +233,10 @@ export class SyncthingControllerImpl implements SyncthingController {
 		return this.plugin.settings.api_key;
 	}
 
-	async getConfiguration(): Promise<SyncThingConfiguration | Failure> {
+	/**
+	 * Gets the Syncthing configuration.
+	 */
+	async getConfiguration(): Promise<SyncthingConfiguration | Failure> {
 		if (!(await this.isRunning()))
 			return new Failure("Syncthing is not running.");
 		try {
@@ -304,16 +251,32 @@ export class SyncthingControllerImpl implements SyncthingController {
 			return config;
 		}
 	}
-	async getDevices(): Promise<SyncThingDevice[]> {
+
+	/**
+	 * Gets the Syncthing devices.
+	 */
+	async getDevices(): Promise<SyncthingDevice[]> {
 		return await this.syncthingFromREST.getDevices();
 	}
-	async getFolders(): Promise<SyncThingFolder[]> {
+
+	/**
+	 * Gets the Syncthing folders.
+	 */
+	async getFolders(): Promise<SyncthingFolder[]> {
 		return await this.syncthingFromREST.getAllFolders();
 	}
-	async startSyncThing(): Promise<boolean> {
-		return this.syncthingFromCLI.startSyncThing();
+
+	/**
+	 * Starts the Syncthing service.
+	 */
+	async startSyncthing(): Promise<boolean> {
+		return this.syncthingFromCLI.startSyncthing();
 	}
-	async stopSyncThing(): Promise<boolean> {
-		return this.syncthingFromCLI.stopSyncThing();
+
+	/**
+	 * Stops the Syncthing service.
+	 */
+	async stopSyncthing(): Promise<boolean> {
+		return this.syncthingFromCLI.stopSyncthing();
 	}
 }

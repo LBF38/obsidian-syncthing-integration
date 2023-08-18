@@ -1,15 +1,17 @@
+import { isStringArray } from "src/controllers/utils";
 import {
-	ReducedSyncThingDevice,
-	SyncThingConfiguration,
-	SyncThingDevice,
-	SyncThingFolder,
+	ReducedSyncthingDevice,
+	SyncTypes,
+	SyncthingConfiguration,
+	SyncthingDevice,
+	SyncthingFolder,
 } from "src/models/entities";
 
-export class SyncThingConfigurationModel extends SyncThingConfiguration {
+export class SyncthingConfigurationModel extends SyncthingConfiguration {
 	constructor(
 		version: string,
-		folders: SyncThingFolder[],
-		devices: SyncThingDevice[],
+		folders: SyncthingFolder[],
+		devices: SyncthingDevice[],
 		syncthingBaseUrl = "localhost:8384"
 	) {
 		super(version, folders, devices, syncthingBaseUrl);
@@ -19,22 +21,37 @@ export class SyncThingConfigurationModel extends SyncThingConfiguration {
 	 * The static method to parse a JSON string and return a model object.
 	 * @param json - The JSON string to parse.
 	 */
-	static fromJSON(json: string): SyncThingConfigurationModel {
+	static fromJSON(json: string): SyncthingConfigurationModel {
 		const parsedJSON = JSON.parse(json);
-		const folders: SyncThingFolder[] = [];
+		const folders: SyncthingFolder[] = [];
+		if (!(typeof parsedJSON === "object" && parsedJSON !== null))
+			throw new Error("JSON is not an object or is null");
+		if (
+			!(
+				"folders" in parsedJSON && Array.isArray(parsedJSON["folders"])
+			) ||
+			!(
+				"devices" in parsedJSON && Array.isArray(parsedJSON["devices"])
+			) ||
+			!(
+				"version" in parsedJSON &&
+				typeof parsedJSON["version"] === "string"
+			)
+		)
+			throw new Error("Error parsing JSON");
 		for (const parsedFolder of parsedJSON["folders"]) {
 			console.log(parsedFolder);
 			folders.push(
-				SyncThingFolderModel.fromJSON(JSON.stringify(parsedFolder))
+				SyncthingFolderModel.fromJSON(JSON.stringify(parsedFolder))
 			);
 		}
-		const devices: SyncThingDevice[] = [];
+		const devices: SyncthingDevice[] = [];
 		for (const parsedDevice of parsedJSON["devices"]) {
 			devices.push(
-				SyncThingDeviceModel.fromJSON(JSON.stringify(parsedDevice))
+				SyncthingDeviceModel.fromJSON(JSON.stringify(parsedDevice))
 			);
 		}
-		return new SyncThingConfigurationModel(
+		return new SyncthingConfigurationModel(
 			parsedJSON["version"],
 			folders,
 			devices
@@ -49,25 +66,76 @@ export class SyncThingConfigurationModel extends SyncThingConfiguration {
 	}
 }
 
-export class SyncThingFolderModel extends SyncThingFolder {
-	static fromJSON(json: string): SyncThingFolderModel {
+export class SyncthingFolderModel extends SyncthingFolder {
+	static fromJSON(json: string): SyncthingFolderModel {
 		const parsedJSON = JSON.parse(json);
-		const reducedDeviceInfos: ReducedSyncThingDevice[] = [];
+		const reducedDeviceInfos: ReducedSyncthingDevice[] = [];
+		// TODO: to refactor w/ a function.
+		if (!(typeof parsedJSON === "object" && parsedJSON !== null))
+			throw new Error("JSON is not an object or is null");
+		if (
+			!(
+				"folders" in parsedJSON && Array.isArray(parsedJSON["folders"])
+			) ||
+			!(
+				"devices" in parsedJSON && Array.isArray(parsedJSON["devices"])
+			) ||
+			!("id" in parsedJSON && typeof parsedJSON["id"] === "string") ||
+			!(
+				"label" in parsedJSON && typeof parsedJSON["label"] === "string"
+			) ||
+			!("path" in parsedJSON && typeof parsedJSON["path"] === "string") ||
+			!(
+				"filesystemType" in parsedJSON &&
+				typeof parsedJSON["filesystemType"] === "string"
+			) ||
+			!("type" in parsedJSON && typeof parsedJSON["type"] === "string") ||
+			!(
+				"maxConflicts" in parsedJSON &&
+				typeof parsedJSON["maxConflicts"] === "number"
+			)
+		)
+			throw new Error("Error parsing JSON");
 		for (const device of parsedJSON["devices"]) {
+			// TODO: to refactor w/ a function.
+			if (!(typeof device === "object" && device !== null))
+				throw new Error("Error parsing JSON");
+			if (
+				!(
+					"deviceID" in device &&
+					typeof device["deviceID"] === "string"
+				)
+			)
+				throw new Error("Error parsing JSON");
+			if (
+				!(
+					"introducedBy" in device &&
+					typeof device["introducedBy"] === "string"
+				)
+			)
+				throw new Error("Error parsing JSON");
+			if (
+				!(
+					"encryptionPassword" in device &&
+					typeof device["encryptionPassword"] === "string"
+				)
+			)
+				throw new Error("Error parsing JSON");
 			reducedDeviceInfos.push(
-				new ReducedSyncThingDevice(
+				new ReducedSyncthingDevice(
 					device["deviceID"],
 					device["introducedBy"],
 					device["encryptionPassword"]
 				)
 			);
 		}
-		return new SyncThingFolderModel(
+		return new SyncthingFolderModel(
 			parsedJSON["id"],
 			parsedJSON["label"],
 			parsedJSON["path"],
 			parsedJSON["filesystemType"],
-			parsedJSON["type"],
+			parsedJSON["type"] as SyncTypes,
+			// TODO: refactor this ^ w/ a type guard. See https://stackoverflow.com/a/51529486/20502385
 			reducedDeviceInfos,
 			parsedJSON["maxConflicts"]
 		);
@@ -78,10 +146,50 @@ export class SyncThingFolderModel extends SyncThingFolder {
 	}
 }
 
-export class SyncThingDeviceModel extends SyncThingDevice {
-	static fromJSON(json: string): SyncThingDeviceModel {
+export class SyncthingDeviceModel extends SyncthingDevice {
+	static fromJSON(json: string): SyncthingDeviceModel {
 		const parsedJSON = JSON.parse(json);
-		return new SyncThingDeviceModel(
+		// TODO: to refactor w/ a function.
+		if (!(typeof parsedJSON === "object" && parsedJSON !== null))
+			throw new Error("JSON is not an object or is null");
+		if (
+			!(
+				"addresses" in parsedJSON &&
+				isStringArray(parsedJSON["addresses"])
+			) ||
+			!(
+				"ignoredFolders" in parsedJSON &&
+				isStringArray(parsedJSON["ignoredFolders"])
+			) ||
+			!(
+				"deviceID" in parsedJSON &&
+				typeof parsedJSON["deviceID"] === "string"
+			) ||
+			!(
+				"introducedBy" in parsedJSON &&
+				typeof parsedJSON["introducedBy"] === "string"
+			) ||
+			!(
+				"encryptionPassword" in parsedJSON &&
+				typeof parsedJSON["encryptionPassword"] === "string"
+			) ||
+			!(
+				"name" in parsedJSON &&
+				typeof parsedJSON["name"] === "string" &&
+				typeof parsedJSON["name"] === "undefined"
+			) ||
+			!("type" in parsedJSON && typeof parsedJSON["type"] === "string") ||
+			!(
+				"maxConflicts" in parsedJSON &&
+				typeof parsedJSON["maxConflicts"] === "number"
+			) ||
+			!(
+				"paused" in parsedJSON &&
+				typeof parsedJSON["paused"] === "boolean"
+			)
+		)
+			throw new Error("Error parsing JSON");
+		return new SyncthingDeviceModel(
 			parsedJSON["deviceID"],
 			parsedJSON["introducedBy"],
 			parsedJSON["encryptionPassword"],
