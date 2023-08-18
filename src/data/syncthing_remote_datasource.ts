@@ -1,4 +1,4 @@
-import { requestUrl } from "obsidian";
+import { Platform, requestUrl } from "obsidian";
 import SyncthingPlugin from "src/main";
 import { SyncthingDevice } from "src/models/entities";
 import { RestFailure } from "src/models/failures";
@@ -89,7 +89,10 @@ export class SyncthingFromREST {
 	private async requestEndpoint(endpoint: string) {
 		// FIXME: Fix the issue when connecting to the REST API. (error 403)
 		console.log("requestEndpoint: Endpoint", endpoint);
-		const url = `${this.plugin.settings.configuration.url?.protocol}://${this.plugin.settings.configuration.url?.ip_address}:${this.plugin.settings.configuration.url?.port}${endpoint}`;
+		let ip_address = this.plugin.settings.configuration.url?.ip_address;
+		if (ip_address === "localhost" && Platform.isMobileApp)
+			ip_address = "127.0.0.1";
+		const url = `${this.plugin.settings.configuration.url?.protocol}://${ip_address}:${this.plugin.settings.configuration.url?.port}${endpoint}`;
 		const response = requestUrl({
 			url: url,
 			method: "GET",
