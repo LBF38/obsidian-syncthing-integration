@@ -29,6 +29,9 @@ devDependencies:
   '@semantic-release/git':
     specifier: ^10.0.1
     version: 10.0.1(semantic-release@21.0.7)
+  '@total-typescript/ts-reset':
+    specifier: ^0.5.1
+    version: 0.5.1
   '@tsconfig/svelte':
     specifier: ^5.0.0
     version: 5.0.0
@@ -865,6 +868,10 @@ packages:
       semantic-release: 21.0.7
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /@total-typescript/ts-reset@0.5.1:
+    resolution: {integrity: sha512-AqlrT8YA1o7Ff5wPfMOL0pvL+1X+sw60NN6CcOCqs658emD6RfiXhF7Gu9QcfKBH7ELY2nInLhKSCWVoNL70MQ==}
     dev: true
 
   /@trysound/sax@0.2.0:
