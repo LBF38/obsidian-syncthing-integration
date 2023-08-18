@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.2.0...1.2.1) (2023-08-18)
+
+
+### Bug Fixes
+
+* **controllers:** :bug: API endpoint calls ([#100](https://github.com/LBF38/obsidian-syncthing-integration/issues/100)) ([45ea294](https://github.com/LBF38/obsidian-syncthing-integration/commit/45ea29499f57aeb51f1abd8c2c99c172fe9fdbcb)), closes [#94](https://github.com/LBF38/obsidian-syncthing-integration/issues/94)
+
 # [1.2.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.1.2...1.2.0) (2023-08-03)
 
 
