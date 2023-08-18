@@ -14,9 +14,18 @@ export class SyncthingConfiguration {
 		public version: string,
 		public folders: SyncthingFolder[],
 		public devices: SyncthingDevice[],
-		public syncthingBaseUrl: string
+		public url: SyncthingURL
 	) {}
 }
+
+/**
+ * Simple URL object.
+ */
+export type SyncthingURL = {
+	protocol: "https" | "http";
+	ip_address: string | "localhost";
+	port: number;
+};
 
 /**
  * Available sync types in Syncthing.

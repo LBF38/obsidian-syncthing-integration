@@ -5,6 +5,7 @@ import {
 	SyncthingConfiguration,
 	SyncthingDevice,
 	SyncthingFolder,
+	SyncthingURL,
 } from "src/models/entities";
 
 export class SyncthingConfigurationModel extends SyncthingConfiguration {
@@ -12,9 +13,13 @@ export class SyncthingConfigurationModel extends SyncthingConfiguration {
 		version: string,
 		folders: SyncthingFolder[],
 		devices: SyncthingDevice[],
-		syncthingBaseUrl = "localhost:8384"
+		url: SyncthingURL = {
+			protocol: "http",
+			ip_address: "localhost",
+			port: 8384,
+		}
 	) {
-		super(version, folders, devices, syncthingBaseUrl);
+		super(version, folders, devices, url);
 	}
 
 	/**
