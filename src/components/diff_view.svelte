@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { unifiedMergeView } from "@codemirror/merge";
-	import { EditorState, StateEffect, Transaction } from "@codemirror/state";
+	import { EditorState, Transaction } from "@codemirror/state";
 	import { EditorView, basicSetup } from "codemirror";
+	import { marked } from "marked";
+	import { Notice, TFile } from "obsidian";
 	import { DiffModal } from "src/views/diff_modal";
+	import { MergeModal } from "src/views/merge_editor";
 	import { onMount } from "svelte";
 	import ConflictFileDetails from "./conflict_file_details.svelte";
 	import FileDetails from "./file_details.svelte";
-	import { MergeModal } from "src/views/merge_editor";
-	import { marked } from "marked";
-	import { Notice, TFile } from "obsidian";
 
 	export let parentModal: DiffModal;
 	let unifiedMergeViewContainer: HTMLDivElement;
@@ -131,7 +131,6 @@
 			<ConflictFileDetails
 				{file}
 				counter={i}
-				syncthingController={parentModal.syncthingController}
 				styled={true}
 				isClicked={parentModal.conflictingFiles[i] === currentConflict}
 				on:file={onFileChange}
@@ -153,6 +152,7 @@
 			<p>Loading preview...</p>
 		{:then content}
 			<div class="preview">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 				{@html marked(content, {
 					mangle: false,
 					headerIds: false,
@@ -164,6 +164,7 @@
 			<p>Loading preview...</p>
 		{:then content}
 			<div class="preview">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 				{@html marked(content, {
 					mangle: false,
 					headerIds: false,

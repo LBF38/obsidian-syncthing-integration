@@ -1,24 +1,14 @@
 import { Notice, Plugin, addIcon } from "obsidian";
-import {
-	SyncthingControllerImpl,
-	type SyncthingController,
-} from "./controllers/main_controller";
+import { SyncthingController } from "./controllers/main_controller";
 import {
 	DevModeModal,
 	PluginDevModeController,
 } from "./controllers/plugin_dev_mode";
 import {
-	SyncthingFromAndroidImpl,
-	type SyncthingFromAndroid,
+	SyncthingFromAndroid
 } from "./data/syncthing_android_datasource";
-import {
-	SyncThingFromCLIimpl,
-	type SyncThingFromCLI,
-} from "./data/syncthing_local_datasource";
-import {
-	SyncThingFromRESTimpl,
-	type SyncThingFromREST,
-} from "./data/syncthing_remote_datasource";
+import { SyncthingFromCLI } from "./data/syncthing_local_datasource";
+import { SyncthingFromREST } from "./data/syncthing_remote_datasource";
 import { SyncThingConfiguration } from "./models/entities";
 import { ConflictsModal } from "./views/conflicts_modal";
 import { SyncthingLogoSVG } from "./views/logos";
@@ -41,10 +31,10 @@ export default class SyncthingPlugin extends Plugin {
 	static loadCount = 0;
 	settings!: SyncthingPluginSettings;
 	pluginsElements: HTMLElement[] = [];
-	syncthingFromCLI: SyncThingFromCLI = new SyncThingFromCLIimpl();
-	syncthingFromREST: SyncThingFromREST = new SyncThingFromRESTimpl(this);
-	syncthingFromAndroid: SyncthingFromAndroid = new SyncthingFromAndroidImpl();
-	syncthingController: SyncthingController = new SyncthingControllerImpl(
+	syncthingFromCLI: SyncthingFromCLI = new SyncthingFromCLI();
+	syncthingFromREST: SyncthingFromREST = new SyncthingFromREST(this);
+	syncthingFromAndroid: SyncthingFromAndroid = new SyncthingFromAndroid();
+	syncthingController: SyncthingController = new SyncthingController(
 		this.syncthingFromCLI,
 		this.syncthingFromREST,
 		this.syncthingFromAndroid,

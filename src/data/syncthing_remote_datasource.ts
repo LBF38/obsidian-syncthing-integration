@@ -9,40 +9,16 @@ import {
 } from "../models/models";
 
 /**
- * Interface for the REST API of Syncthing.
+ * REST API of Syncthing.
  * @see https://docs.syncthing.net/dev/rest.html
  */
-export interface SyncThingFromREST {
-	/**
-	 * Get the configuration of Syncthing installation using the REST API.
-	 * @returns {SyncThingConfiguration} The configuration of Syncthing installation.
-	 * @see https://docs.syncthing.net/rest/config.html
-	 */
-	getConfiguration(): Promise<SyncThingConfigurationModel>;
-	/**
-	 * Get all the folders of Syncthing installation using the REST API.
-	 */
-	getAllFolders(): Promise<SyncThingFolderModel[]>;
-	/**
-	 * Get all the folders of Syncthing installation for a specific device using the REST API.
-	 * @param device - The device to get the folders for.
-	 */
-	getFoldersForDevice(
-		device: SyncThingDevice
-	): Promise<SyncThingFolderModel[]>;
-	/**
-	 * Get all the devices of Syncthing installation using the REST API.
-	 */
-	getDevices(): Promise<SyncThingDeviceModel[]>;
+export class SyncthingFromREST {
+	constructor(public plugin: SyncthingPlugin) {}
+
 	/**
 	 * Ping the Syncthing installation using the REST API.
 	 * This is used to check if Syncthing is installed.
 	 */
-	ping(): Promise<"pong">;
-}
-
-export class SyncThingFromRESTimpl implements SyncThingFromREST {
-	constructor(public plugin: SyncthingPlugin) {}
 	async ping(): Promise<"pong"> {
 		const response = await this.requestEndpoint(
 			this.plugin.settings.configuration.syncthingBaseUrl +
@@ -51,6 +27,10 @@ export class SyncThingFromRESTimpl implements SyncThingFromREST {
 		console.log("REST - ping: ", response);
 		return response.json["ping"];
 	}
+
+	/**
+	 * Get all the folders of Syncthing installation using the REST API.
+	 */
 	async getAllFolders(): Promise<SyncThingFolderModel[]> {
 		const response = await this.requestEndpoint(
 			`${this.plugin.settings.configuration.syncthingBaseUrl}/rest/system/config/folders`
@@ -63,6 +43,10 @@ export class SyncThingFromRESTimpl implements SyncThingFromREST {
 		return foldersModel;
 	}
 
+	/**
+	 * Get all the folders of Syncthing installation for a specific device using the REST API.
+	 * @param device - The device to get the folders for.
+	 */
 	async getFoldersForDevice(
 		device: SyncThingDevice
 	): Promise<SyncThingFolderModel[]> {
@@ -73,6 +57,10 @@ export class SyncThingFromRESTimpl implements SyncThingFromREST {
 			)
 		);
 	}
+
+	/**
+	 * Get all the devices of Syncthing installation using the REST API.
+	 */
 	async getDevices(): Promise<SyncThingDeviceModel[]> {
 		const response = await this.requestEndpoint(
 			`${this.plugin.settings.configuration.syncthingBaseUrl}/rest/system/config/devices`
@@ -84,6 +72,11 @@ export class SyncThingFromRESTimpl implements SyncThingFromREST {
 		return devicesModel;
 	}
 
+	/**
+	 * Get the configuration of Syncthing installation using the REST API.
+	 * @returns {SyncThingConfiguration} The configuration of Syncthing installation.
+	 * @see https://docs.syncthing.net/rest/config.html
+	 */
 	async getConfiguration(): Promise<SyncThingConfigurationModel> {
 		const response = await this.requestEndpoint(
 			`${this.plugin.settings.configuration.syncthingBaseUrl}/rest/system/config`
