@@ -353,7 +353,7 @@
 	<button
 		on:click={async (event) => {
 			new Notice("This part is in construction.");
-			new ConfigurationModal(parent.app).open();
+			new ConfigurationModal(parent.app, parent.plugin).open();
 		}}
 		slot="control"
 	>

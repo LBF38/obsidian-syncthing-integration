@@ -1,10 +1,11 @@
 import { App, Modal } from "obsidian";
 import ConfigurationTable from "src/components/configuration_table.svelte";
+import SyncthingPlugin from "src/main";
 import { SvelteComponent } from "svelte";
 
 export class ConfigurationModal extends Modal {
 	private components: SvelteComponent[] = [];
-	constructor(app: App) {
+	constructor(app: App, public plugin: SyncthingPlugin) {
 		super(app);
 	}
 
