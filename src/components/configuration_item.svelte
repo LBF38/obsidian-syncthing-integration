@@ -1,13 +1,10 @@
 <script lang="ts">
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
+	import { ConfigurationItemData } from "./types";
 
 	// your script goes here
 	export let title = "My Device's Name";
-	export let data: {
-		icon: string;
-		title: string;
-		information: string;
-	}[] = [
+	export let data: ConfigurationItemData = [
 		{
 			icon: "download-cloud",
 			title: "Download Rate",
@@ -52,7 +49,7 @@
 </script>
 
 <details>
-	<summary>{title}</summary>
+	<summary><slot name="title">{title}</slot></summary>
 	<table>
 		{#each data as item}
 			<tr>
@@ -84,8 +81,8 @@
 		list-style: none;
 		display: flex;
 		flex-direction: row;
-		justify-content: space-between;
 		align-items: center;
+		gap: 0.5em;
 		height: 2em;
 		background-color: var(--background-secondary-alt);
 		padding: 1em;
@@ -116,6 +113,7 @@
 	}
 	table tr td {
 		padding: 0.5em;
+		pointer-events: none;
 	}
 	table tr td div {
 		vertical-align: middle;

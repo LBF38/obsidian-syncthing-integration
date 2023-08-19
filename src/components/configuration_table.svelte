@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { ConfigurationModal } from "src/views/configuration_modal";
 	import ConfigurationItem from "./configuration_item.svelte";
+	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
+	import FolderItem from "./folder_item.svelte";
+	import { Notice } from "obsidian";
+	import RemoteItem from "./remote_item.svelte";
 
-	// TODO: add configuration table component
 	export let parent: ConfigurationModal;
 	parent.titleEl.setText("Syncthing Configuration");
 	parent.titleEl.style.textAlign = "center";
@@ -14,16 +17,33 @@
 <div class="left">
 	<div class="folder">
 		<h2>Folders (#)</h2>
-		<ConfigurationItem title="Folder #1">
-			<svelte:fragment slot="footer">
-				<button class="mod-cta">Edit</button>
-			</svelte:fragment>
-		</ConfigurationItem>
-		<ConfigurationItem title="Folder #2" />
+		<FolderItem name="Folder #1" />
+		<FolderItem name="Folder #2" />
 		<div class="controls">
-			<button>Pause All</button>
-			<button>Recent Changes</button>
-			<button>Add Remote Device</button>
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="pause" />
+				<span>Pause All</span>
+			</button>
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="refresh-cw" />
+				<span>Rescan All</span>
+			</button>
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="plus" />
+				<span>Add Folder</span>
+			</button>
 		</div>
 	</div>
 </div>
@@ -34,16 +54,34 @@
 	</div>
 	<div class="remote">
 		<h2>Remote Devices (#)</h2>
-		<ConfigurationItem title="Remote Device #1">
-			<svelte:fragment slot="footer">
-				<button class="mod-cta">Edit</button>
-			</svelte:fragment>
-		</ConfigurationItem>
-		<ConfigurationItem title="Remote Device #2" />
+		<RemoteItem name="Remote #1" />
+		<RemoteItem name="Remote #2" />
+		<RemoteItem name="Remote #3" />
 		<div class="controls">
-			<button>Pause All</button>
-			<button>Recent Changes</button>
-			<button>Add Remote Device</button>
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="pause" />
+				<span>Pause All</span>
+			</button>
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="info" />
+				<span>Recent Changes</span>
+			</button>
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="plus" />
+				<span>Add Remote Device</span>
+			</button>
 		</div>
 	</div>
 </div>
@@ -70,6 +108,7 @@
 		margin: 1em 0;
 	}
 	.controls button {
+		gap: 0.5em;
 		margin: 0 0.5em;
 	}
 </style>
