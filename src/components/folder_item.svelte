@@ -20,49 +20,38 @@
 		{
 			icon: "info",
 			title: "Folder ID",
-			information: folder.id,
 		},
 		{
 			icon: "folder",
 			title: "Folder Path",
-			information: folder.path,
 		},
 		{
 			icon: "globe-2",
 			title: "Global State",
-			information: `TO REFACTOR: ${folder.id}`,
 		},
 		{
 			icon: "home",
 			title: "Local State",
-			information: `TO REFACTOR: ${folder.id}`,
 		},
 		{
 			icon: "refresh-cw",
 			title: "Rescans",
-			information: `TO REFACTOR: ${folder.type}`,
 		},
 		{
 			icon: "file",
 			title: "File Versioning",
-			information: `TO REFACTOR: ${folder.type}`,
 		},
 		{
 			icon: "share-2",
 			title: "Shared With",
-			information: folder.devices
-				.map((item) => item.deviceID.slice(0, 7))
-				.join(", "),
 		},
 		{
 			icon: "clock-9",
 			title: "Last Scan",
-			information: `TO REFACTOR: ${folder.type}`,
 		},
 		{
 			icon: "arrow-left-right",
 			title: "Latest Change",
-			information: `TO REFACTOR: ${folder.type}`,
 		},
 	];
 </script>
@@ -73,6 +62,35 @@
 		<span>{folder.label}</span>
 		<span style="flex: 1 0 auto; text-align: end;">Unshared</span>
 	</svelte:fragment>
+
+	<svelte:fragment let:item>
+		{#if item.icon === data[0].icon}
+			<span>Date of last seen.</span>
+		{:else if item.icon === data[1].icon}
+			<span>up to date</span>
+		{:else if item.icon === data[2].icon}
+			<span> Files: 100, Folders: 50, Storage: ~40 MiB </span>
+		{:else if item.icon === data[3].icon}
+			<span> Files: 100, Folders: 50, Storage: ~40 MiB </span>
+		{:else if item.icon === data[4].icon}
+			<span>{folder.label}</span>
+		{:else if item.icon === data[5].icon}
+			<span>Lastest version !!</span>
+		{:else if item.icon === data[6].icon}
+			<span>
+				{folder.devices
+					.map((device) => device.deviceID.slice(0, 7))
+					.join(", ")}
+			</span>
+		{:else if item.icon === data[7].icon}
+			<span>Latest scan !!!</span>
+		{:else if item.icon === data[8].icon}
+			<span>Ultimate change !</span>
+		{:else}
+			<span>Not implemented yet!</span>
+		{/if}
+	</svelte:fragment>
+
 	<div slot="footer" class="footer">
 		<button
 			on:click={async (event) => {

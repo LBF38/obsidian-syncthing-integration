@@ -16,27 +16,22 @@
 		{
 			icon: "eye",
 			title: "Last seen",
-			information: device.deviceID.slice(0, 7),
 		},
 		{
 			icon: "cloud",
 			title: "Sync Status",
-			information: device.deviceID.slice(0, 7),
 		},
 		{
 			icon: "link",
 			title: "Address",
-			information: device.address.join(", "),
 		},
 		{
 			icon: "qr-code",
 			title: "Identification",
-			information: device.deviceID.slice(0, 7),
 		},
 		{
 			icon: "folder",
 			title: "Folders",
-			information: device.deviceID.slice(0, 7),
 		},
 	];
 </script>
@@ -54,6 +49,30 @@
 			<ObsidianLucideIcon name="wifi-off" />
 		</div>
 	</svelte:fragment>
+
+	<svelte:fragment let:item>
+		{#if item.icon === data[0].icon}
+			<span>Date of last seen.</span>
+		{:else if item.icon === data[1].icon}
+			<span>up to date</span>
+		{:else if item.icon === data[2].icon}
+			<span>{device.address.join(", ")}</span>
+		{:else if item.icon === data[3].icon}
+			<a
+				href="/"
+				on:click={() => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				{device.deviceID.slice(0, 7)}
+			</a>
+		{:else if item.icon === data[4].icon}
+			<span>{device.name}</span>
+		{:else}
+			<span>Not implemented yet!</span>
+		{/if}
+	</svelte:fragment>
+
 	<div slot="footer" class="footer">
 		<button
 			on:click={async (event) => {

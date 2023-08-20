@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Notice } from "obsidian";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import { ConfigurationItemData } from "./types";
 
@@ -7,42 +8,34 @@
 		{
 			icon: "download-cloud",
 			title: "Download Rate",
-			information: "0 B/s (0 B)",
 		},
 		{
 			icon: "upload-cloud",
 			title: "Upload Rate",
-			information: "0 B/s (0 B)",
 		},
 		{
 			icon: "home",
 			title: "Local State (Total)",
-			information: "Files: 189, Folders: 16, Storage: ~ 39,6 MiB",
 		},
 		{
 			icon: "network",
 			title: "Listeners",
-			information: "3/3",
 		},
 		{
 			icon: "milestone",
 			title: "Discovery",
-			information: "4/5",
 		},
 		{
 			icon: "clock-9",
 			title: "Uptime",
-			information: "1h 8m 0s",
 		},
 		{
 			icon: "qr-code",
 			title: "Identification",
-			information: "HX4RNK",
 		},
 		{
 			icon: "tag",
 			title: "Version",
-			information: "v1.23.7, blabla",
 		},
 	];
 </script>
@@ -50,20 +43,56 @@
 <details>
 	<summary><slot name="title">{title}</slot></summary>
 	<table>
-		{#each data as item}
-			<tr>
-				<td>
-					<div>
-						<ObsidianLucideIcon
-							name={item.icon}
-							style="display: flex;"
-						/>
-						{item.title}
-					</div>
-				</td>
-				<td>{item.information}</td>
-			</tr>
-		{/each}
+		<slot name="table">
+			{#each data as item}
+				<tr>
+					<td>
+						<div>
+							<ObsidianLucideIcon
+								name={item.icon}
+								style="display: flex;"
+							/>
+							{item.title}
+						</div>
+					</td>
+					<td>
+						<slot {item}>
+							{#if item.icon === data[0].icon}
+								<a href="/" style="color: inherit;">
+									0 B/s (0 B)
+								</a>
+							{:else if item.icon === data[1].icon}
+								<a href="/" style="color: inherit;">
+									0 B/s (0 B)
+								</a>
+							{:else if item.icon === data[2].icon}
+								<span>
+									Files: 100, Folders: 50, Storage: ~40 MiB
+								</span>
+							{:else if item.icon === data[3].icon}
+								<span> 3/3 </span>
+							{:else if item.icon === data[4].icon}
+								<span> 4/5 </span>
+							{:else if item.icon === data[5].icon}
+								<span> 10h 23m </span>
+							{:else if item.icon === data[6].icon}
+								<a
+									href="/"
+									on:click={() =>
+										new Notice("not implement yet !")}
+								>
+									HX4RNK
+								</a>
+							{:else if item.icon === data[7].icon}
+								<span> v1.23.7, Windows, blabla</span>
+							{:else}
+								<span>Not implemented yet!</span>
+							{/if}
+						</slot>
+					</td>
+				</tr>
+			{/each}
+		</slot>
 	</table>
 	<slot name="footer" />
 </details>
@@ -108,7 +137,17 @@
 	}
 	table tr td {
 		padding: 0.5em;
-		pointer-events: none;
+		/* pointer-events: none; */
+	}
+	tr:active,
+	td:active {
+		/* unset the default behaviour */
+		position: static;
+		background: none;
+		width: auto;
+		transition: none;
+		transform: none;
+		border-radius: 0;
 	}
 	table tr td div {
 		vertical-align: middle;
