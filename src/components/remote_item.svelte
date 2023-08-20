@@ -3,14 +3,56 @@
 	import ConfigurationItem from "./configuration_item.svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import { ConfigurationItemData } from "./types";
-	export let name: string;
-	export let data: ConfigurationItemData | undefined = undefined;
+	import { SyncthingDevice } from "src/models/entities";
+	export let device: SyncthingDevice = {
+		address: ["dynamic"],
+		deviceID: "device ID",
+		introducedBy: "introduced by",
+		name: "device name",
+		ignoredFolders: [],
+		paused: false,
+	};
+	let data: ConfigurationItemData = [
+		{
+			icon: "eye",
+			title: "Last seen",
+			information: device.deviceID.slice(0, 7),
+		},
+		{
+			icon: "cloud",
+			title: "Sync Status",
+			information: device.deviceID.slice(0, 7),
+		},
+		{
+			icon: "link",
+			title: "Address",
+			information: device.address.join(", "),
+		},
+		{
+			icon: "qr-code",
+			title: "Identification",
+			information: device.deviceID.slice(0, 7),
+		},
+		{
+			icon: "folder",
+			title: "Folders",
+			information: device.deviceID.slice(0, 7),
+		},
+	];
 </script>
 
 <ConfigurationItem {data}>
 	<svelte:fragment slot="title">
-		<ObsidianLucideIcon name="hard-drive" />
-		<span>{name}</span>
+		<div style="display: flex;gap: 0.5em">
+			<ObsidianLucideIcon name="hard-drive" />
+			<span>{device.name ?? device.deviceID}</span>
+		</div>
+		<div
+			style="display: flex; gap:0.5em;flex: 1 0 auto; justify-content: end;"
+		>
+			<span>Disconnected</span>
+			<ObsidianLucideIcon name="wifi-off" />
+		</div>
 	</svelte:fragment>
 	<div slot="footer" class="footer">
 		<button

@@ -28,7 +28,7 @@
 	<div class="folder">
 		<h2>Folders ({folders.length})</h2>
 		{#each folders as folder}
-			<FolderItem name={folder.label} />
+			<FolderItem {folder} />
 		{/each}
 		<div class="controls">
 			<button
@@ -66,7 +66,7 @@
 	<div class="remote">
 		<h2>Remote Devices ({devices.length})</h2>
 		{#each devices as device}
-			<RemoteItem name={device.name ?? device.deviceID} />
+			<RemoteItem {device} />
 		{/each}
 		<div class="controls">
 			<button
@@ -98,7 +98,6 @@
 </div>
 
 <style>
-	/* your styles go here */
 	.left {
 		float: left;
 		width: 50%;

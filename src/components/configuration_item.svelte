@@ -2,7 +2,6 @@
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import { ConfigurationItemData } from "./types";
 
-	// your script goes here
 	export let title = "My Device's Name";
 	export let data: ConfigurationItemData = [
 		{
@@ -83,9 +82,9 @@
 		flex-direction: row;
 		align-items: center;
 		gap: 0.5em;
-		height: 2em;
+		height: fit-content;
 		background-color: var(--background-secondary-alt);
-		padding: 1em;
+		padding: 1% 2%;
 		border-radius: var(--radius-m);
 	}
 	details[open] summary {
@@ -93,10 +92,6 @@
 		border-top-left-radius: var(--radius-m);
 		border-top-right-radius: var(--radius-m);
 	}
-	/* summary > p {
-		display: flex;
-		flex-direction: column;
-	} */
 	table {
 		width: 100%;
 		background-color: var(--background-primary);
