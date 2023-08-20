@@ -80,9 +80,6 @@ export class SyncthingFolderModel extends SyncthingFolder {
 			throw new Error("JSON is not an object or is null");
 		if (
 			!(
-				"folders" in parsedJSON && Array.isArray(parsedJSON["folders"])
-			) ||
-			!(
 				"devices" in parsedJSON && Array.isArray(parsedJSON["devices"])
 			) ||
 			!("id" in parsedJSON && typeof parsedJSON["id"] === "string") ||
@@ -163,8 +160,13 @@ export class SyncthingDeviceModel extends SyncthingDevice {
 				isStringArray(parsedJSON["addresses"])
 			) ||
 			!(
-				"ignoredFolders" in parsedJSON &&
-				isStringArray(parsedJSON["ignoredFolders"])
+				("ignoredFolders" in parsedJSON) /*&&*/
+				// 	(isStringArray(parsedJSON["ignoredFolders"]) ||
+				// 		Array.isArray(
+				// 			parsedJSON["ignoredFolders"] &&
+				// 				(parsedJSON["ignoredFolders"] as Array<string>)
+				// 					.length === 0
+				// 		))
 			) ||
 			!(
 				"deviceID" in parsedJSON &&
@@ -175,18 +177,9 @@ export class SyncthingDeviceModel extends SyncthingDevice {
 				typeof parsedJSON["introducedBy"] === "string"
 			) ||
 			!(
-				"encryptionPassword" in parsedJSON &&
-				typeof parsedJSON["encryptionPassword"] === "string"
-			) ||
-			!(
 				"name" in parsedJSON &&
-				typeof parsedJSON["name"] === "string" &&
-				typeof parsedJSON["name"] === "undefined"
-			) ||
-			!("type" in parsedJSON && typeof parsedJSON["type"] === "string") ||
-			!(
-				"maxConflicts" in parsedJSON &&
-				typeof parsedJSON["maxConflicts"] === "number"
+				(typeof parsedJSON["name"] === "string" ||
+					typeof parsedJSON["name"] === "undefined")
 			) ||
 			!(
 				"paused" in parsedJSON &&
@@ -197,10 +190,10 @@ export class SyncthingDeviceModel extends SyncthingDevice {
 		return new SyncthingDeviceModel(
 			parsedJSON["deviceID"],
 			parsedJSON["introducedBy"],
-			parsedJSON["encryptionPassword"],
+			// parsedJSON["encryptionPassword"],
 			parsedJSON["addresses"],
 			parsedJSON["paused"],
-			parsedJSON["ignoredFolders"],
+			parsedJSON["ignoredFolders"] as Array<string>, // TODO: refactor this.
 			parsedJSON["name"] ?? ""
 		);
 	}

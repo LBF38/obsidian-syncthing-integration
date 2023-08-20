@@ -27,15 +27,17 @@ export class SyncthingFromREST {
 
 	/**
 	 * Get all the folders of Syncthing installation using the REST API.
+	 * @see https://docs.syncthing.net/rest/config#rest-config-folders-rest-config-devices
 	 */
 	async getAllFolders(): Promise<SyncthingFolderModel[]> {
-		const response = await this.requestEndpoint(
-			"/rest/system/config/folders"
-		);
+		const response = await this.requestEndpoint("/rest/config/folders");
 		const foldersModel: SyncthingFolderModel[] = [];
-		for (const folder of await response.json()) {
+		console.log("REST: ", response.json);
+		for (const folder of response.json) {
 			console.log("REST: ", folder);
-			foldersModel.push(SyncthingFolderModel.fromJSON(folder));
+			foldersModel.push(
+				SyncthingFolderModel.fromJSON(JSON.stringify(folder))
+			);
 		}
 		return foldersModel;
 	}
@@ -57,14 +59,16 @@ export class SyncthingFromREST {
 
 	/**
 	 * Get all the devices of Syncthing installation using the REST API.
+	 * @see https://docs.syncthing.net/rest/config#rest-config-folders-rest-config-devices
 	 */
 	async getDevices(): Promise<SyncthingDeviceModel[]> {
-		const response = await this.requestEndpoint(
-			"/rest/system/config/devices"
-		);
+		const response = await this.requestEndpoint("/rest/config/devices");
 		const devicesModel: SyncthingDeviceModel[] = [];
-		for (const device of await response.json()) {
-			devicesModel.push(SyncthingDeviceModel.fromJSON(device));
+		console.log("REST: ", response.json);
+		for (const device of response.json) {
+			devicesModel.push(
+				SyncthingDeviceModel.fromJSON(JSON.stringify(device))
+			);
 		}
 		return devicesModel;
 	}
@@ -75,8 +79,8 @@ export class SyncthingFromREST {
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
 	async getConfiguration(): Promise<SyncthingConfigurationModel> {
-		const response = await this.requestEndpoint("/rest/system/config");
-		return SyncthingConfigurationModel.fromJSON(await response.json());
+		const response = await this.requestEndpoint("/rest/config");
+		return SyncthingConfigurationModel.fromJSON(response.json);
 	}
 
 	/**

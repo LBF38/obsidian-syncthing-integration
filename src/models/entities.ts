@@ -73,7 +73,7 @@ export class SyncthingDevice {
 		 */
 		public deviceID: string,
 		public introducedBy: string,
-		public encryptionPassword: string,
+		// public encryptionPassword: string, // TODO: move to the Folder element.
 		public address: string[],
 		public paused: boolean,
 		public ignoredFolders: string[],
@@ -88,7 +88,7 @@ export class ReducedSyncthingDevice
 	implements
 		Pick<
 			SyncthingDevice,
-			"deviceID" | "introducedBy" | "encryptionPassword"
+			"deviceID" | "introducedBy" /* | "encryptionPassword" */
 		>
 {
 	constructor(

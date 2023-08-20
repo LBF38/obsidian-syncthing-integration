@@ -1,24 +1,35 @@
 <script lang="ts">
-	import { ConfigurationModal } from "src/views/configuration_modal";
-	import ConfigurationItem from "./configuration_item.svelte";
-	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
-	import FolderItem from "./folder_item.svelte";
 	import { Notice } from "obsidian";
+	import { SyncthingDevice, SyncthingFolder } from "src/models/entities";
+	import { ConfigurationModal } from "src/views/configuration_modal";
+	import { onMount } from "svelte";
+	import ConfigurationItem from "./configuration_item.svelte";
+	import FolderItem from "./folder_item.svelte";
+	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import RemoteItem from "./remote_item.svelte";
 
 	export let parent: ConfigurationModal;
 	parent.titleEl.setText("Syncthing Configuration");
 	parent.titleEl.style.textAlign = "center";
 
-	let syncthingBaseUrl = `${parent.plugin.settings.configuration.url?.protocol}://${parent.plugin.settings.configuration.url?.ip_address}:${parent.plugin.settings.configuration.url?.port}/}`;
+	let syncthingBaseUrl = `${parent.plugin.settings.configuration.url?.protocol}://${parent.plugin.settings.configuration.url?.ip_address}:${parent.plugin.settings.configuration.url?.port}/`;
 	console.log(syncthingBaseUrl);
+	let folders: SyncthingFolder[] = [];
+	let devices: SyncthingDevice[] = [];
+	onMount(async () => {
+		folders = await parent.plugin.syncthingController.getFolders();
+		devices = await parent.plugin.syncthingController.getDevices();
+		console.log("Folders: ", folders);
+		console.log("Devices: ", devices);
+	});
 </script>
 
 <div class="left">
 	<div class="folder">
-		<h2>Folders (#)</h2>
-		<FolderItem name="Folder #1" />
-		<FolderItem name="Folder #2" />
+		<h2>Folders ({folders.length})</h2>
+		{#each folders as folder}
+			<FolderItem name={folder.label} />
+		{/each}
 		<div class="controls">
 			<button
 				on:click={async (event) => {
@@ -53,10 +64,10 @@
 		<ConfigurationItem />
 	</div>
 	<div class="remote">
-		<h2>Remote Devices (#)</h2>
-		<RemoteItem name="Remote #1" />
-		<RemoteItem name="Remote #2" />
-		<RemoteItem name="Remote #3" />
+		<h2>Remote Devices ({devices.length})</h2>
+		{#each devices as device}
+			<RemoteItem name={device.name ?? device.deviceID} />
+		{/each}
 		<div class="controls">
 			<button
 				on:click={async (event) => {
