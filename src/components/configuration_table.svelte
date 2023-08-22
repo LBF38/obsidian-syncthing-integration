@@ -14,11 +14,14 @@
 
 	let syncthingBaseUrl = `${parent.plugin.settings.configuration.url?.protocol}://${parent.plugin.settings.configuration.url?.ip_address}:${parent.plugin.settings.configuration.url?.port}/`;
 	console.log(syncthingBaseUrl);
+	// TODO: refactor this to use Svelte stores.
 	let folders: SyncthingFolder[] = [];
 	let devices: SyncthingDevice[] = [];
+	let thisDevice: SyncthingDevice | undefined = undefined;
 	onMount(async () => {
 		folders = await parent.plugin.syncthingController.getFolders();
 		devices = await parent.plugin.syncthingController.getDevices();
+		thisDevice = devices.first();
 		console.log("Folders: ", folders);
 		console.log("Devices: ", devices);
 	});
@@ -61,11 +64,14 @@
 <div class="right">
 	<div class="mydevice">
 		<h2>This Device</h2>
-		<ConfigurationItem />
+		<ConfigurationItem isThisDevice device={thisDevice} />
 	</div>
 	<div class="remote">
-		<h2>Remote Devices ({devices.length})</h2>
-		{#each devices as device}
+		<h2>
+			Remote Devices ({devices.filter((value) => value !== thisDevice)
+				.length})
+		</h2>
+		{#each devices.filter((value) => value !== thisDevice) as device}
 			<RemoteItem {device} />
 		{/each}
 		<div class="controls">

@@ -1,100 +1,350 @@
 <script lang="ts">
 	import { Notice } from "obsidian";
+	import { SyncthingDevice, SyncthingFolder } from "src/models/entities";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
-	import { ConfigurationItemData } from "./types";
 
-	export let title = "My Device's Name";
-	export let data: ConfigurationItemData = [
-		{
-			icon: "download-cloud",
-			title: "Download Rate",
-		},
-		{
-			icon: "upload-cloud",
-			title: "Upload Rate",
-		},
-		{
-			icon: "home",
-			title: "Local State (Total)",
-		},
-		{
-			icon: "network",
-			title: "Listeners",
-		},
-		{
-			icon: "milestone",
-			title: "Discovery",
-		},
-		{
-			icon: "clock-9",
-			title: "Uptime",
-		},
-		{
-			icon: "qr-code",
-			title: "Identification",
-		},
-		{
-			icon: "tag",
-			title: "Version",
-		},
-	];
+	export let folder: SyncthingFolder | undefined = undefined;
+	export let device: SyncthingDevice | undefined = undefined;
+	export let isThisDevice = false;
 </script>
 
 <details>
-	<summary><slot name="title">{title}</slot></summary>
-	<table>
-		<slot name="table">
-			{#each data as item}
-				<tr>
-					<td>
-						<div>
-							<ObsidianLucideIcon
-								name={item.icon}
-								style="display: flex;"
-							/>
-							{item.title}
-						</div>
-					</td>
-					<td>
-						<slot {item}>
-							{#if item.icon === data[0].icon}
-								<a href="/" style="color: inherit;">
-									0 B/s (0 B)
-								</a>
-							{:else if item.icon === data[1].icon}
-								<a href="/" style="color: inherit;">
-									0 B/s (0 B)
-								</a>
-							{:else if item.icon === data[2].icon}
-								<span>
-									Files: 100, Folders: 50, Storage: ~40 MiB
-								</span>
-							{:else if item.icon === data[3].icon}
-								<span> 3/3 </span>
-							{:else if item.icon === data[4].icon}
-								<span> 4/5 </span>
-							{:else if item.icon === data[5].icon}
-								<span> 10h 23m </span>
-							{:else if item.icon === data[6].icon}
-								<a
-									href="/"
-									on:click={() =>
-										new Notice("not implement yet !")}
-								>
-									HX4RNK
-								</a>
-							{:else if item.icon === data[7].icon}
-								<span> v1.23.7, Windows, blabla</span>
-							{:else}
-								<span>Not implemented yet!</span>
-							{/if}
-						</slot>
-					</td>
-				</tr>
-			{/each}
+	<summary>
+		<slot name="title">
+			<ObsidianLucideIcon name="hard-drive" />
+			<span>{device?.name ?? device?.deviceID}</span>
 		</slot>
+	</summary>
+	<table>
+		{#if folder && !isThisDevice}
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="info" />
+						<span>Folder ID</span>
+					</div>
+				</td>
+				<td>
+					<span>{folder.id}</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="folder" />
+						<span>Folder Path</span>
+					</div>
+				</td>
+				<td>
+					<span>{folder.path}</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="globe-2" />
+						<span>Global State</span>
+					</div>
+				</td>
+				<td>
+					<!-- TODO: change to dynamic data. -->
+					<span> Files: 100, Folders: 50, Storage: ~40 MiB </span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="home" />
+						<span>Local State</span>
+					</div>
+				</td>
+				<td>
+					<!-- TODO: change to dynamic data. -->
+					<span> Files: 100, Folders: 50, Storage: ~40 MiB </span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="refresh-cw" />
+						<span>Rescans</span>
+					</div>
+				</td>
+				<td>
+					<!-- TODO: change to dynamic data. -->
+					<div>
+						<ObsidianLucideIcon name="clock-9" />
+						<span>1h</span>
+						<ObsidianLucideIcon name="eye" />
+						<span>Enabled</span>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="file" />
+						<span>File Versioning</span>
+					</div>
+				</td>
+				<td>
+					<!-- TODO: change to dynamic data. -->
+					<span>Staggered</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="share-2" />
+						<span>Shared With</span>
+					</div>
+				</td>
+				<td>
+					<!-- TODO: map to device names and remove this device. -->
+					<span>
+						{folder.devices
+							.map((device) => device.deviceID.slice(0, 7))
+							.join(", ")}
+					</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="clock-9" />
+						<span>Last Scan</span>
+					</div>
+				</td>
+				<td>
+					<!-- TODO: change to dynamic/real data. -->
+					<span>{new Date().toISOString()}</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="arrow-left-right" />
+						<span>Latest Change</span>
+					</div>
+				</td>
+				<td>
+					<span>{"Updated <filename>.ext"}</span>
+				</td>
+			</tr>
+		{:else if device && !isThisDevice}
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="eye" />
+						<span>Last seen</span>
+					</div>
+				</td>
+				<td>
+					<!-- TODO: change to dynamic data. -->
+					<span>{new Date().toString()}</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="cloud" />
+						<span>Sync Status</span>
+					</div>
+				</td>
+				<td>
+					<!-- TODO: change to dynamic data. -->
+					<span>up to date</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="link" />
+						<span>Addresses</span>
+					</div>
+				</td>
+				<td>
+					<span>{device.address.join(", ")}</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="qr-code" />
+						<span>Identification</span>
+					</div>
+				</td>
+				<td>
+					<a
+						href="/"
+						on:click={() => {
+							new Notice("Not implemented yet!");
+						}}
+					>
+						{device.deviceID.slice(0, 7)}
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="folder" />
+						<span>Folders</span>
+					</div>
+				</td>
+				<td>
+					<span>{device.name}</span>
+				</td>
+			</tr>
+		{:else if isThisDevice && device}
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="download-cloud" />
+						<span>Download Rate</span>
+					</div>
+				</td>
+				<td>
+					<a href="/" style="color: inherit;"> 0 B/s (0 B) </a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="upload-cloud" />
+						<span>Upload Rate</span>
+					</div>
+				</td>
+				<td>
+					<a href="/" style="color: inherit;"> 0 B/s (0 B) </a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="home" />
+						<span>Local State (Total)</span>
+					</div>
+				</td>
+				<td>
+					<span> Files: 100, Folders: 50, Storage: ~40 MiB </span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="network" />
+						<span>Listeners</span>
+					</div>
+				</td>
+				<td>
+					<span> 3/3 </span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="milestone" />
+						<span>Discovery</span>
+					</div>
+				</td>
+				<td>
+					<span> 4/5 </span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="clock-9" />
+						<span>Uptime</span>
+					</div>
+				</td>
+				<td>
+					<span> 10h 23m </span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="qr-code" />
+						<span>Identification</span>
+					</div>
+				</td>
+				<td>
+					<a
+						href="/"
+						on:click={() => new Notice("not implement yet !")}
+					>
+						{device.deviceID.slice(0, 7)}
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div>
+						<ObsidianLucideIcon name="tag" />
+						<span>Version</span>
+					</div>
+				</td>
+				<td>
+					<span> v1.23.7, Windows, blabla</span>
+				</td>
+			</tr>
+		{/if}
 	</table>
-	<slot name="footer" />
+	<slot name="footer" class="footer">
+		{#if folder && !isThisDevice}
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="pause" />
+				<span>Pause</span>
+			</button>
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="history" />
+				<span>Versions</span>
+			</button>
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="refresh-cw" />
+				<span>Rescan</span>
+			</button>
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="pencil" />
+				<span>Edit</span>
+			</button>
+		{:else if device && !isThisDevice}
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="pause" />
+				<span>Pause</span>
+			</button>
+			<button
+				on:click={async (event) => {
+					new Notice("Not implemented yet!");
+				}}
+			>
+				<ObsidianLucideIcon name="pencil" />
+				<span>Edit</span>
+			</button>
+		{/if}
+	</slot>
 </details>
 
 <style>
