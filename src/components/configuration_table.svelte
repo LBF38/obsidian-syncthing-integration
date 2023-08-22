@@ -7,6 +7,7 @@
 	import FolderItem from "./folder_item.svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import RemoteItem from "./remote_item.svelte";
+	import WarningMessage from "./warning_message.svelte";
 
 	export let parent: ConfigurationModal;
 	parent.titleEl.setText("Syncthing Configuration");
@@ -26,6 +27,10 @@
 		console.log("Devices: ", devices);
 	});
 </script>
+
+<WarningMessage
+	message="The following configuration is not fully implemented yet. Some data aren't real-time and some controls are not implemented yet. It is mainly to reproduce the Syncthing GUI and then, real-time data and controls will be added."
+/>
 
 <div class="left">
 	<div class="folder">
