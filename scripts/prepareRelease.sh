@@ -4,7 +4,7 @@ if ! git log -1 --pretty=%B | grep -q "chore(release): :bookmark: $1"; then
 	pnpm run version
 	git add manifest.json versions.json package.json docs/CHANGELOG.md
 	git checkout -b release/"$1"
-	git commit -m "chore(release): :bookmark: $1 [skip ci]\n\n$2"
+	git commit -m "chore(release): :bookmark: $1 [skip ci]"
 	git push --set-upstream origin release/"$1" --force
 	if gh pr list | grep -q "release/$1"; then
 		echo "a release PR already exists"
