@@ -1,3 +1,87 @@
+# [2.0.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.2.1...2.0.0) (2023-08-22)
+
+
+### Features
+
+* **ui:** :sparkles: add config table ([#104](https://github.com/LBF38/obsidian-syncthing-integration/issues/104)) ([89b73fd](https://github.com/LBF38/obsidian-syncthing-integration/commit/89b73fd6f7e684802ffc037e4767fe5a2d4311cd))
+
+
+### BREAKING CHANGES
+
+* **ui:** this changes the SyncthingConfiguration type.
+
+* fix(mobile): :bug: update requestEndpoint to support mobile
+
+update requestEndpoint method to support mobile
+by changing the localhost address to its corresponding ip address
+
+* feat(ui): :construction: add config table
+
+* feat(ui): :sparkles: add configuration item component
+
+new component for displaying configuration information from Syncthing.
+This will be used to recreate the official Syncthing GUI.
+
+* refactor(ui): :recycle: update obsidian lucide icon component
+
+add all props to be manipulated outside of the component.
+It could be used to add styles, classes, etc
+to the div element that wraps the SVG.
+
+* feat(ui): :sparkles: add configuration modal
+
+add syncthing configuration modal to reproduce the Syncthing GUI
+
+* feat(ui): :sparkles: update configuration table A LOT
+
+- update configuration item for adding more customization
+- create folder item and remote item,
+respectively components for folders and remote devices.
+- update obsidian lucide icon component with default style
+- add configuration item data type inside component/types.ts
+These changes are static ! Let's now add some dynamic data !
+
+* feat(controllers): :sparkles: add network calls to get folders/devices
+
+add the API calls to the configuration table so we have dynamic data.
+This is awesome ! Now, we have to shape the data in each component.
+
+TODO: refactor models and entities.
+They are not 100% accurate to the Syncthing APIs
+
+* feat(ui): :lipstick: update configuration table ui
+
+update folder and remote items to have dynamic data.
+update configuration item and table to handle dynamic data.
+
+* refactor(dev): :construction: working on type safety
+
+making functions to dynamically check the type of unknown received json.
+(when creating models/entities)
+Also trying to make it statically typed.
+
+* refactor(ui): :recycle: update configuration table
+
+refactor types and use of slots inside of the table cells.
+might be overcomplicated for what it does.
+also should use Svelte stores
+for common values such as folders and devices.
+
+* refactor(ui): :recycle: full refactor of syncthing configuration view
+
+refactoring all remote and folder items
+inside of the configuration item component.
+Also refactoring the configuration table to use the configuration item
+give relevant data.
+
+* refactor(controllers): :construction: update requestEndpoint
+
+to follow redirect on HTTPS
+
+* feat(ui): :sparkles: add warning message on configuration view
+
+for next release, to warn that the configuration view isn't fully implemented yet.
+
 ## [1.2.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.2.0...1.2.1) (2023-08-18)
 
 
