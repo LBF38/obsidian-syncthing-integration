@@ -1,4 +1,4 @@
-import { requestUrl } from "obsidian";
+import { Platform, requestUrl } from "obsidian";
 import SyncthingPlugin from "src/main";
 import { SyncthingDevice } from "src/models/entities";
 import { RestFailure } from "src/models/failures";
@@ -27,15 +27,17 @@ export class SyncthingFromREST {
 
 	/**
 	 * Get all the folders of Syncthing installation using the REST API.
+	 * @see https://docs.syncthing.net/rest/config#rest-config-folders-rest-config-devices
 	 */
 	async getAllFolders(): Promise<SyncthingFolderModel[]> {
-		const response = await this.requestEndpoint(
-			"/rest/system/config/folders"
-		);
+		const response = await this.requestEndpoint("/rest/config/folders");
 		const foldersModel: SyncthingFolderModel[] = [];
-		for (const folder of await response.json()) {
+		console.log("REST: ", response.json);
+		for (const folder of response.json) {
 			console.log("REST: ", folder);
-			foldersModel.push(SyncthingFolderModel.fromJSON(folder));
+			foldersModel.push(
+				SyncthingFolderModel.fromJSON(JSON.stringify(folder))
+			);
 		}
 		return foldersModel;
 	}
@@ -57,14 +59,16 @@ export class SyncthingFromREST {
 
 	/**
 	 * Get all the devices of Syncthing installation using the REST API.
+	 * @see https://docs.syncthing.net/rest/config#rest-config-folders-rest-config-devices
 	 */
 	async getDevices(): Promise<SyncthingDeviceModel[]> {
-		const response = await this.requestEndpoint(
-			"/rest/system/config/devices"
-		);
+		const response = await this.requestEndpoint("/rest/config/devices");
 		const devicesModel: SyncthingDeviceModel[] = [];
-		for (const device of await response.json()) {
-			devicesModel.push(SyncthingDeviceModel.fromJSON(device));
+		console.log("REST: ", response.json);
+		for (const device of response.json) {
+			devicesModel.push(
+				SyncthingDeviceModel.fromJSON(JSON.stringify(device))
+			);
 		}
 		return devicesModel;
 	}
@@ -75,14 +79,24 @@ export class SyncthingFromREST {
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
 	async getConfiguration(): Promise<SyncthingConfigurationModel> {
-		const response = await this.requestEndpoint("/rest/system/config");
-		return SyncthingConfigurationModel.fromJSON(await response.json());
+		const response = await this.requestEndpoint("/rest/config");
+		return SyncthingConfigurationModel.fromJSON(response.json);
 	}
 
+	/**
+	 * Private method to request an endpoint of the REST API.
+	 * The endpoint should start with a `/`.
+	 *
+	 * @param endpoint - The REST endpoint to call. @see https://docs.syncthing.net/dev/rest.html
+	 * @returns The response of the REST API.
+	 */
 	private async requestEndpoint(endpoint: string) {
 		// FIXME: Fix the issue when connecting to the REST API. (error 403)
 		console.log("requestEndpoint: Endpoint", endpoint);
-		const url = `${this.plugin.settings.configuration.syncthingBaseUrl}/${endpoint}`;
+		let ip_address = this.plugin.settings.configuration.url?.ip_address;
+		if (ip_address === "localhost" && Platform.isMobileApp)
+			ip_address = "127.0.0.1";
+		const url = `${this.plugin.settings.configuration.url?.protocol}://${ip_address}:${this.plugin.settings.configuration.url?.port}${endpoint}`;
 		const response = requestUrl({
 			url: url,
 			method: "GET",
@@ -91,6 +105,7 @@ export class SyncthingFromREST {
 				Accept: "*/*",
 				"Content-Type": "application/json",
 				"Access-Control-Allow-Origin": "*",
+				redirect: "follow",
 			},
 		});
 		console.log(

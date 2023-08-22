@@ -158,6 +158,95 @@ export function isStringArray(value: unknown): value is string[] {
 	return isArrayOf(value, (item): item is string => typeof item === "string");
 }
 
-export function isNumberArray(value: unknown) {
+export function isNumberArray(value: unknown): value is number[] {
 	return isArrayOf(value, (item): item is number => typeof item === "number");
 }
+
+// /**
+//  * Validates that a JSON object has the expected fields and types.
+//  * @param json The JSON object to validate.
+//  * @param field A field to validate.
+//  * @param type The type of the field.
+//  * @returns `true` if the JSON object is valid, `false` otherwise.
+//  */
+// export function validateField(
+// 	json: unknown,
+// 	field: string,
+// 	type: "string" | "number" | "boolean" | "object" | "array"
+// ): json is object & Record<typeof field, typeof type> {
+// 	if (typeof json !== "object" || json === null) {
+// 		return false;
+// 	}
+// 	for (const [key, type] of Object.entries(fields)) {
+// 		if (!json.hasOwnProperty(key)) {
+// 			return false;
+// 		}
+// 		if (typeof json[key as keyof typeof json] !== typeof type) {
+// 			return false;
+// 		}
+// 	}
+// 	return true;
+// }
+
+// let json: unknown = { test: 42 };
+// validateJSON(json, { test: 42 });
+// json;
+
+/**
+ * Validates that a JSON object has the expected field and type.
+ *
+ * @param json an unknown json response to validate
+ * @param field a field to validate in the json response
+ * @param type the type of the field to validate
+ * @returns `true` if the JSON object is valid, `false` otherwise. And gives the json object the correct type.
+ *
+ * @example
+ * ```ts
+ * const json: unknown = { test: 42 };
+ * if (!validateField(json, "test", "")) throw new Error("Type error");
+ * json; // should be of type `object & Record<"test", string>`
+ * ```
+ *
+ */
+export function validateJsonField<T extends string, K>(
+	json: unknown,
+	field: T,
+	type: K
+): json is object & Record<T, K> {
+	return (
+		typeof json === "object" &&
+		json !== null &&
+		field in json &&
+		typeof json[field as keyof typeof json] === type
+	);
+}
+
+export function logErrorIfNotValidJson<T extends string, K>(
+	json: unknown,
+	field: T,
+	type: K
+): asserts json is object & Record<T, K> {
+	if (!validateJsonField(json, field, type)) {
+		console.error(
+			`Error validating JSON: ${field} is not present or is not of type ${typeof type}. Got ${JSON.stringify(
+				json
+			)}.`
+		);
+	}
+}
+// export function throwIfNotValid<T extends string>(
+// 	json: unknown,
+// 	field: T,
+// 	type: "string" | "number" | "boolean" | "object"
+// ): asserts json is object & Record<T, typeof checkedType> {
+// 	let checkedType;
+// 	if (type === "string") checkedType = "";
+// 	else if (type === "number") checkedType = 42;
+// 	else if (type === "boolean") checkedType = true;
+// 	else if (type === "object") checkedType = {};
+// 	if (!validateField(json, field, checkedType)) {
+// 		throw new Error(
+// 			`Error validating JSON: ${field} is not present or is not of type ${typeof type}. Got ${json}.`
+// 		);
+// 	}
+// }

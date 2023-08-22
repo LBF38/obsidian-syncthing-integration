@@ -7,10 +7,12 @@
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
 	import ObsidianToggle from "./obsidian_toggle.svelte";
+	import { ConfigurationModal } from "src/views/configuration_modal";
 	export let parent: SyncthingSettingTab;
 	let hasSyncthing = true;
 	let apiInputType = "password";
 	let guiPasswordInputType = "password";
+	let syncthingBaseUrl = "";
 
 	onMount(async () => {
 		hasSyncthing = await parent.syncthingController.hasSyncthing();
@@ -26,6 +28,7 @@
 			parent.plugin.saveSettings();
 		});
 	}
+	$: syncthingBaseUrl = `${parent.plugin.settings.configuration.url?.protocol}://${parent.plugin.settings.configuration.url?.ip_address}:${parent.plugin.settings.configuration.url?.port}`;
 </script>
 
 <!-- Banner -->
@@ -169,22 +172,101 @@
 {/if}
 
 <!-- GUI Setting -->
-<ObsidianSettingsItem name="Syncthing GUI" heading={true} />
+<ObsidianSettingsItem name="Syncthing base URL" heading={true} />
 <ObsidianSettingsItem
-	name="Set GUI address"
-	description="Please set your Syncthing GUI address here. This address will be used to open the Syncthing GUI in your browser. It is required on mobile app."
+	name="Set the Syncthing base URL"
+	description="Please set your Syncthing base URL here. This address will be used to open the Syncthing GUI in your browser and to make API requests."
 >
-	<input
-		type="text"
-		placeholder="Enter your GUI address here..."
-		bind:value={parent.plugin.settings.configuration.syncthingBaseUrl}
-		on:change={async (event) => {
-			parent.plugin.settings.configuration.syncthingBaseUrl =
-				event.currentTarget.value;
-			await parent.plugin.saveSettings();
-		}}
+	<div
 		slot="control"
-	/>
+		style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end;"
+	>
+		<div style="display: flex; align-items: center;">
+			<select
+				style="border-radius: var(--input-radius) 0 0 var(--input-radius);"
+				value={parent.plugin.settings.configuration.url?.protocol ?? ""}
+				on:change={async (event) => {
+					console.log(
+						"select change: ",
+						event,
+						event.currentTarget.value
+					);
+					if (!parent.plugin.settings.configuration.url) {
+						parent.plugin.settings.configuration.url = {
+							protocol: "http",
+							ip_address: "localhost",
+							port: 8384,
+						};
+					}
+					if (
+						event.currentTarget.value === "http" ||
+						event.currentTarget.value === "https"
+					)
+						parent.plugin.settings.configuration.url.protocol =
+							event.currentTarget.value;
+					await parent.plugin.saveSettings();
+				}}
+			>
+				<option value="http"> http://</option>
+				<option value="https"> https://</option>
+			</select>
+
+			<input
+				type="text"
+				placeholder="Enter your Syncthing address here..."
+				value={parent.plugin.settings.configuration.url?.ip_address ??
+					""}
+				on:change={async (event) => {
+					console.log(
+						"ip address change: ",
+						event,
+						event.currentTarget.value
+					);
+					const valueChange = event.currentTarget.value;
+					if (!parent.plugin.settings.configuration.url) {
+						parent.plugin.settings.configuration.url = {
+							protocol: "http",
+							ip_address: "localhost",
+							port: 8384,
+						};
+					}
+					parent.plugin.settings.configuration.url.ip_address =
+						valueChange === "" || !valueChange
+							? "localhost"
+							: valueChange;
+					await parent.plugin.saveSettings();
+				}}
+				style="border-radius: 0;"
+			/>
+			<input
+				type="number"
+				placeholder="Enter the port..."
+				value={parent.plugin.settings.configuration.url?.port ?? ""}
+				on:change={async (event) => {
+					console.log(
+						"port change: ",
+						event,
+						event.currentTarget.value
+					);
+					const valueChange = event.currentTarget.value;
+					if (!parent.plugin.settings.configuration.url) {
+						parent.plugin.settings.configuration.url = {
+							protocol: "http",
+							ip_address: "localhost",
+							port: 8384,
+						};
+					}
+					parent.plugin.settings.configuration.url.port =
+						isNaN(parseInt(valueChange)) || !valueChange
+							? 8384
+							: parseInt(valueChange);
+					await parent.plugin.saveSettings();
+				}}
+				style="border-radius: 0 var(--input-radius) var(--input-radius) 0;"
+			/>
+		</div>
+		<input style="margin: 2% 0;" value={syncthingBaseUrl} disabled />
+	</div>
 </ObsidianSettingsItem>
 <ObsidianSettingsItem
 	name="Set GUI Credentials"
@@ -193,7 +275,7 @@
 	<svelte:fragment slot="control">
 		<input
 			type="text"
-			placeholder="Enter your GUI username here..."
+			placeholder="Enter your GUI username..."
 			id="gui-username"
 			bind:value={parent.plugin.settings.gui_username}
 			on:change={async (event) => {
@@ -204,7 +286,7 @@
 		/>
 		<input
 			type={guiPasswordInputType}
-			placeholder="Enter your GUI password here..."
+			placeholder="Enter your GUI password..."
 			id="gui-password"
 			value={parent.plugin.settings.gui_password ?? ""}
 			on:change={async (event) => {
@@ -250,17 +332,9 @@
 				parent.plugin.settings.gui_username &&
 				parent.plugin.settings.gui_password
 			) {
-				url = `https://${parent.plugin.settings.gui_username}:${
-					parent.plugin.settings.gui_password
-				}@${
-					parent.plugin.settings.configuration.syncthingBaseUrl ??
-					"localhost:8384"
-				}`;
+				url = `https://${parent.plugin.settings.gui_username}:${parent.plugin.settings.gui_password}@${syncthingBaseUrl}`;
 			} else {
-				url = `https://${
-					parent.plugin.settings.configuration.syncthingBaseUrl ??
-					"localhost:8384"
-				}`;
+				url = `https://${syncthingBaseUrl}`;
 			}
 			// eslint-disable-next-line no-undef
 			open(url);
@@ -275,7 +349,17 @@
 <ObsidianSettingsItem
 	name="In construction"
 	description="This part is in construction."
-/>
+>
+	<button
+		on:click={async (event) => {
+			new Notice("This part is in construction.");
+			new ConfigurationModal(parent.app, parent.plugin).open();
+		}}
+		slot="control"
+	>
+		<ObsidianLucideIcon name="cog" />
+	</button>
+</ObsidianSettingsItem>
 
 <!-- Plugin developer mode -->
 {#if Platform.isDesktopApp}

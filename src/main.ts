@@ -4,9 +4,7 @@ import {
 	DevModeModal,
 	PluginDevModeController,
 } from "./controllers/plugin_dev_mode";
-import {
-	SyncthingFromAndroid
-} from "./data/syncthing_android_datasource";
+import { SyncthingFromAndroid } from "./data/syncthing_android_datasource";
 import { SyncthingFromCLI } from "./data/syncthing_local_datasource";
 import { SyncthingFromREST } from "./data/syncthing_remote_datasource";
 import { SyncthingConfiguration } from "./models/entities";
@@ -23,7 +21,13 @@ interface SyncthingPluginSettings {
 }
 
 const DEFAULT_SETTINGS: Partial<SyncthingPluginSettings> = {
-	configuration: { syncthingBaseUrl: "localhost:8384" },
+	configuration: {
+		url: {
+			protocol: "http",
+			ip_address: "localhost",
+			port: 8384,
+		},
+	},
 	devMode: false,
 };
 

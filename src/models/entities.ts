@@ -14,9 +14,18 @@ export class SyncthingConfiguration {
 		public version: string,
 		public folders: SyncthingFolder[],
 		public devices: SyncthingDevice[],
-		public syncthingBaseUrl: string
+		public url: SyncthingURL
 	) {}
 }
+
+/**
+ * Simple URL object.
+ */
+export type SyncthingURL = {
+	protocol: "https" | "http";
+	ip_address: string | "localhost";
+	port: number;
+};
 
 /**
  * Available sync types in Syncthing.
@@ -64,7 +73,7 @@ export class SyncthingDevice {
 		 */
 		public deviceID: string,
 		public introducedBy: string,
-		public encryptionPassword: string,
+		// public encryptionPassword: string, // TODO: move to the Folder element.
 		public address: string[],
 		public paused: boolean,
 		public ignoredFolders: string[],
@@ -79,7 +88,7 @@ export class ReducedSyncthingDevice
 	implements
 		Pick<
 			SyncthingDevice,
-			"deviceID" | "introducedBy" | "encryptionPassword"
+			"deviceID" | "introducedBy" /* | "encryptionPassword" */
 		>
 {
 	constructor(
