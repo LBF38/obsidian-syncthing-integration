@@ -1,7 +1,7 @@
 {
 	"id": "syncthing-integration",
 	"name": "Syncthing Integration",
-	"version": "1.2.1",
+	"version": "2.0.0",
 	"minAppVersion": "1.0.0",
 	"description": "Integrates most of Syncthing features into Obsidian.",
 	"author": "LBF38",
