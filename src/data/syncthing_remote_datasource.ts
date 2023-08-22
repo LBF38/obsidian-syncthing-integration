@@ -105,6 +105,7 @@ export class SyncthingFromREST {
 				Accept: "*/*",
 				"Content-Type": "application/json",
 				"Access-Control-Allow-Origin": "*",
+				redirect: "follow",
 			},
 		});
 		console.log(
