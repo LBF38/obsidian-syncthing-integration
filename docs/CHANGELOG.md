@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.0.0...2.0.1) (2023-08-25)
+
+
+### Bug Fixes
+
+* **ui:** :ambulance: GUI open link fixed ([#111](https://github.com/LBF38/obsidian-syncthing-integration/issues/111)) ([0cbdcdc](https://github.com/LBF38/obsidian-syncthing-integration/commit/0cbdcdc0bb845ab9cbf0b1b88ad12103af806e22)), closes [#110](https://github.com/LBF38/obsidian-syncthing-integration/issues/110)
+
 # [2.0.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/1.2.1...2.0.0) (2023-08-22)
 
 
