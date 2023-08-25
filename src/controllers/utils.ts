@@ -217,7 +217,7 @@ export function validateJsonField<T extends string, K>(
 		typeof json === "object" &&
 		json !== null &&
 		field in json &&
-		typeof json[field as keyof typeof json] === type
+		typeof json[field as keyof typeof json] === typeof type
 	);
 }
 

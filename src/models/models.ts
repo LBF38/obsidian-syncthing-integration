@@ -171,6 +171,6 @@ export class ReducedSyncthingDeviceModel extends ReducedSyncthingDevice {
 	}
 
 	toJSON(): string {
-		throw new Error("Method not implemented.");
+		return JSON.stringify(this);
 	}
 }
