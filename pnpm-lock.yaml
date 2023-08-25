@@ -100,7 +100,7 @@ devDependencies:
     version: 0.40.0
   obsidian:
     specifier: latest
-    version: 1.4.0(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
+    version: 1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
   sass:
     specifier: ^1.62.1
     version: 1.62.1
@@ -122,6 +122,9 @@ devDependencies:
   typescript:
     specifier: ^5.0.0
     version: 5.0.2
+  valibot:
+    specifier: ^0.13.1
+    version: 0.13.1
 
 packages:
 
@@ -3127,8 +3130,8 @@ packages:
       boolbase: 1.0.0
     dev: true
 
-  /obsidian@1.4.0(@codemirror/state@6.2.1)(@codemirror/view@6.13.0):
-    resolution: {integrity: sha512-fsZMPlxgflGSBSP6P4BjQi5+0MqZl3h6FEDEZ3CNnweNdDw0doyqN3FMO/PGWfuxPT77WicVwUxekuI3e6eCGg==}
+  /obsidian@1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.13.0):
+    resolution: {integrity: sha512-q2V5GNT/M40uYOENdVw5kovPSoaO6vppiiyBCkIqWgKp4oN654jA/GQ0OaNBA7p5NdfS245QCeRgCFQ42wOZiw==}
     peerDependencies:
       '@codemirror/state': ^6.0.0
       '@codemirror/view': ^6.0.0
@@ -4499,6 +4502,10 @@ packages:
 
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+    dev: true
+
+  /valibot@0.13.1:
+    resolution: {integrity: sha512-SG2W1RHqE2LShl3p6tyERt6I+G6PQa9ZFVfkyNKXz01HBzL+tBeH5kXw/5AQeAzPJSjI3djVGBl1CyozA1kyBQ==}
     dev: true
 
   /validate-npm-package-license@3.0.4:
