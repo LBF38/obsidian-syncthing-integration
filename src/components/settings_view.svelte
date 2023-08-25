@@ -332,9 +332,9 @@
 				parent.plugin.settings.gui_username &&
 				parent.plugin.settings.gui_password
 			) {
-				url = `https://${parent.plugin.settings.gui_username}:${parent.plugin.settings.gui_password}@${syncthingBaseUrl}`;
+				url = `${parent.plugin.settings.configuration.url?.protocol}://${parent.plugin.settings.gui_username}:${parent.plugin.settings.gui_password}@${parent.plugin.settings.configuration.url?.ip_address}:${parent.plugin.settings.configuration.url?.port}`;
 			} else {
-				url = `https://${syncthingBaseUrl}`;
+				url = syncthingBaseUrl;
 			}
 			// eslint-disable-next-line no-undef
 			open(url);
