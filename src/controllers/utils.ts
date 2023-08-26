@@ -4,6 +4,7 @@ import { TFile } from "obsidian";
 import { Failure } from "src/models/failures";
 import { SyncthingController } from "./main_controller";
 import { ConflictFilename } from "src/models/entities";
+import { transform, union, date, string, number, minValue } from "valibot";
 
 /**
  * This utility function is used to sort the files in conflict by date, name, etc.
@@ -250,3 +251,78 @@ export function logErrorIfNotValidJson<T extends string, K>(
 // 		);
 // 	}
 // }
+
+/**
+ * Creates a complete, customizable validation function that validates a datetime.
+ *
+ * The correct number of days in a month is validated, including leap year.
+ *
+ * Date Format: yyyy-mm-dd
+ * Time Formats: [T]hh:mm[:ss[.sss]][+/-hh:mm] or [T]hh:mm[:ss[.sss]][Z]
+ *
+ * @param {Object} options The configuration options.
+ * @param {boolean} options.date Whether to validate the date.
+ * @param {boolean} options.time Whether to validate the time.
+ * @param {boolean} options.seconds Whether to validate the seconds.
+ * @param {boolean} options.milliseconds Whether to validate the milliseconds.
+ * @param {boolean} options.timezone Whether to validate the timezone.
+ * @param {string} error The error message.
+ *
+ * @returns A validation function.
+ */
+export function iso<TInput extends string>(options?: {
+	date?: boolean;
+	time?: boolean;
+	seconds?: boolean;
+	milliseconds?: boolean;
+	timezone?: boolean;
+	error?: string;
+}) {
+	return (input: TInput) => {
+		// override default date and time options to true if options is undefined
+		const {
+			date = false,
+			time = false,
+			seconds = true,
+			milliseconds = true,
+			timezone = true,
+			error = "Invalid ISO string",
+		} = options || { date: true, time: true };
+
+		const dateRegex = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
+		const timeRegex = `([01]\\d|2[0-3]):[0-5]\\d:${
+			seconds ? `[0-5]\\d${milliseconds ? "\\.\\d{3}" : ""}` : ""
+		}${timezone ? "([+-]([01]\\d|2[0-3]):[0-5]\\d|Z)" : ""}`;
+		const regex = new RegExp(
+			`^${date ? dateRegex : ""}${date && time ? "T" : time ? "T?" : ""}${
+				time ? timeRegex : ""
+			}$`
+		);
+
+		if (!regex.test(input)) {
+			return {
+				issue: {
+					validation: "iso",
+					message: error,
+					input,
+				},
+			};
+		}
+		return { output: input };
+	};
+}
+
+// Transforms a Date, string, or number into a Date
+export const dateSchema = transform(
+	// Input types: Date, string, number
+	union(
+		[
+			date(),
+			string([iso({ date: true, time: true, milliseconds: false })]),
+			number([minValue(0)]),
+		],
+		"Must be a valid Date object, ISO string, or UNIX timestamp"
+	),
+	// Output type: Date
+	(input) => new Date(input)
+);
