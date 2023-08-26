@@ -7,7 +7,7 @@ import {
 	SyncthingSystemStatus,
 } from "src/models/entities";
 import { RestFailure } from "src/models/failures";
-import { Output, array, safeParse, safeParseAsync } from "valibot";
+import { Output, array, safeParseAsync } from "valibot";
 
 /**
  * REST API of Syncthing.
@@ -105,44 +105,12 @@ export class SyncthingFromREST {
 	 * @returns the Syncthing system status object.
 	 */
 	async getSystemStatus(): Promise<Output<typeof SyncthingSystemStatus>> {
-		// const response = await this.requestEndpoint("/rest/system/status");
-		const mobileTest: Output<typeof SyncthingSystemStatus> = {
-			alloc: 42,
-			connectionServiceStatus: {
-				IPv4: {
-					error: null,
-					lanAddresses: ["lan"],
-					wanAddresses: ["wan"],
-				},
-			},
-			discoveryEnabled: true,
-			discoveryErrors: { test: "test" },
-			discoveryStatus: { IPv4: { error: null } },
-			discoveryMethods: 42,
-			goroutines: 42,
-			guiAddressOverridden: true,
-			guiAddressUsed: "foo",
-			lastDialStatus: {},
-			myID: "HX4RNKZ-6DAL37Q-5DQNHAG-VGJE3SW-PCMQD5F-GHWUKDS-EXK3Z66-FGWECAT",
-			pathSeparator: "foo",
-			startTime: new Date(),
-			sys: 42,
-			themes: ["foo"],
-			tilde: "foo",
-			uptime: 42,
-			urVersionMax: 42,
-		};
-		let result;
-		if (Platform.isMobileApp) {
-			result = safeParse(SyncthingSystemStatus, mobileTest);
-		} else {
-			result = await safeParseAsync(
-				SyncthingSystemStatus,
-				(
-					await this.requestEndpoint("/rest/system/status")
-				).json
-			);
-		}
+		const result = await safeParseAsync(
+			SyncthingSystemStatus,
+			(
+				await this.requestEndpoint("/rest/system/status")
+			).json
+		);
 		if (!result.success) {
 			console.error("getSystemStatus ERROR: ", result.issues);
 			throw new RestFailure(
