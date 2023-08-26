@@ -185,4 +185,28 @@ export const SyncthingSystemStatus = object({
 	urVersionMax: number(),
 });
 
+export const SyncthingVersion = object({
+	arch: string(),
+	longVersion: string(),
+	os: string(),
+	version: string(),
+});
+
+export const SyncthingDeviceStats = record(
+	object({
+		lastSeen: dateSchema,
+		lastConnectionDurationS: number(),
+	})
+);
+
+export const SyncthingFolderStats = record(
+	object({
+		lastScan: dateSchema,
+		lastFile: object({
+			filename: string(),
+			at: dateSchema,
+		}),
+	})
+);
+
 // TODO: add all entities necessary from Syncthing API (REST/CLI) to the integration in Obsidian.

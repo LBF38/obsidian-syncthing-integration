@@ -3,8 +3,11 @@ import SyncthingPlugin from "src/main";
 import {
 	SyncthingConfiguration,
 	SyncthingDevice,
+	SyncthingDeviceStats,
 	SyncthingFolder,
+	SyncthingFolderStats,
 	SyncthingSystemStatus,
+	SyncthingVersion,
 } from "src/models/entities";
 import { RestFailure } from "src/models/failures";
 import {
@@ -12,6 +15,7 @@ import {
 	BaseSchemaAsync,
 	Output,
 	array,
+	boolean,
 	literal,
 	object,
 	safeParseAsync,
@@ -90,12 +94,82 @@ export class SyncthingFromREST {
 	 * Get the system status of Syncthing installation using the REST API.
 	 * It allows to have access to the ID of this device.
 	 * @returns the Syncthing system status object.
+	 * @see https://docs.syncthing.net/rest/system-status-get.html
 	 */
 	async getSystemStatus(): Promise<Output<typeof SyncthingSystemStatus>> {
 		return await this.requestEndpoint(
 			"/rest/system/status",
 			SyncthingSystemStatus
 		);
+	}
+
+	/**
+	 * Get the version of Syncthing installation using the REST API.
+	 * @returns the Syncthing version object.
+	 * @see https://docs.syncthing.net/rest/system-version-get.html
+	 */
+	async getVersion(): Promise<Output<typeof SyncthingVersion>> {
+		return await this.requestEndpoint(
+			"/rest/system/version",
+			SyncthingVersion
+		);
+	}
+
+	/**
+	 * Get the general statistics about devices. Currently, it only contains the time the device was last seen and the last connection duration.
+	 * @returns the Syncthing device statistics object.
+	 * @see https://docs.syncthing.net/rest/stats-device-get
+	 */
+	async getDeviceStatistics() {
+		return await this.requestEndpoint(
+			"/rest/stats/device/",
+			array(SyncthingDeviceStats)
+		);
+	}
+
+	/**
+	 * Get the general statistics about folders. Currently, it only contains the last scan time and the last synced file.
+	 * @returns the Syncthing folder statistics object.
+	 * @see https://docs.syncthing.net/rest/stats-folder-get
+	 */
+	async getFolderStatistics() {
+		return await this.requestEndpoint(
+			"/rest/stats/folder/",
+			array(SyncthingFolderStats)
+		);
+	}
+
+	/**
+	 * Check the health of Syncthing instance.
+	 * This endpoint does not require authentication.
+	 * @returns `true` if the health check is successful, `false` otherwise.
+	 * @see https://docs.syncthing.net/rest/noauth-health-get.html
+	 */
+	async checkHealth(): Promise<boolean> {
+		return (
+			(
+				await this.requestEndpoint(
+					"/rest/noauth/health",
+					object({ status: literal("OK") })
+				)
+			).status === "OK"
+		);
+	}
+
+	/**
+	 * Check whether a restart of Syncthing is required for the current config to take effect.
+	 * @returns `true` if a restart is required, `false` otherwise.
+	 * @see https://docs.syncthing.net/rest/config#rest-config-restart-required
+	 */
+	async isRestartRequired(): Promise<boolean> {
+		return (
+			await this.requestEndpoint(
+				"/rest/config/restart-required",
+				object({
+					requiresRestart: boolean(),
+				})
+			)
+		).requiresRestart;
 	}
 
 	/**
