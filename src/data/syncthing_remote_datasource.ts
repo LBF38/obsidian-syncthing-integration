@@ -7,7 +7,15 @@ import {
 	SyncthingSystemStatus,
 } from "src/models/entities";
 import { RestFailure } from "src/models/failures";
-import { Output, array, safeParseAsync } from "valibot";
+import {
+	BaseSchema,
+	BaseSchemaAsync,
+	Output,
+	array,
+	literal,
+	object,
+	safeParseAsync,
+} from "valibot";
 
 /**
  * REST API of Syncthing.
@@ -21,9 +29,12 @@ export class SyncthingFromREST {
 	 * This is used to check if Syncthing is installed.
 	 */
 	async ping(): Promise<"pong"> {
-		const response = await this.requestEndpoint("/rest/system/ping");
-		console.log("REST - ping: ", response);
-		return response.json["ping"];
+		return (
+			await this.requestEndpoint(
+				"/rest/system/ping",
+				object({ ping: literal("pong") })
+			)
+		).ping;
 	}
 
 	/**
@@ -31,18 +42,10 @@ export class SyncthingFromREST {
 	 * @see https://docs.syncthing.net/rest/config#rest-config-folders-rest-config-devices
 	 */
 	async getAllFolders(): Promise<Output<typeof SyncthingFolder>[]> {
-		const response = await this.requestEndpoint("/rest/config/folders");
-		const result = await safeParseAsync(
-			array(SyncthingFolder),
-			response.json
+		return await this.requestEndpoint(
+			"/rest/config/folders",
+			array(SyncthingFolder)
 		);
-		if (!result.success) {
-			console.error("getAllFolders ERROR: ", result.issues);
-			throw new RestFailure(
-				result.issues.map((issue) => issue.message).join("\n")
-			);
-		}
-		return result.output;
 	}
 
 	/**
@@ -65,18 +68,10 @@ export class SyncthingFromREST {
 	 * @see https://docs.syncthing.net/rest/config#rest-config-folders-rest-config-devices
 	 */
 	async getDevices(): Promise<Output<typeof SyncthingDevice>[]> {
-		const response = await this.requestEndpoint("/rest/config/devices");
-		const result = await safeParseAsync(
-			array(SyncthingDevice),
-			response.json
+		return await this.requestEndpoint(
+			"/rest/config/devices",
+			array(SyncthingDevice)
 		);
-		if (!result.success) {
-			console.error("getDevices ERROR: ", result.issues);
-			throw new RestFailure(
-				result.issues.map((issue) => issue.message).join("\n")
-			);
-		}
-		return result.output;
 	}
 
 	/**
@@ -85,18 +80,10 @@ export class SyncthingFromREST {
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
 	async getConfiguration(): Promise<Output<typeof SyncthingConfiguration>> {
-		const response = await this.requestEndpoint("/rest/config");
-		const result = await safeParseAsync(
-			SyncthingConfiguration,
-			response.json
+		return await this.requestEndpoint(
+			"/rest/config",
+			SyncthingConfiguration
 		);
-		if (!result.success) {
-			console.error("getConfiguration ERROR: ", result.issues);
-			throw new RestFailure(
-				result.issues.map((issue) => issue.message).join("\n")
-			);
-		}
-		return result.output;
 	}
 
 	/**
@@ -105,19 +92,10 @@ export class SyncthingFromREST {
 	 * @returns the Syncthing system status object.
 	 */
 	async getSystemStatus(): Promise<Output<typeof SyncthingSystemStatus>> {
-		const result = await safeParseAsync(
-			SyncthingSystemStatus,
-			(
-				await this.requestEndpoint("/rest/system/status")
-			).json
+		return await this.requestEndpoint(
+			"/rest/system/status",
+			SyncthingSystemStatus
 		);
-		if (!result.success) {
-			console.error("getSystemStatus ERROR: ", result.issues);
-			throw new RestFailure(
-				result.issues.map((issue) => issue.message).join("\n")
-			);
-		}
-		return result.output;
 	}
 
 	/**
@@ -127,7 +105,10 @@ export class SyncthingFromREST {
 	 * @param endpoint - The REST endpoint to call. @see https://docs.syncthing.net/dev/rest.html
 	 * @returns The response of the REST API.
 	 */
-	private async requestEndpoint(endpoint: string) {
+	private async requestEndpoint<TSchema extends BaseSchema | BaseSchemaAsync>(
+		endpoint: string,
+		schema: TSchema
+	): Promise<Output<TSchema>> {
 		// FIXME: Fix the issue when connecting to the REST API. (error 403)
 		console.log("requestEndpoint: Endpoint", endpoint);
 		let ip_address = this.plugin.settings.url?.ip_address;
@@ -150,17 +131,18 @@ export class SyncthingFromREST {
 			this.plugin.settings.api_key !== ""
 		);
 		console.log("requestEndpoint: url requested ", url);
-		return response
-			.then((response) => {
-				console.log("requestEndpoint: response ", response);
-				if (response.status >= 400) {
-					throw new RestFailure(response.text);
-				}
-				return response;
-			})
-			.catch((error) => {
-				console.error("requestEndpoint: error: ", error);
-				throw new RestFailure(error);
-			});
+		const result = await safeParseAsync(schema, await response.json);
+		if (!result.success) {
+			console.error(
+				"requestEndpoint ERROR: ",
+				`endpoint: ${endpoint}`,
+				result.issues
+			);
+			throw new RestFailure(
+				result.issues.map((issue) => issue.message).join("\n")
+			);
+			// TODO: ^ refactor to neverthrow.
+		}
+		return result.output;
 	}
 }
