@@ -28,6 +28,8 @@
 	"include": [
 		"**/*.ts",
 		"**/*.svelte",
-		"esbuild.config.mjs"
+	],
+	"exclude": [
+		"esbuild.config.mjs",
 	]
 }
