@@ -28,7 +28,6 @@ export class SyncthingConfiguration {
 		public version: string,
 		public folders: SyncthingFolder[],
 		public devices: SyncthingDevice[],
-		public url: SyncthingURL
 	) {}
 }
 

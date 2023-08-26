@@ -4,22 +4,16 @@ import {
 	SyncTypes,
 	SyncthingConfiguration,
 	SyncthingDevice,
-	SyncthingFolder,
-	SyncthingURL,
+	SyncthingFolder
 } from "src/models/entities";
 
 export class SyncthingConfigurationModel extends SyncthingConfiguration {
 	constructor(
 		version: string,
 		folders: SyncthingFolder[],
-		devices: SyncthingDevice[],
-		url: SyncthingURL = {
-			protocol: "http",
-			ip_address: "localhost",
-			port: 8384,
-		}
+		devices: SyncthingDevice[]
 	) {
-		super(version, folders, devices, url);
+		super(version, folders, devices);
 	}
 
 	/**

@@ -7,7 +7,7 @@ import {
 import { SyncthingFromAndroid } from "./data/syncthing_android_datasource";
 import { SyncthingFromCLI } from "./data/syncthing_local_datasource";
 import { SyncthingFromREST } from "./data/syncthing_remote_datasource";
-import { SyncthingConfiguration } from "./models/entities";
+import { SyncthingConfiguration, SyncthingURL } from "./models/entities";
 import { ConflictsModal } from "./views/conflicts_modal";
 import { SyncthingLogoSVG } from "./views/logos";
 import { SyncthingSettingTab } from "./views/settings_tab";
@@ -16,17 +16,16 @@ interface SyncthingPluginSettings {
 	api_key: string;
 	gui_username: string;
 	gui_password: string;
+	url: SyncthingURL;
 	configuration: SyncthingConfiguration | Partial<SyncthingConfiguration>;
 	devMode: boolean;
 }
 
 const DEFAULT_SETTINGS: Partial<SyncthingPluginSettings> = {
-	configuration: {
-		url: {
-			protocol: "http",
-			ip_address: "localhost",
-			port: 8384,
-		},
+	url: {
+		protocol: "http",
+		ip_address: "localhost",
+		port: 8384,
 	},
 	devMode: false,
 };

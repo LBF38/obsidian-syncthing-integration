@@ -147,10 +147,10 @@ export class SyncthingFromREST {
 	private async requestEndpoint(endpoint: string) {
 		// FIXME: Fix the issue when connecting to the REST API. (error 403)
 		console.log("requestEndpoint: Endpoint", endpoint);
-		let ip_address = this.plugin.settings.configuration.url?.ip_address;
+		let ip_address = this.plugin.settings.url?.ip_address;
 		if (ip_address === "localhost" && Platform.isMobileApp)
 			ip_address = "127.0.0.1";
-		const url = `${this.plugin.settings.configuration.url?.protocol}://${ip_address}:${this.plugin.settings.configuration.url?.port}${endpoint}`;
+		const url = `${this.plugin.settings.url?.protocol}://${ip_address}:${this.plugin.settings.url?.port}${endpoint}`;
 		const response = requestUrl({
 			url: url,
 			method: "GET",
