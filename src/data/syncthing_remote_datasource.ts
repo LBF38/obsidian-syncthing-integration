@@ -1,12 +1,13 @@
 import { Platform, requestUrl } from "obsidian";
 import SyncthingPlugin from "src/main";
-import { SyncthingDevice } from "src/models/entities";
-import { RestFailure } from "src/models/failures";
 import {
-	SyncthingConfigurationModel,
-	SyncthingDeviceModel,
-	SyncthingFolderModel,
-} from "../models/models";
+	SyncthingConfiguration,
+	SyncthingDevice,
+	SyncthingFolder,
+	SyncthingSystemStatus,
+} from "src/models/entities";
+import { RestFailure } from "src/models/failures";
+import { Output, array, safeParse, safeParseAsync } from "valibot";
 
 /**
  * REST API of Syncthing.
@@ -29,17 +30,19 @@ export class SyncthingFromREST {
 	 * Get all the folders of Syncthing installation using the REST API.
 	 * @see https://docs.syncthing.net/rest/config#rest-config-folders-rest-config-devices
 	 */
-	async getAllFolders(): Promise<SyncthingFolderModel[]> {
+	async getAllFolders(): Promise<Output<typeof SyncthingFolder>[]> {
 		const response = await this.requestEndpoint("/rest/config/folders");
-		const foldersModel: SyncthingFolderModel[] = [];
-		console.log("REST: ", response.json);
-		for (const folder of response.json) {
-			console.log("REST: ", folder);
-			foldersModel.push(
-				SyncthingFolderModel.fromJSON(JSON.stringify(folder))
+		const result = await safeParseAsync(
+			array(SyncthingFolder),
+			response.json
+		);
+		if (!result.success) {
+			console.error("getAllFolders ERROR: ", result.issues);
+			throw new RestFailure(
+				result.issues.map((issue) => issue.message).join("\n")
 			);
 		}
-		return foldersModel;
+		return result.output;
 	}
 
 	/**
@@ -47,8 +50,8 @@ export class SyncthingFromREST {
 	 * @param device - The device to get the folders for.
 	 */
 	async getFoldersForDevice(
-		device: SyncthingDevice
-	): Promise<SyncthingFolderModel[]> {
+		device: Output<typeof SyncthingDevice>
+	): Promise<Output<typeof SyncthingFolder>[]> {
 		const folders = await this.getAllFolders();
 		return folders.filter((folder) =>
 			folder.devices.some(
@@ -61,16 +64,19 @@ export class SyncthingFromREST {
 	 * Get all the devices of Syncthing installation using the REST API.
 	 * @see https://docs.syncthing.net/rest/config#rest-config-folders-rest-config-devices
 	 */
-	async getDevices(): Promise<SyncthingDeviceModel[]> {
+	async getDevices(): Promise<Output<typeof SyncthingDevice>[]> {
 		const response = await this.requestEndpoint("/rest/config/devices");
-		const devicesModel: SyncthingDeviceModel[] = [];
-		console.log("REST: ", response.json);
-		for (const device of response.json) {
-			devicesModel.push(
-				SyncthingDeviceModel.fromJSON(JSON.stringify(device))
+		const result = await safeParseAsync(
+			array(SyncthingDevice),
+			response.json
+		);
+		if (!result.success) {
+			console.error("getDevices ERROR: ", result.issues);
+			throw new RestFailure(
+				result.issues.map((issue) => issue.message).join("\n")
 			);
 		}
-		return devicesModel;
+		return result.output;
 	}
 
 	/**
@@ -78,9 +84,72 @@ export class SyncthingFromREST {
 	 * @returns {SyncthingConfiguration} The configuration of Syncthing installation.
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
-	async getConfiguration(): Promise<SyncthingConfigurationModel> {
+	async getConfiguration(): Promise<Output<typeof SyncthingConfiguration>> {
 		const response = await this.requestEndpoint("/rest/config");
-		return SyncthingConfigurationModel.fromJSON(response.json);
+		const result = await safeParseAsync(
+			SyncthingConfiguration,
+			response.json
+		);
+		if (!result.success) {
+			console.error("getConfiguration ERROR: ", result.issues);
+			throw new RestFailure(
+				result.issues.map((issue) => issue.message).join("\n")
+			);
+		}
+		return result.output;
+	}
+
+	/**
+	 * Get the system status of Syncthing installation using the REST API.
+	 * It allows to have access to the ID of this device.
+	 * @returns the Syncthing system status object.
+	 */
+	async getSystemStatus(): Promise<Output<typeof SyncthingSystemStatus>> {
+		// const response = await this.requestEndpoint("/rest/system/status");
+		const mobileTest: Output<typeof SyncthingSystemStatus> = {
+			alloc: 42,
+			connectionServiceStatus: {
+				IPv4: {
+					error: null,
+					lanAddresses: ["lan"],
+					wanAddresses: ["wan"],
+				},
+			},
+			discoveryEnabled: true,
+			discoveryErrors: { test: "test" },
+			discoveryStatus: { IPv4: { error: null } },
+			discoveryMethods: 42,
+			goroutines: 42,
+			guiAddressOverridden: true,
+			guiAddressUsed: "foo",
+			lastDialStatus: {},
+			myID: "HX4RNKZ-6DAL37Q-5DQNHAG-VGJE3SW-PCMQD5F-GHWUKDS-EXK3Z66-FGWECAT",
+			pathSeparator: "foo",
+			startTime: new Date(),
+			sys: 42,
+			themes: ["foo"],
+			tilde: "foo",
+			uptime: 42,
+			urVersionMax: 42,
+		};
+		let result;
+		if (Platform.isMobileApp) {
+			result = safeParse(SyncthingSystemStatus, mobileTest);
+		} else {
+			result = await safeParseAsync(
+				SyncthingSystemStatus,
+				(
+					await this.requestEndpoint("/rest/system/status")
+				).json
+			);
+		}
+		if (!result.success) {
+			console.error("getSystemStatus ERROR: ", result.issues);
+			throw new RestFailure(
+				result.issues.map((issue) => issue.message).join("\n")
+			);
+		}
+		return result.output;
 	}
 
 	/**
@@ -93,10 +162,10 @@ export class SyncthingFromREST {
 	private async requestEndpoint(endpoint: string) {
 		// FIXME: Fix the issue when connecting to the REST API. (error 403)
 		console.log("requestEndpoint: Endpoint", endpoint);
-		let ip_address = this.plugin.settings.configuration.url?.ip_address;
+		let ip_address = this.plugin.settings.url?.ip_address;
 		if (ip_address === "localhost" && Platform.isMobileApp)
 			ip_address = "127.0.0.1";
-		const url = `${this.plugin.settings.configuration.url?.protocol}://${ip_address}:${this.plugin.settings.configuration.url?.port}${endpoint}`;
+		const url = `${this.plugin.settings.url?.protocol}://${ip_address}:${this.plugin.settings.url?.port}${endpoint}`;
 		const response = requestUrl({
 			url: url,
 			method: "GET",

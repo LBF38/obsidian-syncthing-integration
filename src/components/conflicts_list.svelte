@@ -23,17 +23,12 @@
 				dropdown.onChange((value) => {
 					conflicts = sortFilesBy(
 						conflicts,
-						value as keyof typeof sortOptions,
-						parentModal.syncthingController
+						value as keyof typeof sortOptions
 					);
 					console.log("dropdown", conflicts);
 				});
 			});
-		conflicts = sortFilesBy(
-			conflicts,
-			"recent",
-			parentModal.syncthingController
-		);
+		conflicts = sortFilesBy(conflicts, "recent");
 	});
 
 	parentModal.titleEl.setText("Syncthing Conflicts");
