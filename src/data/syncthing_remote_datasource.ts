@@ -1,12 +1,13 @@
 import { Platform, requestUrl } from "obsidian";
 import SyncthingPlugin from "src/main";
-import { SyncthingDevice } from "src/models/entities";
+import { SyncthingDevice, SyncthingSystemStatus } from "src/models/entities";
 import { RestFailure } from "src/models/failures";
 import {
 	SyncthingConfigurationModel,
 	SyncthingDeviceModel,
 	SyncthingFolderModel,
 } from "../models/models";
+import { Output, safeParse, safeParseAsync } from "valibot";
 
 /**
  * REST API of Syncthing.
@@ -81,6 +82,59 @@ export class SyncthingFromREST {
 	async getConfiguration(): Promise<SyncthingConfigurationModel> {
 		const response = await this.requestEndpoint("/rest/config");
 		return SyncthingConfigurationModel.fromJSON(response.json);
+	}
+
+	/**
+	 * Get the system status of Syncthing installation using the REST API.
+	 * It allows to have access to the ID of this device.
+	 * @returns the Syncthing system status object.
+	 */
+	async getSystemStatus(): Promise<Output<typeof SyncthingSystemStatus>> {
+		// const response = await this.requestEndpoint("/rest/system/status");
+		const mobileTest: Output<typeof SyncthingSystemStatus> = {
+			alloc: 42,
+			connectionServiceStatus: {
+				IPv4: {
+					error: null,
+					lanAddresses: ["lan"],
+					wanAddresses: ["wan"],
+				},
+			},
+			discoveryEnabled: true,
+			discoveryErrors: { test: "test" },
+			discoveryStatus: { IPv4: { error: null } },
+			discoveryMethods: 42,
+			goroutines: 42,
+			guiAddressOverridden: true,
+			guiAddressUsed: "foo",
+			lastDialStatus: {},
+			myID: "HX4RNKZ-6DAL37Q-5DQNHAG-VGJE3SW-PCMQD5F-GHWUKDS-EXK3Z66-FGWECAT",
+			pathSeparator: "foo",
+			startTime: "foo", // TODO: change it to date.
+			sys: 42,
+			themes: ["foo"],
+			tilde: "foo",
+			uptime: 42,
+			urVersionMax: 42,
+		};
+		let result;
+		if (Platform.isMobileApp) {
+			result = safeParse(SyncthingSystemStatus, mobileTest);
+		} else {
+			result = await safeParseAsync(
+				SyncthingSystemStatus,
+				(
+					await this.requestEndpoint("/rest/system/status")
+				).json
+			);
+		}
+		if (!result.success) {
+			console.error("getSystemStatus ERROR: ", result.issues);
+			throw new RestFailure(
+				result.issues.map((issue) => issue.message).join("\n")
+			);
+		}
+		return result.output;
 	}
 
 	/**

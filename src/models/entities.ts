@@ -1,3 +1,14 @@
+import {
+	array,
+	boolean,
+	nullable,
+	number,
+	object,
+	optional,
+	record,
+	string
+} from "valibot";
+
 /**
  * Syncthing configuration object.
  *
@@ -142,5 +153,46 @@ export interface ConflictFilename {
 	 */
 	extension: string;
 }
+
+/**
+ * Syncthing System Status.
+ * @see https://docs.syncthing.net/rest/system-status-get.html
+ */
+export const SyncthingSystemStatus = object({
+	alloc: number(),
+	connectionServiceStatus: record(
+		object({
+			error: nullable(string()),
+			lanAddresses: array(string()),
+			wanAddresses: array(string()),
+		})
+	),
+	discoveryEnabled: boolean(),
+	discoveryErrors: record(string()),
+	discoveryStatus: record(
+		object({
+			error: nullable(string()),
+		})
+	),
+	discoveryMethods: number(),
+	goroutines: number(),
+	guiAddressOverridden: boolean(),
+	guiAddressUsed: string(),
+	lastDialStatus: record(
+		object({
+			when: string(), // TODO: change it to date.
+			error: nullable(string()),
+			ok: boolean(),
+		})
+	),
+	myID: string(),
+	pathSeparator: string(),
+	startTime: string(), // TODO: change it to date.
+	sys: number(),
+	themes: optional(array(string())),
+	tilde: string(),
+	uptime: number(),
+	urVersionMax: number(),
+});
 
 // TODO: add all entities necessary from Syncthing API (REST/CLI) to the integration in Obsidian.

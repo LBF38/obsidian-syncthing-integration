@@ -273,4 +273,11 @@ export class SyncthingController {
 	async stopSyncthing(): Promise<boolean> {
 		return this.syncthingFromCLI.stopSyncthing();
 	}
+
+	/**
+	 * Get the Syncthing system status.
+	 */
+	getSystemStatus() {
+		return this.syncthingFromREST.getSystemStatus();
+	}
 }

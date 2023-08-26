@@ -162,6 +162,27 @@
 	</ObsidianSettingsItem>
 {/if}
 
+<ObsidianSettingsItem name="Syncthing System Status">
+	<svelte:fragment slot="control">
+		<button
+			on:click={async () => {
+				parent.syncthingController
+					.getSystemStatus()
+					.then((result) => {
+						console.log("Syncthing System Status: ", result);
+						new Notice(`This device ID: ${result.myID}`);
+					})
+					.catch((error) => {
+						console.log("Syncthing System Status ERROR: ", error);
+						new Notice(error.message);
+					});
+			}}
+		>
+			Get System Status
+		</button>
+	</svelte:fragment>
+</ObsidianSettingsItem>
+
 <!-- Mobile settings -->
 {#if Platform.isMobileApp}
 	<ObsidianSettingsItem
