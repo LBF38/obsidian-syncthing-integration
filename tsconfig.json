@@ -27,6 +27,7 @@
 	},
 	"include": [
 		"**/*.ts",
-		"**/*.svelte"
+		"**/*.svelte",
+		"esbuild.config.mjs"
 	]
 }
