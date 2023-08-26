@@ -1,12 +1,17 @@
 import {
 	array,
 	boolean,
+	date,
+	isoTimestamp,
+	minValue,
 	nullable,
 	number,
 	object,
 	optional,
 	record,
-	string
+	string,
+	transform,
+	union
 } from "valibot";
 
 /**
@@ -154,6 +159,17 @@ export interface ConflictFilename {
 	extension: string;
 }
 
+// Transforms a Date, string, or number into a Date
+export const dateValidation = transform(
+	// Input types: Date, string, number
+	union(
+		[date(), string([isoTimestamp()]), number([minValue(0)])],
+		"Must be a valid Date object, ISO string, or UNIX timestamp"
+	),
+	// Output type: Date
+	(input) => new Date(input)
+);
+
 /**
  * Syncthing System Status.
  * @see https://docs.syncthing.net/rest/system-status-get.html
@@ -180,14 +196,14 @@ export const SyncthingSystemStatus = object({
 	guiAddressUsed: string(),
 	lastDialStatus: record(
 		object({
-			when: string(), // TODO: change it to date.
+			when: dateValidation,
 			error: nullable(string()),
 			ok: boolean(),
 		})
 	),
 	myID: string(),
 	pathSeparator: string(),
-	startTime: string(), // TODO: change it to date.
+	startTime: dateValidation,
 	sys: number(),
 	themes: optional(array(string())),
 	tilde: string(),

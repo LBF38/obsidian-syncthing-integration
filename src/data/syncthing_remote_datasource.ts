@@ -110,7 +110,7 @@ export class SyncthingFromREST {
 			lastDialStatus: {},
 			myID: "HX4RNKZ-6DAL37Q-5DQNHAG-VGJE3SW-PCMQD5F-GHWUKDS-EXK3Z66-FGWECAT",
 			pathSeparator: "foo",
-			startTime: "foo", // TODO: change it to date.
+			startTime: new Date(),
 			sys: 42,
 			themes: ["foo"],
 			tilde: "foo",
