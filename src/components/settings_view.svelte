@@ -28,7 +28,7 @@
 			parent.plugin.saveSettings();
 		});
 	}
-	$: syncthingBaseUrl = `${parent.plugin.settings.configuration.url?.protocol}://${parent.plugin.settings.configuration.url?.ip_address}:${parent.plugin.settings.configuration.url?.port}`;
+	$: syncthingBaseUrl = `${parent.plugin.settings.url?.protocol}://${parent.plugin.settings.url?.ip_address}:${parent.plugin.settings.url?.port}`;
 </script>
 
 <!-- Banner -->
@@ -205,15 +205,15 @@
 		<div style="display: flex; align-items: center;">
 			<select
 				style="border-radius: var(--input-radius) 0 0 var(--input-radius);"
-				value={parent.plugin.settings.configuration.url?.protocol ?? ""}
+				value={parent.plugin.settings.url?.protocol ?? ""}
 				on:change={async (event) => {
 					console.log(
 						"select change: ",
 						event,
 						event.currentTarget.value
 					);
-					if (!parent.plugin.settings.configuration.url) {
-						parent.plugin.settings.configuration.url = {
+					if (!parent.plugin.settings.url) {
+						parent.plugin.settings.url = {
 							protocol: "http",
 							ip_address: "localhost",
 							port: 8384,
@@ -223,7 +223,7 @@
 						event.currentTarget.value === "http" ||
 						event.currentTarget.value === "https"
 					)
-						parent.plugin.settings.configuration.url.protocol =
+						parent.plugin.settings.url.protocol =
 							event.currentTarget.value;
 					await parent.plugin.saveSettings();
 				}}
@@ -235,8 +235,7 @@
 			<input
 				type="text"
 				placeholder="Enter your Syncthing address here..."
-				value={parent.plugin.settings.configuration.url?.ip_address ??
-					""}
+				value={parent.plugin.settings.url?.ip_address ?? ""}
 				on:change={async (event) => {
 					console.log(
 						"ip address change: ",
@@ -244,14 +243,14 @@
 						event.currentTarget.value
 					);
 					const valueChange = event.currentTarget.value;
-					if (!parent.plugin.settings.configuration.url) {
-						parent.plugin.settings.configuration.url = {
+					if (!parent.plugin.settings.url) {
+						parent.plugin.settings.url = {
 							protocol: "http",
 							ip_address: "localhost",
 							port: 8384,
 						};
 					}
-					parent.plugin.settings.configuration.url.ip_address =
+					parent.plugin.settings.url.ip_address =
 						valueChange === "" || !valueChange
 							? "localhost"
 							: valueChange;
@@ -262,7 +261,7 @@
 			<input
 				type="number"
 				placeholder="Enter the port..."
-				value={parent.plugin.settings.configuration.url?.port ?? ""}
+				value={parent.plugin.settings.url?.port ?? ""}
 				on:change={async (event) => {
 					console.log(
 						"port change: ",
@@ -270,14 +269,14 @@
 						event.currentTarget.value
 					);
 					const valueChange = event.currentTarget.value;
-					if (!parent.plugin.settings.configuration.url) {
-						parent.plugin.settings.configuration.url = {
+					if (!parent.plugin.settings.url) {
+						parent.plugin.settings.url = {
 							protocol: "http",
 							ip_address: "localhost",
 							port: 8384,
 						};
 					}
-					parent.plugin.settings.configuration.url.port =
+					parent.plugin.settings.url.port =
 						isNaN(parseInt(valueChange)) || !valueChange
 							? 8384
 							: parseInt(valueChange);
@@ -353,7 +352,7 @@
 				parent.plugin.settings.gui_username &&
 				parent.plugin.settings.gui_password
 			) {
-				url = `${parent.plugin.settings.configuration.url?.protocol}://${parent.plugin.settings.gui_username}:${parent.plugin.settings.gui_password}@${parent.plugin.settings.configuration.url?.ip_address}:${parent.plugin.settings.configuration.url?.port}`;
+				url = `${parent.plugin.settings.url?.protocol}://${parent.plugin.settings.gui_username}:${parent.plugin.settings.gui_password}@${parent.plugin.settings.url?.ip_address}:${parent.plugin.settings.url?.port}`;
 			} else {
 				url = syncthingBaseUrl;
 			}

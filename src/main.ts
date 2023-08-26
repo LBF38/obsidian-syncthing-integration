@@ -11,13 +11,16 @@ import { SyncthingConfiguration, SyncthingURL } from "./models/entities";
 import { ConflictsModal } from "./views/conflicts_modal";
 import { SyncthingLogoSVG } from "./views/logos";
 import { SyncthingSettingTab } from "./views/settings_tab";
+import { Output } from "valibot";
 
 interface SyncthingPluginSettings {
 	api_key: string;
 	gui_username: string;
 	gui_password: string;
 	url: SyncthingURL;
-	configuration: SyncthingConfiguration | Partial<SyncthingConfiguration>;
+	configuration:
+		| Output<typeof SyncthingConfiguration>
+		| Partial<Output<typeof SyncthingConfiguration>>;
 	devMode: boolean;
 }
 

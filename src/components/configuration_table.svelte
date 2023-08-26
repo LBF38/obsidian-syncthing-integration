@@ -8,6 +8,7 @@
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import RemoteItem from "./remote_item.svelte";
 	import WarningMessage from "./warning_message.svelte";
+	import { Output } from "valibot";
 
 	export let parent: ConfigurationModal;
 	parent.titleEl.setText("Syncthing Configuration");
@@ -16,9 +17,9 @@
 	let syncthingBaseUrl = `${parent.plugin.settings.url?.protocol}://${parent.plugin.settings.url?.ip_address}:${parent.plugin.settings.url?.port}/`;
 	console.log(syncthingBaseUrl);
 	// TODO: refactor this to use Svelte stores.
-	let folders: SyncthingFolder[] = [];
-	let devices: SyncthingDevice[] = [];
-	let thisDevice: SyncthingDevice | undefined = undefined;
+	let folders: Output<typeof SyncthingFolder>[] = [];
+	let devices: Output<typeof SyncthingDevice>[] = [];
+	let thisDevice: Output<typeof SyncthingDevice> | undefined = undefined;
 	onMount(async () => {
 		folders = await parent.plugin.syncthingController.getFolders();
 		devices = await parent.plugin.syncthingController.getDevices();

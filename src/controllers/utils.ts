@@ -1,10 +1,17 @@
 // --- My utility functions --- //
 
 import { TFile } from "obsidian";
-import { Failure } from "src/models/failures";
-import { SyncthingController } from "./main_controller";
 import { ConflictFilename } from "src/models/entities";
-import { transform, union, date, string, number, minValue } from "valibot";
+import { Failure } from "src/models/failures";
+import {
+	date,
+	minValue,
+	number,
+	string,
+	transform,
+	union
+} from "valibot";
+import { SyncthingController } from "./main_controller";
 
 /**
  * This utility function is used to sort the files in conflict by date, name, etc.

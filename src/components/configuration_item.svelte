@@ -2,9 +2,10 @@
 	import { Notice } from "obsidian";
 	import { SyncthingDevice, SyncthingFolder } from "src/models/entities";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
+	import { Output } from "valibot";
 
-	export let folder: SyncthingFolder | undefined = undefined;
-	export let device: SyncthingDevice | undefined = undefined;
+	export let folder: Output<typeof SyncthingFolder> | undefined = undefined;
+	export let device: Output<typeof SyncthingDevice> | undefined = undefined;
 	export let isThisDevice = false;
 </script>
 
@@ -164,7 +165,7 @@
 					</div>
 				</td>
 				<td>
-					<span>{device.address.join(", ")}</span>
+					<span>{device.addresses.join(", ")}</span>
 				</td>
 			</tr>
 			<tr>
