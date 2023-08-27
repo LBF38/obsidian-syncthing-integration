@@ -183,6 +183,33 @@
 	</svelte:fragment>
 </ObsidianSettingsItem>
 
+<ObsidianSettingsItem name="Syncthing configuration">
+	<svelte:fragment slot="control">
+		<button
+			on:click={async () => {
+				parent.syncthingController
+					.getConfiguration()
+					.then((result) => {
+						if (result instanceof Failure) {
+							new Notice(result.message);
+							return;
+						}
+						console.log("Syncthing Configuration: ", result);
+						new Notice(
+							`Syncthing configuration version: ${result.version}`
+						);
+					})
+					.catch((error) => {
+						console.log("Syncthing Configuration ERROR: ", error);
+						new Notice(error.message);
+					});
+			}}
+		>
+			Get configuration
+		</button>
+	</svelte:fragment>
+</ObsidianSettingsItem>
+
 <!-- Mobile settings -->
 {#if Platform.isMobileApp}
 	<ObsidianSettingsItem
