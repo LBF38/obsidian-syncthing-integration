@@ -90,6 +90,13 @@ export class SyncthingFromREST {
 	 * @param endpoint - The REST endpoint to call. @see https://docs.syncthing.net/dev/rest.html
 	 * @returns The response of the REST API.
 	 */
+	/**
+	 * Private method to request an endpoint of the REST API.
+	 * The endpoint should start with a `/`.
+	 *
+	 * @param endpoint - The REST endpoint to call. @see https://docs.syncthing.net/dev/rest.html
+	 * @returns The response of the REST API.
+	 */
 	private async requestEndpoint(endpoint: string) {
 		// FIXME: Fix the issue when connecting to the REST API. (error 403)
 		console.log("requestEndpoint: Endpoint", endpoint);
