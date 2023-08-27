@@ -173,6 +173,14 @@ export class SyncthingFromREST {
 	}
 
 	/**
+	 * Restart Syncthing.
+	 * @see https://docs.syncthing.net/rest/system-restart-post.html
+	 */
+	async restart(): Promise<void> {
+		await this.requestEndpoint("/rest/system/restart", object({}), "POST");
+	}
+
+	/**
 	 * Private method to request an endpoint of the REST API.
 	 * The endpoint should start with a `/`.
 	 *
@@ -181,7 +189,8 @@ export class SyncthingFromREST {
 	 */
 	private async requestEndpoint<TSchema extends BaseSchema | BaseSchemaAsync>(
 		endpoint: string,
-		schema: TSchema
+		schema: TSchema,
+		method: "GET" | "POST" | "PUT" | "PATCH" = "GET"
 	): Promise<Output<TSchema>> {
 		// FIXME: Fix the issue when connecting to the REST API. (error 403)
 		console.log("requestEndpoint: Endpoint", endpoint);
@@ -191,7 +200,7 @@ export class SyncthingFromREST {
 		const url = `${this.plugin.settings.url?.protocol}://${ip_address}:${this.plugin.settings.url?.port}${endpoint}`;
 		const response = requestUrl({
 			url: url,
-			method: "GET",
+			method: method,
 			headers: {
 				"X-API-Key": this.plugin.settings.api_key,
 				Accept: "*/*",

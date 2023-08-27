@@ -20,9 +20,12 @@
 	let folders: Output<typeof SyncthingFolder>[] = [];
 	let devices: Output<typeof SyncthingDevice>[] = [];
 	let thisDevice: Output<typeof SyncthingDevice> | undefined = undefined;
+	let restartRequired = false;
 	onMount(async () => {
 		folders = await parent.plugin.syncthingController.getFolders();
 		devices = await parent.plugin.syncthingController.getDevices();
+		restartRequired =
+			await parent.plugin.syncthingFromREST.isRestartRequired();
 		thisDevice = devices.first();
 		console.log("Folders: ", folders);
 		console.log("Devices: ", devices);
@@ -32,6 +35,22 @@
 <WarningMessage
 	message="The following configuration is not fully implemented yet. Some data aren't real-time and some controls are not implemented yet. It is mainly to reproduce the Syncthing GUI and then, real-time data and controls will be added."
 />
+
+{#if restartRequired}
+	<!-- TODO: make it change when configuration changes. (note for later) -->
+	<WarningMessage
+		message="The configuration has been saved but not activated. Syncthing must restart to activate the new configuration."
+	>
+		<button
+			on:click={async () => {
+				await parent.plugin.syncthingFromREST.restart();
+				restartRequired = !restartRequired;
+			}}
+		>
+			Restart
+		</button>
+	</WarningMessage>
+{/if}
 
 <div class="left">
 	<div class="folder">
