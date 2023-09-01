@@ -100,10 +100,10 @@ devDependencies:
     version: 0.40.0
   obsidian:
     specifier: latest
-    version: 1.4.0(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
+    version: 1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
   sass:
-    specifier: ^1.62.1
-    version: 1.62.1
+    specifier: ^1.66.1
+    version: 1.66.1
   semantic-release:
     specifier: ^21.0.7
     version: 21.0.7
@@ -115,7 +115,7 @@ devDependencies:
     version: 4.2.0
   svelte-preprocess:
     specifier: ^5.0.4
-    version: 5.0.4(postcss@8.4.24)(sass@1.62.1)(svelte@4.2.0)(typescript@5.0.2)
+    version: 5.0.4(postcss@8.4.24)(sass@1.66.1)(svelte@4.2.0)(typescript@5.0.2)
   tslib:
     specifier: 2.6.0
     version: 2.6.0
@@ -3127,8 +3127,8 @@ packages:
       boolbase: 1.0.0
     dev: true
 
-  /obsidian@1.4.0(@codemirror/state@6.2.1)(@codemirror/view@6.13.0):
-    resolution: {integrity: sha512-fsZMPlxgflGSBSP6P4BjQi5+0MqZl3h6FEDEZ3CNnweNdDw0doyqN3FMO/PGWfuxPT77WicVwUxekuI3e6eCGg==}
+  /obsidian@1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.13.0):
+    resolution: {integrity: sha512-q2V5GNT/M40uYOENdVw5kovPSoaO6vppiiyBCkIqWgKp4oN654jA/GQ0OaNBA7p5NdfS245QCeRgCFQ42wOZiw==}
     peerDependencies:
       '@codemirror/state': ^6.0.0
       '@codemirror/view': ^6.0.0
@@ -3932,8 +3932,8 @@ packages:
       rimraf: 2.7.1
     dev: true
 
-  /sass@1.62.1:
-    resolution: {integrity: sha512-NHpxIzN29MXvWiuswfc1W3I0N8SXBd8UR26WntmDlRYf0bSADnwnOjsyMZ3lMezSlArD33Vs3YFhp7dWvL770A==}
+  /sass@1.66.1:
+    resolution: {integrity: sha512-50c+zTsZOJVgFfTgwwEzkjA3/QACgdNsKueWPyAR0mRINIvLAStVQBbPg14iuqEQ74NPDbXzJARJ/O4SI1zftA==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -4248,7 +4248,7 @@ packages:
       svelte: 4.2.0
     dev: true
 
-  /svelte-preprocess@5.0.4(postcss@8.4.24)(sass@1.62.1)(svelte@4.2.0)(typescript@5.0.2):
+  /svelte-preprocess@5.0.4(postcss@8.4.24)(sass@1.66.1)(svelte@4.2.0)(typescript@5.0.2):
     resolution: {integrity: sha512-ABia2QegosxOGsVlsSBJvoWeXy1wUKSfF7SWJdTjLAbx/Y3SrVevvvbFNQqrSJw89+lNSsM58SipmZJ5SRi5iw==}
     engines: {node: '>= 14.10.0'}
     requiresBuild: true
@@ -4290,7 +4290,7 @@ packages:
       detect-indent: 6.1.0
       magic-string: 0.27.0
       postcss: 8.4.24
-      sass: 1.62.1
+      sass: 1.66.1
       sorcery: 0.11.0
       strip-indent: 3.0.0
       svelte: 4.2.0
