@@ -43,6 +43,7 @@
 		"eslint-plugin-svelte": "^2.32.4",
 		"fs": "0.0.1-security",
 		"highlight.js": "^11.8.0",
+		"https": "^1.0.0",
 		"husky": "^8.0.0",
 		"lorem-ipsum": "^2.0.8",
 		"marked": "^5.1.1",
