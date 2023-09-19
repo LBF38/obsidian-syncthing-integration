@@ -102,3 +102,66 @@ Here are the main features that the mobile UI should have :
   - [ ] Through opening the Play Store app page.
   - [ ] Through opening the Syncthing app if installed.
 - [ ] Add/remove folders and/or files to the Syncthing configuration through commands/settings tab. => can choose which files are synchronized with other devices. (usage of the `.stignore` file)
+
+## Steps to follow to change the HTTPS certificate for the Syncthing GUI/API
+
+From the `openssl` cli, run the following command to generate a new certificate:
+
+- Generate a private key:
+
+```bash
+openssl genrsa -out https-key.pem 2048
+```
+
+- Generate a certificate signing request (CSR):
+
+```bash
+openssl req -new -key https-key.pem -out https-csr.pem
+```
+
+- Generate a self-signed certificate:
+
+```bash
+openssl x509 -req -in https-csr.pem -signkey https-key.pem -out https-cert.pem
+```
+
+- To create a `.cer` file from a `.pem` file, run the following command:
+
+```bash
+openssl x509 -in https-cert.pem -outform der -out https-cert.cer
+```
+
+An example of a SAN configuration for adding a Subject Alternative Name (SAN) to the certificate:
+
+```toml
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+
+[req_distinguished_name]
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = localhost
+# Add more DNS entries if needed
+```
+
+To generate a certificate signing request (CSR) with the SAN extension, you can use the following command:
+
+```bash
+openssl req -new -key https-key.pem -out https-csr.pem -config san.cnf
+```
+
+We can also directly use the `openssl` cli to add SAN to the certificate:
+
+```bash
+openssl req -new -x509 -key https-key.pem -out https-cert.pem -subj "/CN=localhost" -addext "subjectAltName = DNS:localhost"
+```
+
+For generating the certificate with the SAN extension, we can use the following command:
+
+```bash
+openssl req -new -x509 -key https-key.pem -out https-cert.pem -subj "/CN=mathismsi/O=Syncthing/OU=Automatically Generated" -addext "subjectAltName = DNS:localhost"
+```
