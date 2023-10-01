@@ -46,7 +46,7 @@
 		"husky": "^8.0.0",
 		"lorem-ipsum": "^2.0.8",
 		"marked": "^5.1.1",
-		"monaco-editor": "0.40.0",
+		"monaco-editor": "0.43.0",
 		"obsidian": "latest",
 		"sass": "^1.62.1",
 		"semantic-release": "^21.0.7",
