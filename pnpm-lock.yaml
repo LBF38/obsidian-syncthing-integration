@@ -93,8 +93,8 @@ devDependencies:
     specifier: ^2.0.8
     version: 2.0.8
   marked:
-    specifier: ^5.1.1
-    version: 5.1.1
+    specifier: ^9.0.0
+    version: 9.0.3
   monaco-editor:
     specifier: 0.40.0
     version: 0.40.0
@@ -2825,6 +2825,12 @@ packages:
   /marked@5.1.1:
     resolution: {integrity: sha512-bTmmGdEINWmOMDjnPWDxGPQ4qkDLeYorpYbEtFOXzOruTwUE671q4Guiuchn4N8h/v6NGd7916kXsm3Iz4iUSg==}
     engines: {node: '>= 18'}
+    hasBin: true
+    dev: true
+
+  /marked@9.0.3:
+    resolution: {integrity: sha512-pI/k4nzBG1PEq1J3XFEHxVvjicfjl8rgaMaqclouGSMPhk7Q3Ejb2ZRxx/ZQOcQ1909HzVoWCFYq6oLgtL4BpQ==}
+    engines: {node: '>= 16'}
     hasBin: true
     dev: true
 
