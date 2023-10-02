@@ -36,7 +36,7 @@
 		"codemirror": "^6.0.1",
 		"css-minify": "^2.0.0",
 		"diff": "^5.1.0",
-		"diff2html": "^3.4.35",
+		"diff2html": "^3.4.44",
 		"esbuild": "0.19.4",
 		"esbuild-svelte": "^0.8.0",
 		"eslint": "^8.42.0",

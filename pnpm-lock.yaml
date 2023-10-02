@@ -66,8 +66,8 @@ devDependencies:
     specifier: ^5.1.0
     version: 5.1.0
   diff2html:
-    specifier: ^3.4.35
-    version: 3.4.35
+    specifier: ^3.4.44
+    version: 3.4.44
   esbuild:
     specifier: 0.19.4
     version: 0.19.4
@@ -100,7 +100,7 @@ devDependencies:
     version: 0.40.0
   obsidian:
     specifier: latest
-    version: 1.4.0(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
+    version: 1.4.11(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
   sass:
     specifier: ^1.62.1
     version: 1.62.1
@@ -1702,14 +1702,14 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /diff2html@3.4.35:
-    resolution: {integrity: sha512-+pKs1BrA7l8DAwY33awHyznE3iuTIo58xmINmDBUwGsnou2KvBoSr6dAa6AvQAM7SH+nGtuOKNXmxumgbGp/Pw==}
+  /diff2html@3.4.44:
+    resolution: {integrity: sha512-h6Ev+OJfTNUxDTUvo+DsH6DNmcFNjNtcaZ2g/WLP5nBnIev7O+JgPFmIc2iFcazqyN/WNOkSR91UZlEl2DPe7w==}
     engines: {node: '>=12'}
     dependencies:
       diff: 5.1.0
       hogan.js: 3.0.2
     optionalDependencies:
-      highlight.js: 11.6.0
+      highlight.js: 11.8.0
     dev: true
 
   /diff@5.1.0:
@@ -2311,13 +2311,6 @@ packages:
     dependencies:
       function-bind: 1.1.1
     dev: true
-
-  /highlight.js@11.6.0:
-    resolution: {integrity: sha512-ig1eqDzJaB0pqEvlPVIpSSyMaO92bH1N2rJpLMN/nX396wTpDA4Eq0uK+7I/2XG17pFaaKE0kjV/XPeGt7Evjw==}
-    engines: {node: '>=12.0.0'}
-    requiresBuild: true
-    dev: true
-    optional: true
 
   /highlight.js@11.8.0:
     resolution: {integrity: sha512-MedQhoqVdr0U6SSnWPzfiadUcDHfN/Wzq25AkXiQv9oiOO/sG0S7XkvpFIqWBl9Yq1UYyYOOVORs5UW2XlPyzg==}
@@ -3093,8 +3086,8 @@ packages:
       boolbase: 1.0.0
     dev: true
 
-  /obsidian@1.4.0(@codemirror/state@6.2.1)(@codemirror/view@6.13.0):
-    resolution: {integrity: sha512-fsZMPlxgflGSBSP6P4BjQi5+0MqZl3h6FEDEZ3CNnweNdDw0doyqN3FMO/PGWfuxPT77WicVwUxekuI3e6eCGg==}
+  /obsidian@1.4.11(@codemirror/state@6.2.1)(@codemirror/view@6.13.0):
+    resolution: {integrity: sha512-BCVYTvaXxElJMl6MMbDdY/CGK+aq18SdtDY/7vH8v6BxCBQ6KF4kKxL0vG9UZ0o5qh139KpUoJHNm+6O5dllKA==}
     peerDependencies:
       '@codemirror/state': ^6.0.0
       '@codemirror/view': ^6.0.0
