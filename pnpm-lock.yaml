@@ -72,8 +72,8 @@ devDependencies:
     specifier: 0.19.4
     version: 0.19.4
   esbuild-svelte:
-    specifier: ^0.7.4
-    version: 0.7.4(esbuild@0.19.4)(svelte@4.2.0)
+    specifier: ^0.8.0
+    version: 0.8.0(esbuild@0.19.4)(svelte@4.2.0)
   eslint:
     specifier: ^8.42.0
     version: 8.42.0
@@ -526,6 +526,13 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
+    dev: true
+
+  /@jridgewell/trace-mapping@0.3.19:
+    resolution: {integrity: sha512-kf37QtfW+Hwx/buWGMPcR60iF9ziHa6r/CZJIHbmcm4+0qrXiVdxegAH0F6yddEVQ7zdkjcGCgCzUu+BcbhQxw==}
+    dependencies:
+      '@jridgewell/resolve-uri': 3.1.0
+      '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
   /@js-random/date@0.3.5:
@@ -1794,13 +1801,14 @@ packages:
     resolution: {integrity: sha512-SOp9Phqvqn7jtEUxPWdWfWoLmyt2VaJ6MpvP9Comy1MceMXqE6bxvaTu4iaxpYYPzhny28Lc+M87/c2cPK6lDg==}
     dev: true
 
-  /esbuild-svelte@0.7.4(esbuild@0.19.4)(svelte@4.2.0):
-    resolution: {integrity: sha512-d4Vafj5nFTmZPXznW6YL3ZHXiWwNiPLcE8yfq/5oE8nbyrZlIB92ZCVh3JMbMje+vCb4jnKdH+WoV2sLZRdOJA==}
+  /esbuild-svelte@0.8.0(esbuild@0.19.4)(svelte@4.2.0):
+    resolution: {integrity: sha512-uKcPf1kl2UGMjrfHChv4dLxGAvCNhf9s72mHo19ZhKP+LrVOuQkOM/g8GE7MiGpoqjpk8UHqL08uLRbSKXhmhw==}
     engines: {node: '>=14'}
     peerDependencies:
       esbuild: '>=0.9.6'
       svelte: '>=3.43.0 <5'
     dependencies:
+      '@jridgewell/trace-mapping': 0.3.19
       esbuild: 0.19.4
       svelte: 4.2.0
     dev: true

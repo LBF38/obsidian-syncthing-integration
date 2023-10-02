@@ -38,7 +38,7 @@
 		"diff": "^5.1.0",
 		"diff2html": "^3.4.35",
 		"esbuild": "0.19.4",
-		"esbuild-svelte": "^0.7.4",
+		"esbuild-svelte": "^0.8.0",
 		"eslint": "^8.42.0",
 		"eslint-plugin-svelte": "^2.32.4",
 		"fs": "0.0.1-security",
