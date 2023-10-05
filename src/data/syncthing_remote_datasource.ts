@@ -1,4 +1,5 @@
 import { Platform, requestUrl } from "obsidian";
+import { dateSchema } from "src/controllers/utils";
 import SyncthingPlugin from "src/main";
 import {
 	SyncthingConfiguration,
@@ -17,8 +18,14 @@ import {
 	array,
 	boolean,
 	literal,
+	merge,
+	nullable,
+	number,
 	object,
+	record,
 	safeParseAsync,
+	string,
+	union,
 } from "valibot";
 
 /**
@@ -31,8 +38,63 @@ export class SyncthingFromREST {
 	//! System Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#system-endpoint
 
-	private async system_browse(current?: string) {}
-	private async system_connections() {}
+	/**
+	 * @see https://docs.syncthing.net/rest/system-browse-get.html
+	 */
+	private async system_browse(current?: string) {
+		return await this.requestEndpoint(
+			`/rest/system/browse?current=${current}`,
+			array(string())
+		);
+	}
+
+	/**
+	 * @see https://docs.syncthing.net/rest/system-connections-get.html
+	 */
+	private async system_connections() {
+		const connectionsTypeSchema = union(
+			[
+				literal("TCP (Client)"),
+				literal("TCP (Server)"),
+				literal("Relay (Client)"),
+				literal("Relay (Server)"),
+			],
+			"Error parsing connections type"
+		);
+		const primarySchema = object({
+			at: dateSchema,
+			inBytesTotal: number(),
+			outBytesTotal: number(),
+			startedAt: dateSchema,
+			address: string(),
+			type: nullable(connectionsTypeSchema),
+			isLocal: boolean(),
+			crypto: string(),
+		});
+		const connectionsSchema = object({
+			connections: record(
+				merge([
+					primarySchema,
+					object({
+						connected: boolean(),
+						paused: boolean(),
+						clientVersion: string(),
+						primary: primarySchema,
+					}),
+				])
+			),
+			total: object({
+				at: dateSchema,
+				inBytesTotal: number(),
+				outBytesTotal: number(),
+			}),
+		});
+		return await this.requestEndpoint(
+			"/rest/system/connections",
+			connectionsSchema
+		);
+	}
+
 	private async system_discovery() {}
 	private async system_debug() {}
 	private async system_clearErrors() {}
@@ -141,7 +203,7 @@ export class SyncthingFromREST {
 		);
 	}
 
-	// Formatting the endpoints in objects.
+	//! Formatting the endpoints in objects.
 
 	system = {
 		browse: this.system_browse,
