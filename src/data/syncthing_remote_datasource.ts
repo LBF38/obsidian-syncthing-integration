@@ -28,6 +28,203 @@ import {
 export class SyncthingFromREST {
 	constructor(public plugin: SyncthingPlugin) {}
 
+	//! System Endpoint
+	//? https://docs.syncthing.net/dev/rest.html#system-endpoint
+
+	private async system_browse(current?: string) {}
+	private async system_connections() {}
+	private async system_discovery() {}
+	private async system_debug() {}
+	private async system_clearErrors() {}
+	private async system_error() {}
+	private async system_log() {}
+	private async system_paths() {}
+	private async system_pause() {}
+	private async system_ping() {}
+	private async system_reset() {}
+	private async system_restart() {}
+	private async system_resume() {}
+	private async system_shutdown() {}
+	private async system_status() {}
+	private async system_upgrade() {}
+	private async system_version() {}
+
+	//! Config Endpoint
+	//? https://docs.syncthing.net/dev/rest.html#config-endpoint
+
+	private async config_all() {}
+	private async config_folders(id?: string) {}
+	private async config_devices(
+		id?: string,
+		method: "GET" | "PUT" | "PATCH" | "DELETE" = "GET"
+	) {
+		return await this.requestEndpoint(
+			"/rest/config/devices",
+			array(SyncthingDevice)
+		);
+	}
+	private async config_restart_required() {}
+	private async config_defaults_folder() {}
+	private async config_defaults_device() {}
+	private async config_defaults_ignores() {}
+	private async config_options() {}
+	private async config_ldap() {}
+	private async config_gui() {}
+
+	//! Cluster Endpoint
+	//? https://docs.syncthing.net/dev/rest.html#discovery-endpoint
+
+	//TODO: implement all endpoints
+	private async cluster_devices() {}
+	private async cluster_folders() {}
+
+	//! Folder Endpoint
+	//? https://docs.syncthing.net/dev/rest.html#folder-endpoint
+
+	//TODO: implement all endpoints
+	private async folder_errors() {}
+	private async folder_versions() {}
+
+	//! Database Endpoint
+	//? https://docs.syncthing.net/dev/rest.html#database-endpoint
+
+	//TODO: implement all endpoints
+	private async db_browse() {}
+	private async db_completion() {}
+	private async db_file() {}
+	private async db_ignores() {}
+	private async db_localchanged() {}
+	private async db_need() {}
+	private async db_override() {}
+	private async db_prio() {}
+	private async db_remoteneed() {}
+	private async db_revert() {}
+	private async db_scan() {}
+	private async db_status() {}
+
+	//! Event Endpoint
+
+	private async events() {}
+	private async disk() {}
+
+	//! Statistics Endpoint
+	//? https://docs.syncthing.net/dev/rest.html#statistics-endpoint
+
+	private async stats_device() {}
+	private async stats_folder() {}
+
+	//! Misc Endpoint
+	//? https://docs.syncthing.net/dev/rest.html#misc-endpoint
+
+	private async svc_deviceid() {}
+	private async svc_lang() {}
+	private async svc_random_string() {}
+	private async svc_report() {}
+
+	//! Debug Endpoint
+	//? https://docs.syncthing.net/dev/rest.html#debug-endpoint
+
+	//TODO: implement all endpoints
+	private async debug_block() {}
+
+	//! Noauth Endpoint
+	//? https://docs.syncthing.net/dev/rest.html#noauth-endpoint
+
+	private async noauth_health() {
+		return (
+			(
+				await this.requestEndpoint(
+					"/rest/noauth/health",
+					object({ status: literal("OK") })
+				)
+			).status === "OK"
+		);
+	}
+
+	// Formatting the endpoints in objects.
+
+	system = {
+		browse: this.system_browse,
+		connections: this.system_connections,
+		debug: this.system_debug,
+		discovery: this.system_discovery,
+		clearErrors: this.system_clearErrors,
+		error: this.system_error,
+		log: this.system_log,
+		paths: this.system_paths,
+		pause: this.system_pause,
+		ping: this.system_ping,
+		reset: this.system_reset,
+		restart: this.system_restart,
+		resume: this.system_resume,
+		shutdown: this.system_shutdown,
+		status: this.system_status,
+		upgrade: this.system_upgrade,
+		version: this.system_version,
+	};
+
+	config = {
+		all: this.config_all,
+		devices: this.config_devices,
+		folders: this.config_folders,
+		restart_required: this.config_restart_required,
+		defaults: {
+			folder: this.config_defaults_folder,
+			device: this.config_defaults_device,
+			ignores: this.config_defaults_ignores,
+		},
+		options: this.config_options,
+		ldap: this.config_ldap,
+		gui: this.config_gui,
+	};
+
+	cluster = {
+		devices: this.cluster_devices,
+		folders: this.cluster_folders,
+	};
+
+	folder = { errors: this.folder_errors, versions: this.folder_versions };
+
+	db = {
+		browse: this.db_browse,
+		completion: this.db_completion,
+		file: this.db_file,
+		ignores: this.db_ignores,
+		localchanged: this.db_localchanged,
+		need: this.db_need,
+		override: this.db_override,
+		prio: this.db_prio,
+		remoteneed: this.db_remoteneed,
+		revert: this.db_revert,
+		scan: this.db_scan,
+		status: this.db_status,
+	};
+
+	event = {
+		events: this.events,
+		disk: this.disk,
+	};
+
+	stats = {
+		device: this.stats_device,
+		folder: this.stats_folder,
+	};
+
+	svc = {
+		deviceid: this.svc_deviceid,
+		lang: this.svc_lang,
+		random_string: this.svc_random_string,
+		report: this.svc_report,
+	};
+
+	debug = {
+		// block: this.debug_block,
+	};
+
+	noauth = {
+		health: this.noauth_health,
+	};
+
 	/**
 	 * Ping the Syncthing installation using the REST API.
 	 * This is used to check if Syncthing is installed.
@@ -179,6 +376,9 @@ export class SyncthingFromREST {
 	async restart(): Promise<void> {
 		await this.requestEndpoint("/rest/system/restart", object({}), "POST");
 	}
+
+	//! Utils
+	// Request Endpoint
 
 	/**
 	 * Private method to request an endpoint of the REST API.
