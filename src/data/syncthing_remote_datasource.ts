@@ -379,7 +379,7 @@ export class SyncthingFromREST {
 	 * ```
 	 *
 	 * @see https://docs.syncthing.net/rest/system-upgrade-get.html
-	 *
+*
 	 *
 	 * POST /rest/system/upgrade
 	 *
@@ -458,9 +458,144 @@ export class SyncthingFromREST {
 	//! Cluster Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#discovery-endpoint
 
-	//TODO: implement all endpoints
-	private async cluster_devices() {}
-	private async cluster_folders() {}
+	/**
+	 * GET /rest/cluster/pending/devices
+	 * @see https://docs.syncthing.net/rest/cluster-pending-devices-get.html
+	 *
+	 * @since Syncthing 1.13.0
+	 *
+	 * Lists remote devices which have tried to connect, but are not yet
+	 * configured in our instance.
+	 *
+	 * @example
+	 * ```json
+	 *     {
+	 *       "P56IOI7-MZJNU2Y-IQGDREY-DM2MGTI-MGL3BXN-PQ6W5BM-TBBZ4TJ-XZWICQ2": {
+	 *         "time": "2020-03-18T11:43:07Z",
+	 *         "name": "Friend Joe",
+	 *         "address": "192.168.1.2:22000"
+	 *       }
+	 *     }
+	 * ```
+	 *
+	 * ***
+	 *
+	 * DELETE /rest/cluster/pending/devices
+	 * @see https://docs.syncthing.net/rest/cluster-pending-devices-delete.html
+	 *
+	 * @since Syncthing 1.18.0
+	 *
+	 * Remove records about a pending remote device which tried to connect.  Valid
+	 * values for the ``device`` parameter are those from the corresponding
+	 * `cluster-pending-devices-get` endpoint.
+	 *
+	 * @example
+	 * ```bash
+	 *     $ curl -X DELETE -H "X-API-Key: abc123" http://localhost:8384/rest/cluster/pending/devices?device=P56IOI7-MZJNU2Y-IQGDREY-DM2MGTI-MGL3BXN-PQ6W5BM-TBBZ4TJ-XZWICQ2
+	 * ```
+	 *
+	 * Returns status 200 and no content upon success, or status 500 and a plain text error on failure.  A `/events/pendingdeviceschanged` event will be generated in response.
+	 *
+	 * For a more permanent effect, also for future connections from the same device ID, the device should be ignored in the `configuration </users/config>` instead.
+	 */
+	private async cluster_pending_devices(
+		method: "GET" | "DELETE" = "GET",
+		device?: string
+	) {
+		// TODO: implement DELETE
+		return await this.requestEndpoint(
+			"/rest/cluster/pending/devices",
+			record(
+				object({
+					time: dateSchema,
+					name: string(),
+					address: string(),
+				})
+			),
+			method
+		);
+	}
+
+	/**
+	 * GET /rest/cluster/pending/folders
+	 * @see https://docs.syncthing.net/rest/cluster-pending-folders-get.html
+	 *
+	 * @since Syncthing 1.13.0
+	 *
+	 * Lists folders which remote devices have offered to us, but are not yet shared from our instance to them.
+	 * Takes the optional ``device`` parameter to only return folders offered by a specific remote device.
+	 * Other offering devices are also omitted from the result.
+	 *
+	 * @example
+	 * ```json
+	 *     {
+	 *       "cpkn4-57ysy": {
+	 *         "offeredBy": {
+	 *           "P56IOI7-MZJNU2Y-IQGDREY-DM2MGTI-MGL3BXN-PQ6W5BM-TBBZ4TJ-XZWICQ2": {
+	 *             "time": "2020-03-18T11:43:07Z",
+	 *             "label": "Joe's folder",
+	 *             "receiveEncrypted": true,
+	 *             "remoteEncrypted": false
+	 *           },
+	 *           "DOVII4U-SQEEESM-VZ2CVTC-CJM4YN5-QNV7DCU-5U3ASRL-YVFG6TH-W5DV5AA": {
+	 *             "time": "2020-03-01T10:12:13Z",
+	 *             "label": "Jane's and Joe's folder",
+	 *             "receiveEncrypted": false,
+	 *             "remoteEncrypted": false
+	 *           }
+	 *         }
+	 *       },
+	 *       "abcde-fghij": {
+	 *         "offeredBy": {
+	 *           "P56IOI7-MZJNU2Y-IQGDREY-DM2MGTI-MGL3BXN-PQ6W5BM-TBBZ4TJ-XZWICQ2": {
+	 *             "time": "2020-03-18T11:43:07Z",
+	 *             "label": "MyPics",
+	 *             "receiveEncrypted": false,
+	 *             "remoteEncrypted": false
+	 *           }
+	 *         }
+	 *       }
+	 *     }
+	 * ```
+	 *
+	 * ---
+	 *
+	 * DELETE /rest/cluster/pending/folders
+	 * @see https://docs.syncthing.net/rest/cluster-pending-folders-delete.html
+	 *
+	 * @since Syncthing 1.18.0
+	 *
+	 * Remove records about a pending folder announced from a remote device.  Valid values for the ``folder`` and ``device`` parameters are those from the corresponding `cluster-pending-folders-get` endpoint.  The ``device`` parameter is optional and affects announcements of this folder from the given device, or from *any* device if omitted.
+	 *
+	 * @example
+	 * ```bash
+	 *     $ curl -X DELETE -H "X-API-Key: abc123" http://localhost:8384/rest/cluster/pending/folders?folder=cpkn4-57ysy&device=P56IOI7-MZJNU2Y-IQGDREY-DM2MGTI-MGL3BXN-PQ6W5BM-TBBZ4TJ-XZWICQ2
+	 * ```
+	 *
+	 * Returns status 200 and no content upon success, or status 500 and a plain text error on failure.  A `/events/pendingfolderschanged` event will be generated in response.
+	 *
+	 * For a more permanent effect, also for future announcements of the same folder ID, the folder should be ignored in the `configuration </users/config>` instead.
+	 *
+	 */
+	private async cluster_pending_folders(method: "GET" | "DELETE" = "GET") {
+		// TODO: implement DELETE
+		return await this.requestEndpoint(
+			"/rest/cluster/pending/folders",
+			record(
+				object({
+					offeredBy: record(
+						object({
+							time: dateSchema,
+							label: string(),
+							receiveEncrypted: boolean(),
+							remoteEncrypted: boolean(),
+						})
+					),
+				})
+			),
+			method
+		);
+	}
 
 	//! Folder Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#folder-endpoint
@@ -598,8 +733,8 @@ export class SyncthingFromREST {
 	};
 
 	cluster = {
-		devices: this.cluster_devices,
-		folders: this.cluster_folders,
+		devices: this.cluster_pending_devices,
+		folders: this.cluster_pending_folders,
 	};
 
 	folder = { errors: this.folder_errors, versions: this.folder_versions };
@@ -809,7 +944,7 @@ export class SyncthingFromREST {
 	private async requestEndpoint<TSchema extends BaseSchema | BaseSchemaAsync>(
 		endpoint: string,
 		schema: TSchema,
-		method: "GET" | "POST" | "PUT" | "PATCH" = "GET",
+		method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" = "GET",
 		body?: string | ArrayBuffer,
 		contentType = "application/json"
 	): Promise<Output<TSchema>> {
