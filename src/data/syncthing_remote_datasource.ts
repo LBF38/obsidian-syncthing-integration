@@ -380,6 +380,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/system-upgrade-get.html
 	 *
+	 *
 	 * POST /rest/system/upgrade
 	 *
 	 * Perform an upgrade to the newest released version and restart.
@@ -493,8 +494,43 @@ export class SyncthingFromREST {
 	//! Statistics Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#statistics-endpoint
 
-	private async stats_device() {}
-	private async stats_folder() {}
+	/**
+	 * Returns general statistics about devices.
+	 * Currently, only contains the time the device was last seen and the last connection duration.
+	 * @see https://docs.syncthing.net/rest/stats-device-get.html
+	 */
+	private async stats_device() {
+		return await this.requestEndpoint(
+			"/rest/stats/device",
+			record(
+				object({
+					lastSeen: dateSchema,
+					lastConnectionDurationS: number(),
+				})
+			)
+		);
+	}
+
+	/**
+	 * Returns general statistics about folders.
+	 * Currently contains the last scan time and the last synced file.
+	 *
+	 * @see https://docs.syncthing.net/rest/stats-folder-get.html
+	 */
+	private async stats_folder() {
+		return await this.requestEndpoint(
+			"/rest/stats/folder",
+			record(
+				object({
+					lastScan: dateSchema,
+					lastFile: object({
+						filename: string(),
+						at: dateSchema,
+					}),
+				})
+			)
+		);
+	}
 
 	//! Misc Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#misc-endpoint
