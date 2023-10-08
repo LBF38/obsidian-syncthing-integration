@@ -15,6 +15,7 @@ import {
 	BaseSchema,
 	BaseSchemaAsync,
 	Output,
+	any,
 	array,
 	boolean,
 	keyof,
@@ -379,7 +380,7 @@ export class SyncthingFromREST {
 	 * ```
 	 *
 	 * @see https://docs.syncthing.net/rest/system-upgrade-get.html
-*
+	 *
 	 *
 	 * POST /rest/system/upgrade
 	 *
@@ -670,10 +671,62 @@ export class SyncthingFromREST {
 	//! Misc Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#misc-endpoint
 
-	private async svc_deviceid() {}
-	private async svc_lang() {}
-	private async svc_random_string() {}
-	private async svc_report() {}
+	/**
+	 * Verifies and formats a device ID.
+	 *
+	 * Accepts all currently valid formats (52 or 56 characters with or without separators, upper or lower case, with trivial substitutions).
+	 *
+	 * Takes one parameter, ``id``, and returns either a valid device ID in modern format, or an error.
+	 *
+	 * @see https://docs.syncthing.net/rest/svc-deviceid-get.html
+	 */
+	private async svc_deviceid(id: string) {
+		// TODO implement
+		return await this.requestEndpoint(
+			`/rest/svc/deviceid?id=${id}`,
+			union([object({ error: string() }), object({ id: string() })])
+		);
+	}
+
+	/**
+	 * Returns a list of canonicalized localization codes, as picked up from the ``Accept-Language`` header sent by the browser.
+	 *
+	 * @example ["sv_sv","sv","en_us","en"]
+	 *
+	 * @see https://docs.syncthing.net/rest/svc-lang-get.html
+	 */
+	private async svc_lang() {
+		return await this.requestEndpoint("/rest/svc/lang", array(string()));
+	}
+
+	/**
+	 * Returns a strong random generated string (alphanumeric) of the specified length. Takes the ``length`` parameter.
+	 *
+	 * @example { "random": "FdPaEaZQ56sXEKYNxpgF" }
+	 *
+	 * @see https://docs.syncthing.net/rest/svc-random-string-get.html
+	 */
+	private async svc_random_string(length?: number) {
+		return await this.requestEndpoint(
+			`/rest/svc/random/string${length ? `?length=${length}` : ""}`,
+			object({ random: string() })
+		);
+	}
+
+	/**
+	 * Returns the data sent in the anonymous usage report.
+	 *
+	 * IMPORTANT: there is no validation made on this endpoint, as it can easily change and it would not be used in the integration. Thus, it returns an `any` type.
+	 *
+	 * @see https://docs.syncthing.net/rest/svc-report-get.html
+	 */
+	private async svc_report() {
+		return await this.requestEndpoint(
+			"/rest/svc/report",
+			any()
+			// ^ Do not perform any validation as the data report can change in future version.
+		);
+	}
 
 	//! Debug Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#debug-endpoint
@@ -771,6 +824,9 @@ export class SyncthingFromREST {
 		report: this.svc_report,
 	};
 
+	/**
+	 * @todo not implemented yet.
+	 */
 	debug = {
 		// block: this.debug_block,
 	};
