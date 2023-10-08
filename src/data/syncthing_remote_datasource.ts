@@ -17,6 +17,7 @@ import {
 	Output,
 	array,
 	boolean,
+	keyof,
 	literal,
 	merge,
 	nullable,
@@ -26,6 +27,7 @@ import {
 	safeParseAsync,
 	string,
 	union,
+	voidType,
 } from "valibot";
 
 /**
@@ -95,21 +97,340 @@ export class SyncthingFromREST {
 		);
 	}
 
-	private async system_discovery() {}
-	private async system_debug() {}
-	private async system_clearErrors() {}
-	private async system_error() {}
-	private async system_log() {}
-	private async system_paths() {}
-	private async system_pause() {}
-	private async system_ping() {}
-	private async system_reset() {}
-	private async system_restart() {}
-	private async system_resume() {}
-	private async system_shutdown() {}
-	private async system_status() {}
-	private async system_upgrade() {}
-	private async system_version() {}
+	/**
+	 * @see https://docs.syncthing.net/rest/system-discovery-get.html
+	 */
+	private async system_discovery() {
+		return await this.requestEndpoint(
+			"/rest/system/discovery",
+			nullable(record(array(string())))
+		);
+	}
+
+	/**
+	 * @see https://docs.syncthing.net/rest/system-debug-get.html
+	 * @see https://docs.syncthing.net/rest/system-debug-post.html
+	 */
+	private async system_debug(
+		method: "GET" | "POST" = "GET",
+		// TODO: export the facilities type.
+		// disable?: keyof typeof facilitiesSchema,
+		// enable?: keyof typeof facilitiesSchema
+		disable?: string[],
+		enable?: string[]
+	) {
+		// TODO: export the type and simplify it.
+		const facilitiesSchema = object({
+			api: literal("REST API"),
+			app: literal("Main run facility"),
+			backend: literal("The database backend"),
+			beacon: literal("Multicast and broadcast discovery"),
+			config: literal("Configuration loading and saving"),
+			connections: literal("Connection handling"),
+			db: literal("The database layer"),
+			dialer: literal("Dialing connections"),
+			discover: literal("Remote device discovery"),
+			events: literal("Event generation and logging"),
+			fs: literal("Filesystem access"),
+			main: literal("Main package"),
+			model: literal("The root hub"),
+			nat: literal("NAT discovery and port mapping"),
+			pmp: literal("NAT-PMP discovery and port mapping"),
+			protocol: literal("The BEP protocol"),
+			relay: string(),
+			scanner: literal("File change detection and hashing"),
+			sha256: literal("SHA256 hashing package"),
+			stats: literal("Persistent device and folder statistics"),
+			stun: literal("STUN functionality"),
+			sync: literal("Mutexes"),
+			upgrade: literal("Binary upgrades"),
+			upnp: literal("UPnP discovery and port mapping"),
+			ur: literal("Usage reporting"),
+			versioner: literal("File versioning"),
+			walkfs: literal("Filesystem access while walking"),
+			watchaggregator: literal("Filesystem event watcher"),
+		});
+		if (method == "GET") {
+			return await this.requestEndpoint(
+				"/rest/system/debug",
+				object({
+					enabled: nullable(array(keyof(facilitiesSchema))),
+					facilities: facilitiesSchema,
+				})
+			);
+		}
+		if (method == "POST") {
+			return await this.requestEndpoint(
+				`/rest/system/debug?disable=${disable?.join(
+					","
+				)}&enable=${enable?.join(",")}`,
+				voidType(),
+				method
+			);
+		}
+	}
+
+	/**
+	 * @see https://docs.syncthing.net/rest/system-error-clear-post.html
+	 */
+	private async system_clearErrors() {
+		return await this.requestEndpoint(
+			"/rest/system/error/clear",
+			voidType(),
+			"POST"
+		);
+	}
+
+	/**
+	 * @see https://docs.syncthing.net/rest/system-error-get.html
+	 * @see https://docs.syncthing.net/rest/system-error-post.html
+	 */
+	private async system_error(
+		method: "GET" | "POST" = "GET",
+		message?: string
+	) {
+		if (method == "GET") {
+			return await this.requestEndpoint(
+				"/rest/system/error",
+				object({
+					errors: nullable(
+						array(
+							object({
+								when: dateSchema,
+								message: string(),
+							})
+						)
+					),
+				})
+			);
+		}
+		if (method == "POST" && message) {
+			// TODO implement
+			return await this.requestEndpoint(
+				"/rest/system/error",
+				voidType(),
+				"POST",
+				message,
+				"text/plain"
+				// TODO: verify
+			);
+		}
+	}
+
+	/**
+	 * @see https://docs.syncthing.net/rest/system-log-get.html
+	 */
+	private async system_log(json = true) {
+		const logSchema = object({
+			messages: array(
+				object({
+					message: string(),
+					when: dateSchema,
+					level: number(),
+				})
+			),
+		});
+		return await this.requestEndpoint(
+			`/rest/system/log${json ? "" : ".txt"}`,
+			json ? logSchema : string()
+		);
+	}
+
+	/**
+	 * @see https://docs.syncthing.net/rest/system-paths-get.html
+	 */
+	private async system_paths() {
+		return await this.requestEndpoint(
+			"/rest/system/paths",
+			object({
+				auditLog: string(),
+				"baseDir-config": string(),
+				"baseDir-data": string(),
+				"baseDir-userHome": string(),
+				certFile: string(),
+				config: string(),
+				csrfTokens: string(),
+				database: string(),
+				defFolder: string(),
+				guiAssets: string(),
+				httpsCertFile: string(),
+				httpsKeyFile: string(),
+				keyFile: string(),
+				logFile: string(),
+				panicLog: string(),
+			})
+		);
+	}
+
+	/**
+	 * Pause the given device or all devices.
+	 *
+	 * Takes the optional parameter ``device`` (device ID). When omitted, pauses all devices.
+	 *
+	 * Returns status 200 and no content upon success, or status 500 and a plain text error on failure.
+	 * @see https://docs.syncthing.net/rest/system-pause-post.html
+	 */
+	private async system_pause(deviceID?: string) {
+		return await this.requestEndpoint(
+			`/rest/system/pause?device=${deviceID}`,
+			voidType()
+		);
+	}
+
+	/**
+	 * @see https://docs.syncthing.net/rest/system-ping-get.html
+	 * @see https://docs.syncthing.net/rest/system-ping-post.html
+	 */
+	private async system_ping(method: "GET" | "POST" = "GET") {
+		return (
+			await this.requestEndpoint(
+				"/rest/system/ping",
+				object({ ping: literal("pong") }),
+				method
+			)
+		).ping;
+	}
+
+	/**
+	 * Post with empty body to erase the current index database and restart Syncthing. With no query parameters, the entire database is erased from disk.
+	 *
+	 * By specifying the ``folder`` parameter with a valid folder ID, only information for that folder will be erased:
+	 * ```
+	 * curl -X POST -H "X-API-Key: abc123" http://localhost:8384/rest/system/reset?folder=ab1c2-def3g
+
+	 * ```
+	 * **Caution**: See `--reset-database` for ``.stfolder`` creation side-effect and caution regarding mountpoints.
+	 *
+	 * @see https://docs.syncthing.net/rest/system-reset-post.html
+	 */
+	private async system_reset(folderID?: string) {
+		// TODO: test this endpoint in a new Syncthing configuration OR inside a Docker in a Docker.
+		return await this.requestEndpoint(
+			`/rest/system/reset?folder=${folderID}`,
+			voidType(),
+			"POST"
+		);
+	}
+
+	/**
+	 * Post with empty body to immediately restart Syncthing.
+	 *
+	 * @see https://docs.syncthing.net/rest/system-restart-post.html
+	 */
+	private async system_restart() {
+		return await this.requestEndpoint(
+			"/rest/system/restart",
+			voidType(),
+			"POST"
+		);
+	}
+
+	/**
+	 * Resume the given device or all devices.
+	 *
+	 * Takes the optional parameter ``device`` (device ID). When omitted, resumes all devices.
+	 * Returns status 200 and no content upon success, or status 500 and a plain text error on failure.
+	 *
+	 * @see https://docs.syncthing.net/rest/system-resume-post.html
+	 */
+	private async system_resume(deviceID?: string) {
+		return await this.requestEndpoint(
+			`/rest/system/resume?device=${deviceID}`,
+			voidType()
+		);
+	}
+
+	/**
+	 * Post with empty body to cause Syncthing to exit and not restart.
+	 *
+	 * @see https://docs.syncthing.net/rest/system-shutdown-post.html
+	 */
+	private async system_shutdown() {
+		return await this.requestEndpoint(
+			"/rest/system/shutdown",
+			voidType(),
+			"POST"
+		);
+	}
+
+	/**
+	 * @see https://docs.syncthing.net/rest/system-status-get.html
+	 */
+	private async system_status() {
+		return await this.requestEndpoint(
+			"/rest/system/status",
+			SyncthingSystemStatus
+		);
+	}
+
+	/**
+	 * GET /rest/system/upgrade
+	 *
+	 * Checks for a possible upgrade and returns an object describing the newest version and upgrade possibility.
+	 *
+	 * @example
+	 * ```
+	 * {
+	 *   "latest": "v0.14.47",
+	 *   "majorNewer": false,
+	 *   "newer": true,
+	 *   "running": "v0.14.46"
+	 * }
+	 * ```
+	 *
+	 * @see https://docs.syncthing.net/rest/system-upgrade-get.html
+	 *
+	 * POST /rest/system/upgrade
+	 *
+	 * Perform an upgrade to the newest released version and restart.
+	 * Does nothing if there is no newer version than currently running.
+	 *
+	 * @see https://docs.syncthing.net/rest/system-upgrade-post.html
+	 */
+	private async system_upgrade(method: "GET" | "POST" = "GET") {
+		if (method == "GET") {
+			return await this.requestEndpoint(
+				"/rest/system/upgrade",
+				object({
+					latest: string(),
+					majorNewer: boolean(),
+					newer: boolean(),
+					running: string(),
+				})
+			);
+		}
+		return await this.requestEndpoint(
+			"/rest/system/upgrade",
+			voidType(),
+			"POST"
+		);
+	}
+
+	/**
+	 * Returns the current Syncthing version information.
+	 * @see https://docs.syncthing.net/rest/system-version-get.html
+	 */
+	private async system_version() {
+		return await this.requestEndpoint(
+			"/rest/system/version",
+			object({
+				arch: string(),
+				codename: string(),
+				container: boolean(),
+				date: dateSchema,
+				extra: string(),
+				isBeta: boolean(),
+				isCandidate: boolean(),
+				isRelease: boolean(),
+				longVersion: string(),
+				os: string(),
+				stamp: string(),
+				tags: array(string()),
+				user: string(),
+				version: string(),
+			})
+		);
+	}
 
 	//! Config Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#config-endpoint
@@ -452,7 +773,9 @@ export class SyncthingFromREST {
 	private async requestEndpoint<TSchema extends BaseSchema | BaseSchemaAsync>(
 		endpoint: string,
 		schema: TSchema,
-		method: "GET" | "POST" | "PUT" | "PATCH" = "GET"
+		method: "GET" | "POST" | "PUT" | "PATCH" = "GET",
+		body?: string | ArrayBuffer,
+		contentType = "application/json"
 	): Promise<Output<TSchema>> {
 		// FIXME: Fix the issue when connecting to the REST API. (error 403)
 		console.log("requestEndpoint: Endpoint", endpoint);
@@ -466,10 +789,11 @@ export class SyncthingFromREST {
 			headers: {
 				"X-API-Key": this.plugin.settings.api_key,
 				Accept: "*/*",
-				"Content-Type": "application/json",
+				"Content-Type": contentType,
 				"Access-Control-Allow-Origin": "*",
 				redirect: "follow",
 			},
+			body: body,
 		});
 		console.log(
 			"requestEndpoint: API Key set ?",
