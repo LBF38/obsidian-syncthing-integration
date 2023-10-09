@@ -743,9 +743,51 @@ export class SyncthingFromREST {
 	//! Folder Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#folder-endpoint
 
-	//TODO: implement all endpoints
-	private async folder_errors() {}
-	private async folder_versions() {}
+	/**
+	 * @see https://docs.syncthing.net/rest/folder-errors-get.html
+	 */
+	private async folder_errors(
+		folder: string,
+		page?: number,
+		perpage?: number
+	) {
+		return await this.requestEndpoint(
+			`/rest/folder/errors?folder=${folder}&page=${page}&perpage=${perpage}`,
+			object({
+				folder: string(),
+				errors: array(object({ path: string(), error: string() })),
+				page: number(),
+				perpage: number(),
+			})
+		);
+	}
+
+	/**
+	 * Takes one mandatory parameter, `folder`, and returns the list of archived files that could be recovered.
+	 *
+	 * How many versions are available depends on the File Versioning configuration.
+	 *
+	 * Each entry specifies when the file version was archived as the `versionTime`, the `modTime` when it was last modified before being archived, and the size in bytes.
+	 *
+	 * @see https://docs.syncthing.net/rest/folder-versions-get.html
+	 */
+	private async folder_versions(
+		folder: string,
+		method: "GET" | "POST" = "GET"
+	) {
+		// TODO: implement the POST method.
+		return await this.requestEndpoint(
+			`/rest/folder/versions?folder=${folder}`,
+			record(
+				object({
+					versionTime: dateSchema,
+					modTime: dateSchema,
+					size: number(),
+				})
+			),
+			method
+		);
+	}
 
 	//! Database Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#database-endpoint
