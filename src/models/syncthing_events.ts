@@ -61,9 +61,6 @@ export function SyncthingGenericEvent<
 	});
 }
 
-// TODO: implement all events.
-// export const SyncthingEvent = SyncthingGenericEvent();
-
 export const ClusterConfigReceived = SyncthingGenericEvent(
 	"ClusterConfigReceived",
 	object({
@@ -355,3 +352,36 @@ export const StateChanged = SyncthingGenericEvent(
 		to: string(),
 	})
 );
+
+export const UnionSyncthingEvents = union([
+	ClusterConfigReceived,
+	ConfigSaved,
+	DeviceConnected,
+	DeviceDisconnected,
+	DeviceDiscovered,
+	DevicePaused,
+	DeviceResumed,
+	DownloadProgress,
+	Failure,
+	FolderCompletion,
+	FolderErrors,
+	FolderPaused,
+	FolderResumed,
+	FolderScanProgress,
+	FolderSummary,
+	FolderWatchStateChanged,
+	ItemFinished,
+	ItemStarted,
+	ListenAddressesChanged,
+	LocalChangeDetected,
+	LocalIndexUpdated,
+	LoginAttempt,
+	PendingDevicesChanged,
+	PendingFoldersChanged,
+	RemoteChangeDetected,
+	RemoteDownloadProgress,
+	RemoteIndexUpdated,
+	Starting,
+	StartupComplete,
+	StateChanged,
+]);

@@ -12,6 +12,10 @@ import {
 } from "src/models/entities";
 import { RestFailure } from "src/models/failures";
 import {
+	SyncthingEventTypes,
+	UnionSyncthingEvents,
+} from "src/models/syncthing_events";
+import {
 	BaseSchema,
 	BaseSchemaAsync,
 	Output,
@@ -1111,9 +1115,35 @@ export class SyncthingFromREST {
 	}
 
 	//! Event Endpoint
+	//? https://docs.syncthing.net/dev/events.html
 
-	private async events() {}
-	private async disk() {}
+	/**
+	 * @see https://docs.syncthing.net/rest/events-get.html
+	 */
+	private async events(
+		eventsFilter?: Output<typeof SyncthingEventTypes>[],
+		lastSeenID?: number,
+		timeout?: number,
+		limit?: number
+	) {
+		return await this.requestEndpoint(
+			`/rest/events?events=${eventsFilter}&since=${lastSeenID}&timeout=${timeout}&limit=${limit}`,
+			array(UnionSyncthingEvents)
+		);
+	}
+
+	/**
+	 * This convenience endpoint provides the same event stream, but pre-filtered to show only LocalChangeDetected and RemoteChangeDetected event types.
+	 * The events parameter is not used.
+	 *
+	 * @see https://docs.syncthing.net/rest/events-get.html#get-rest-events-disk
+	 */
+	private async disk(lastSeenID?: number, timeout?: number, limit?: number) {
+		return await this.requestEndpoint(
+			`/rest/events/disk?since=${lastSeenID}&timeout=${timeout}&limit=${limit}`,
+			array(UnionSyncthingEvents)
+		);
+	}
 
 	//! Statistics Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#statistics-endpoint
