@@ -437,24 +437,166 @@ export class SyncthingFromREST {
 	//! Config Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#config-endpoint
 
-	private async config_all() {}
-	private async config_folders(id?: string) {}
-	private async config_devices(
-		id?: string,
-		method: "GET" | "PUT" | "PATCH" | "DELETE" = "GET"
+	/**
+	 * ``GET`` returns the entire config and ``PUT`` replaces it.
+	 * @see https://docs.syncthing.net/rest/config.html
+	 */
+	private async config_all(
+		method: "GET" | "PUT" = "GET",
+		config?: Output<typeof SyncthingConfiguration>
 	) {
 		return await this.requestEndpoint(
-			"/rest/config/devices",
-			array(SyncthingDevice)
+			"/rest/config",
+			SyncthingConfiguration,
+			method,
+			method == "PUT" ? JSON.stringify(config) : ""
 		);
 	}
-	private async config_restart_required() {}
-	private async config_defaults_folder() {}
-	private async config_defaults_device() {}
-	private async config_defaults_ignores() {}
-	private async config_options() {}
-	private async config_ldap() {}
-	private async config_gui() {}
+
+	/**
+	 * /rest/config/folders, /rest/config/devices
+	 *
+	 * ``GET`` returns all folders respectively devices as an array.
+	 * ``PUT`` takes an array and ``POST`` a single object.
+	 * In both cases if a given folder/device already exists, it's replaced, otherwise a new one is added.
+	 *
+	 * @see https://docs.syncthing.net/rest/config.html
+	 */
+	private async config_folders(id?: string) {
+		// TODO: implement same as config_devices.
+	}
+
+	/**
+	 * /rest/config/folders, /rest/config/devices
+	 * ``GET`` returns all folders respectively devices as an array.
+	 * ``PUT`` takes an array and ``POST`` a single object.
+	 * In both cases if a given folder/device already exists, it's replaced, otherwise a new one is added.
+	 *
+	 * @see https://docs.syncthing.net/rest/config.html
+	 */
+	private async config_devices(
+		id?: string,
+		method: "GET" | "PUT" | "POST" | "PATCH" | "DELETE" = "GET",
+		device?: Output<typeof SyncthingDevice>
+	) {
+		if (id) {
+			return await this.requestEndpoint(
+				`/rest/config/devices/${id}`,
+				method == "GET" ? SyncthingDevice : voidType(),
+				method,
+				method == "PUT" || method == "PATCH"
+					? JSON.stringify(device)
+					: ""
+			);
+		}
+		if (method == "DELETE" || method == "PATCH") return;
+		// TODO: add validation of the body input for PUT and POST.
+		return await this.requestEndpoint(
+			"/rest/config/devices",
+			method == "GET" ? array(SyncthingDevice) : voidType()
+		);
+	}
+
+	/**
+	 * ``GET`` returns whether a restart of Syncthing is required for the current config to take effect.
+	 * @see https://docs.syncthing.net/rest/config.html
+	 */
+	private async config_restart_required() {
+		return (
+			await this.requestEndpoint(
+				"/rest/config/restart-required",
+				object({
+					requiresRestart: boolean(),
+				})
+			)
+		).requiresRestart;
+	}
+
+	/**
+	 * `GET` returns a template folder / device configuration object with all default values, which only needs a unique ID to be applied.
+	 *
+	 * `PUT` replaces the default config (omitted values are reset to the hard-coded defaults), `PATCH` replaces only the given child objects.
+	 * @see https://docs.syncthing.net/rest/config.html
+	 */
+	private async config_defaults_folder(
+		method: "GET" | "PUT" | "PATCH" = "GET"
+	) {
+		return await this.requestEndpoint(
+			"/rest/config/defaults/folder",
+			SyncthingFolder,
+			method
+		);
+	}
+
+	/**
+	 * `GET` returns a template folder / device configuration object with all default values, which only needs a unique ID to be applied.
+	 *
+	 * `PUT` replaces the default config (omitted values are reset to the hard-coded defaults), `PATCH` replaces only the given child objects.
+	 * @see https://docs.syncthing.net/rest/config.html
+	 */
+	private async config_defaults_device(
+		method: "GET" | "PUT" | "PATCH" = "GET"
+	) {
+		return await this.requestEndpoint(
+			"/rest/config/defaults/device",
+			SyncthingDevice,
+			method
+		);
+	}
+
+	/**
+	 * @see https://docs.syncthing.net/rest/config.html
+	 */
+	private async config_defaults_ignores(
+		method: "GET" | "PUT" = "GET",
+		linesToIgnore: { lines: string[] } // TODO refactor
+	) {
+		const ignoresLineSchema = object({
+			lines: array(string()),
+		});
+		return await this.requestEndpoint(
+			"/rest/config/defaults/ignores",
+			method == "GET" ? ignoresLineSchema : voidType(),
+			method,
+			method == "PUT" ? JSON.stringify(linesToIgnore) : ""
+		);
+	}
+
+	/**
+	 * `GET` returns the respective object, `PUT` replaces the entire object and `PATCH` replaces only the given child objects.
+	 * @see https://docs.syncthing.net/rest/config.html
+	 */
+	private async config_options() {
+		// TODO: implement & verify
+	}
+
+	/**
+	 * `GET` returns the respective object, `PUT` replaces the entire object and `PATCH` replaces only the given child objects.
+	 * @see https://docs.syncthing.net/rest/config.html
+	 */
+	private async config_ldap(method: "GET" | "PUT" | "PATCH" = "GET") {
+		// TODO: implement & verify
+		return await this.requestEndpoint(
+			"/rest/config/ldap",
+			object({
+				address: string(),
+				bindDN: string(),
+				transport: string(),
+				insecureSkipVerify: boolean(),
+				searchBaseDN: string(),
+				searchFilter: string(),
+			}),
+			method
+		);
+	}
+
+	/**
+	 * `GET` returns the respective object, `PUT` replaces the entire object and `PATCH` replaces only the given child objects.
+	 * @see https://docs.syncthing.net/rest/config.html
+	 */
+	private async config_gui() {
+		// TODO: implement & verify
+	}
 
 	//! Cluster Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#discovery-endpoint
