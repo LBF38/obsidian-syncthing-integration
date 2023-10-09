@@ -792,19 +792,323 @@ export class SyncthingFromREST {
 	//! Database Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#database-endpoint
 
-	//TODO: implement all endpoints
-	private async db_browse() {}
-	private async db_completion() {}
-	private async db_file() {}
-	private async db_ignores() {}
-	private async db_localchanged() {}
-	private async db_need() {}
-	private async db_override() {}
-	private async db_prio() {}
-	private async db_remoteneed() {}
-	private async db_revert() {}
-	private async db_scan() {}
-	private async db_status() {}
+	/**
+	 * Returns the directory tree of the global model.
+	 * Directories are always JSON objects (map/dictionary), and files are always arrays of modification time and size.
+	 * The first integer is the files modification time, and the second integer is the file size.
+	 *
+	 * The call takes one mandatory `folder` parameter and two optional parameters.
+	 * Optional parameter `levels` defines how deep within the tree we want to dwell down (0 based, defaults to unlimited depth)
+	 * Optional parameter `prefix` defines a prefix within the tree where to start building the structure.
+	 *
+	 * @see https://docs.syncthing.net/rest/db-browse-get.html
+	 */
+	private async db_browse(folder: string, levels?: number, prefix?: string) {
+		const dbFileSchema = object({
+			modTime: dateSchema,
+			name: string(),
+			size: number(),
+			type: literal("FILE_INFO_TYPE_FILE"),
+		});
+		const dbFolderSchema = object({
+			modTime: dateSchema,
+			name: string(),
+			size: number(),
+			type: literal("FILE_INFO_TYPE_DIRECTORY"),
+
+			children: nullable(array(dbFileSchema)),
+		});
+		// TODO: verify the schema and implementation. Not sure if it's correct.
+		return await this.requestEndpoint(
+			`/rest/db/browse?folder=${folder}&prefix=${prefix}&levels=${levels}`,
+			array(union([dbFileSchema, dbFolderSchema]))
+		);
+	}
+
+	/**
+	 * @see https://docs.syncthing.net/rest/db-completion-get.html
+	 */
+	private async db_completion(folder?: string, device?: string) {
+		return await this.requestEndpoint(
+			`/rest/db/completion?folder=${folder}&device=${device}`,
+			object({
+				completion: number(),
+				globalBytes: number(),
+				globalItems: number(),
+				needBytes: number(),
+				needDeletes: number(),
+				needItems: number(),
+				remoteState: string(), // TODO: verify/make it more granular
+				sequence: number(),
+			})
+		);
+	}
+
+	/**
+	 * Returns most data available about a given file, including version and availability.
+	 *
+	 * Takes `folder` and `file` parameters.
+	 * `local` and `global` refer to the current file on disk and the globally newest file, respectively.
+	 * @see https://docs.syncthing.net/rest/db-file-get.html
+	 */
+	private async db_file(
+		folder: string,
+		file: string,
+		local?: string,
+		global?: string
+	) {
+		return await this.requestEndpoint(
+			`/rest/db/file?folder=${folder}&file=${file}&local=${local}&global=${global}`,
+			any() // TODO: add validation
+		);
+	}
+
+	/**
+	 * `GET` and `POST` methods.
+	 *
+	 * **GET /rest/db/ignores**
+	 *
+	 * Takes one parameter, `folder`, and returns the content of the `.stignore` as the `ignore` field.
+	 * A second field, `expanded`, provides a list of strings which represent globbing patterns described by gobwas/glob (based on standard wildcards) that match the patterns in `.stignore` and all the includes.
+	 * If appropriate these globs are prepended by the following modifiers: `!` to negate the glob, `(?i)` to do case insensitive matching and `(?d)` to enable removing of ignored files in an otherwise empty directory.
+	 *
+	 * @see https://docs.syncthing.net/rest/db-ignores-get.html
+	 *
+	 * **POST /rest/db/ignores**
+	 *
+	 * Expects a format similar to the output of GET /rest/db/ignores call, but only containing the `ignore` field (`expanded` field should be omitted).
+	 * It takes one parameter, `folder`, and either updates the content of the `.stignore` echoing it back as a response, or returns an error.
+	 *
+	 * @see https://docs.syncthing.net/rest/db-ignores-post.html
+	 */
+	private async db_ignores(
+		method: "GET" | "POST" = "GET",
+		folder: string,
+		input?: { ignore: string[] }
+	) {
+		return await this.requestEndpoint(
+			`/rest/db/ignores?folder=${folder}`,
+			object({
+				error: nullable(array(string())),
+				expanded: nullable(array(string())),
+				ignore: nullable(array(string())),
+			}),
+			method,
+			method == "POST" ? JSON.stringify(input) : ""
+		);
+	}
+
+	/**
+	 * Takes one mandatory parameter, `folder`, and returns the list of files which were changed locally in a receive-only folder. Thus they differ from the global state and could be reverted by pulling from remote devices again, see POST /rest/db/revert.
+	 * @see https://docs.syncthing.net/rest/db-localchanged-get.html
+	 */
+	private async db_localchanged(
+		folder: string,
+		page?: number,
+		perpage?: number
+	) {
+		const fileSchema = object({
+			flags: string(),
+			sequence: number(),
+			modified: dateSchema,
+			name: string(),
+			size: number(),
+			version: array(string()),
+		});
+		return await this.requestEndpoint(
+			`/rest/db/localchanged?folder=${folder}&page=${page}&perpage=${perpage}`,
+			object({
+				files: array(fileSchema),
+				page: number(),
+				perpage: number(),
+			})
+		);
+	}
+
+	/**
+	 * @see https://docs.syncthing.net/rest/db-need-get.html
+	 */
+	private async db_need(folder: string, page?: number, perpage?: number) {
+		const fileSchema = object({
+			flags: string(),
+			sequence: number(),
+			modified: dateSchema,
+			name: string(),
+			size: number(),
+			version: array(string()),
+		});
+		return await this.requestEndpoint(
+			`/rest/db/need?folder=${folder}&page=${page}&perpage=${perpage}`,
+			object({
+				progress: array(fileSchema),
+				queued: array(fileSchema),
+				rest: array(fileSchema),
+				page: number(),
+				perpage: number(),
+			})
+		);
+	}
+
+	/**
+	 * Request override of a send only folder. Override means to make the local version latest, overriding changes made on other devices.
+	 * This API call does nothing if the folder is not a send only folder.
+	 *
+	 * Takes the mandatory parameter folder (folder ID).
+	 *
+	 * @see https://docs.syncthing.net/rest/db-override-post.html
+	 */
+	private async db_override(folder: string) {
+		return await this.requestEndpoint(
+			"/rest/db/override",
+			voidType(),
+			"POST"
+		);
+	}
+
+	/**
+	 * Moves the file to the top of the download queue.
+	 *
+	 * Response contains the same output as GET /rest/db/need.
+	 * @see https://docs.syncthing.net/rest/db-prio-post.html
+	 */
+	private async db_prio(folder: string, file: string) {
+		const fileSchema = object({
+			flags: string(),
+			sequence: number(),
+			modified: dateSchema,
+			name: string(),
+			size: number(),
+			version: array(string()),
+		});
+		return await this.requestEndpoint(
+			`/rest/db/prio?folder=${folder}&file=${file}`,
+			object({
+				progress: array(fileSchema),
+				queued: array(fileSchema),
+				rest: array(fileSchema),
+				page: number(),
+				perpage: number(),
+			}),
+			"POST"
+		);
+	}
+
+	/**
+	 * Similar to {@linkcode db_localchanged}, but returns the list of files which were changed remotely in a send-only folder.
+	 * @see https://docs.syncthing.net/rest/db-remoteneed-get.html
+	 */
+	private async db_remoteneed(
+		folder: string,
+		device: string,
+		page?: number,
+		perpage?: number
+	) {
+		const fileSchema = object({
+			flags: string(),
+			sequence: number(),
+			modified: dateSchema,
+			name: string(),
+			size: number(),
+			version: array(string()),
+		});
+		return await this.requestEndpoint(
+			`/rest/db/remoteneed?folder=${folder}&device=${device}&page=${page}&perpage=${perpage}`,
+			object({
+				files: array(fileSchema),
+				page: number(),
+				perpage: number(),
+			})
+		);
+	}
+
+	/**
+	 * Request revert of a receive only folder.
+	 * Reverting a folder means to undo all local changes.
+	 * This API call does nothing if the folder is not a receive only folder.
+	 *
+	 * Takes the mandatory parameter folder (folder ID).
+	 * @see https://docs.syncthing.net/rest/db-revert-post.html
+	 */
+	private async db_revert(folder: string) {
+		return await this.requestEndpoint(
+			`/rest/db/revert?folder=${folder}`,
+			voidType(),
+			"POST"
+		);
+	}
+
+	/**
+	 * Request immediate scan.
+	 *
+	 * Takes the optional parameters `folder` (folder ID), `sub` (path relative to the folder root) and `next` (time in seconds).
+	 * If `folder` is omitted or empty all folders are scanned.
+	 * If `sub` is given, only this path (and children, in case it’s a directory) is scanned.
+	 * The `next` argument delays Syncthing’s automated rescan interval for a given amount of seconds.
+	 *
+	 * Requesting scan of a path that no longer exists, but previously did, is valid and will result in Syncthing noticing the deletion of the path in question.
+	 *
+	 * Returns status 200 and no content upon success, or status 500 and a plain text error if an error occurred during scanning.
+	 *
+	 * @see https://docs.syncthing.net/rest/db-scan-post.html
+	 */
+	private async db_scan(folder?: string, sub?: string, next?: number) {
+		return await this.requestEndpoint(
+			`/rest/db/scan?folder=${folder}&sub=${sub}&next=${next}`,
+			voidType(),
+			"POST"
+		);
+	}
+
+	/**
+	 * Returns information about the current status of a folder.
+	 *
+	 * Parameters: `folder`, the ID of a folder.
+	 *
+	 * @see https://docs.syncthing.net/rest/db-status-get.html
+	 */
+	private async db_status(folder: string) {
+		return await this.requestEndpoint(
+			`/rest/db/status?folder=${folder}`,
+			object({
+				errors: number(),
+				pullErrors: number(),
+				invalid: string(),
+				globalFiles: number(),
+				globalDirectories: number(),
+				globalSymlinks: number(),
+				globalDeleted: number(),
+				globalBytes: number(),
+				globalTotalItems: number(),
+				localFiles: number(),
+				localDirectories: number(),
+				localSymlinks: number(),
+				localDeleted: number(),
+				localBytes: number(),
+				localTotalItems: number(),
+				needFiles: number(),
+				needDirectories: number(),
+				needSymlinks: number(),
+				needDeletes: number(),
+				needBytes: number(),
+				needTotalItems: number(),
+				receiveOnlyChangedFiles: number(),
+				receiveOnlyChangedDirectories: number(),
+				receiveOnlyChangedSymlinks: number(),
+				receiveOnlyChangedDeletes: number(),
+				receiveOnlyChangedBytes: number(),
+				receiveOnlyTotalItems: number(),
+				inSyncFiles: number(),
+				inSyncBytes: number(),
+				state: string(),
+				stateChanged: dateSchema,
+				error: string(),
+				version: number(),
+				sequence: number(),
+				ignorePatterns: boolean(),
+				watchError: string(),
+			})
+		);
+	}
 
 	//! Event Endpoint
 
