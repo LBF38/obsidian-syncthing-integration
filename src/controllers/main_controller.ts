@@ -237,7 +237,7 @@ export class SyncthingController {
 		if (!(await this.isRunning()))
 			return new Failure("Syncthing is not running.");
 		try {
-			const config = await this.syncthingFromREST.getConfiguration();
+			const config = await this.syncthingFromREST.config.all();
 			return config;
 		} catch (error) {
 			if (Platform.isMobileApp) {

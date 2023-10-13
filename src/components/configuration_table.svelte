@@ -3,12 +3,13 @@
 	import { SyncthingDevice, SyncthingFolder } from "src/models/entities";
 	import { ConfigurationModal } from "src/views/configuration_modal";
 	import { onMount } from "svelte";
+	import { Output } from "valibot";
 	import ConfigurationItem from "./configuration_item.svelte";
 	import FolderItem from "./folder_item.svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import RemoteItem from "./remote_item.svelte";
+	import { syncthingConfiguration } from "./stores";
 	import WarningMessage from "./warning_message.svelte";
-	import { Output } from "valibot";
 
 	export let parent: ConfigurationModal;
 	parent.titleEl.setText("Syncthing Configuration");
@@ -22,8 +23,8 @@
 	let thisDevice: Output<typeof SyncthingDevice> | undefined = undefined;
 	let restartRequired = false;
 	onMount(async () => {
-		folders = await parent.plugin.syncthingController.getFolders();
-		devices = await parent.plugin.syncthingController.getDevices();
+		folders = $syncthingConfiguration.folders;
+		devices = $syncthingConfiguration.devices;
 		restartRequired =
 			await parent.plugin.syncthingFromREST.isRestartRequired();
 		thisDevice = devices.first();
