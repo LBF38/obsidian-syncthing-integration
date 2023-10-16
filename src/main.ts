@@ -8,6 +8,7 @@ import { SyncthingFromAndroid } from "./data/syncthing_android_datasource";
 import { SyncthingFromCLI } from "./data/syncthing_local_datasource";
 import { SyncthingFromREST } from "./data/syncthing_remote_datasource";
 import { SyncthingConfiguration } from "./models/entities";
+import { Failure } from "./models/failures";
 import { ConflictsModal } from "./views/conflicts_modal";
 import { SyncthingLogoSVG } from "./views/logos";
 import { SyncthingSettingTab } from "./views/settings_tab";
@@ -58,9 +59,38 @@ export default class SyncthingPlugin extends Plugin {
 
 		// Status bar. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText("Syncthing status");
-		statusBarItemEl.onClickEvent(() => {
-			new Notice("Syncthing integration is not yet implemented.");
+		this.registerEvent(
+			this.app.workspace.on("file-open", () => {
+				const activeFile = this.app.workspace.getActiveFile();
+				if (!activeFile) {
+					statusBarItemEl.empty();
+					return;
+				}
+				this.syncthingController.getConflicts().then((conflicts) => {
+					if (conflicts instanceof Failure) {
+						new Notice(
+							`Error getting conflicts: ${conflicts.message}`
+						);
+						return;
+					}
+					const activeConflicts = conflicts.get(activeFile.basename);
+					if (!activeConflicts) {
+						// new Notice("No conflicts found.");
+						statusBarItemEl.empty();
+						return;
+					}
+					statusBarItemEl.setText(
+						`${activeConflicts.length} conflicts`
+					);
+				});
+			})
+		);
+		statusBarItemEl.onClickEvent(async () => {
+			const activeFile = this.app.workspace.getActiveFile();
+			if (!activeFile) return;
+			await this.app.workspace
+				.createLeafBySplit(this.app.workspace.getLeaf())
+				.openFile(activeFile);
 		});
 
 		// Settings tab
