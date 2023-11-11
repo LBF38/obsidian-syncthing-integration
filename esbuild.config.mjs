@@ -2,7 +2,7 @@ import esbuild from "esbuild";
 import process from "process";
 import builtins from "builtin-modules";
 import fs from "fs";
-import sass from "sass";
+import * as sass from "sass";
 import minify from "css-minify";
 import esbuildSvelte from "esbuild-svelte";
 import sveltePreprocess from "svelte-preprocess";
