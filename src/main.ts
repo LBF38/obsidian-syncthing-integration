@@ -119,4 +119,10 @@ export default class SyncthingPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+
+	removeCommand(id: string) {
+		// @ts-ignore
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		(this.app as any).commands.removeCommand(commandId`${this.manifest.id}:${id}`);
+	}
 }
