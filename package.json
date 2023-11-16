@@ -49,7 +49,7 @@
 		"monaco-editor": "0.40.0",
 		"obsidian": "latest",
 		"sass": "^1.69.0",
-		"semantic-release": "^21.0.7",
+		"semantic-release": "^22.0.7",
 		"style-mod": "^4.0.3",
 		"svelte": "^4.2.0",
 		"svelte-preprocess": "^5.0.4",
