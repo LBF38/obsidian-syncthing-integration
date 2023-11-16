@@ -36,8 +36,8 @@ devDependencies:
     specifier: ^5.0.0
     version: 5.0.0
   '@types/diff':
-    specifier: ^5.0.3
-    version: 5.0.3
+    specifier: ^5.0.8
+    version: 5.0.8
   '@types/marked':
     specifier: ^5.0.1
     version: 5.0.1
@@ -896,8 +896,8 @@ packages:
       '@types/tern': 0.23.4
     dev: true
 
-  /@types/diff@5.0.3:
-    resolution: {integrity: sha512-amrLbRqTU9bXMCc6uX0sWpxsQzRIo9z6MJPkH1pkez/qOxuqSZVuryJAWoBRq94CeG8JxY+VK4Le9HtjQR5T9A==}
+  /@types/diff@5.0.8:
+    resolution: {integrity: sha512-kR0gRf0wMwpxQq6ME5s+tWk9zVCfJUl98eRkD05HWWRbhPB/eu4V1IbyZAsvzC1Gn4znBJ0HN01M4DGXdBEV8Q==}
     dev: true
 
   /@types/estree@1.0.1:
