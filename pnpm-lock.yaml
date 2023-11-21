@@ -86,6 +86,9 @@ devDependencies:
   highlight.js:
     specifier: ^11.8.0
     version: 11.8.0
+  https:
+    specifier: ^1.0.0
+    version: 1.0.0
   husky:
     specifier: ^8.0.0
     version: 8.0.0
@@ -100,7 +103,7 @@ devDependencies:
     version: 0.40.0
   obsidian:
     specifier: latest
-    version: 1.4.0(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
+    version: 1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
   sass:
     specifier: ^1.69.0
     version: 1.69.0
@@ -2398,6 +2401,10 @@ packages:
       - supports-color
     dev: true
 
+  /https@1.0.0:
+    resolution: {integrity: sha512-4EC57ddXrkaF0x83Oj8sM6SLQHAWXw90Skqu2M4AEWENZ3F02dFJE/GARA8igO79tcgYqGrD7ae4f5L3um2lgg==}
+    dev: true
+
   /human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
@@ -3112,8 +3119,8 @@ packages:
       boolbase: 1.0.0
     dev: true
 
-  /obsidian@1.4.0(@codemirror/state@6.2.1)(@codemirror/view@6.13.0):
-    resolution: {integrity: sha512-fsZMPlxgflGSBSP6P4BjQi5+0MqZl3h6FEDEZ3CNnweNdDw0doyqN3FMO/PGWfuxPT77WicVwUxekuI3e6eCGg==}
+  /obsidian@1.4.4(@codemirror/state@6.2.1)(@codemirror/view@6.13.0):
+    resolution: {integrity: sha512-q2V5GNT/M40uYOENdVw5kovPSoaO6vppiiyBCkIqWgKp4oN654jA/GQ0OaNBA7p5NdfS245QCeRgCFQ42wOZiw==}
     peerDependencies:
       '@codemirror/state': ^6.0.0
       '@codemirror/view': ^6.0.0

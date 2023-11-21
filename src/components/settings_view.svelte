@@ -170,6 +170,18 @@
 		error={true}
 	/>
 {/if}
+<ObsidianSettingsItem
+	name="Testing HTTPS request on mobile"
+	description="The following settings is a test for HTTPS request on mobile."
+>
+	<svelte:fragment slot="control">
+		<button
+			on:click={() => parent.plugin.syncthingFromREST.getMobileStatus()}
+		>
+			Get status
+		</button>
+	</svelte:fragment>
+</ObsidianSettingsItem>
 
 <!-- GUI Setting -->
 <ObsidianSettingsItem name="Syncthing base URL" heading={true} />

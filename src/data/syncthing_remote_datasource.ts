@@ -1,4 +1,5 @@
-import { Platform, requestUrl } from "obsidian";
+import https from "https";
+import { Platform, RequestUrlResponse, requestUrl } from "obsidian";
 import SyncthingPlugin from "src/main";
 import { SyncthingDevice } from "src/models/entities";
 import { RestFailure } from "src/models/failures";
@@ -84,13 +85,23 @@ export class SyncthingFromREST {
 	}
 
 	/**
+	 * Test API for HTTPS request on mobile
+	 */
+	async getMobileStatus() {
+		await this.requestEndpointMobile("/rest/system/ping");
+		// console.log(response);
+	}
+
+	/**
 	 * Private method to request an endpoint of the REST API.
 	 * The endpoint should start with a `/`.
 	 *
 	 * @param endpoint - The REST endpoint to call. @see https://docs.syncthing.net/dev/rest.html
 	 * @returns The response of the REST API.
 	 */
-	private async requestEndpoint(endpoint: string) {
+	private async requestEndpoint(
+		endpoint: string
+	): Promise<RequestUrlResponse> {
 		// FIXME: Fix the issue when connecting to the REST API. (error 403)
 		console.log("requestEndpoint: Endpoint", endpoint);
 		let ip_address = this.plugin.settings.configuration.url?.ip_address;
@@ -106,6 +117,7 @@ export class SyncthingFromREST {
 				"Content-Type": "application/json",
 				"Access-Control-Allow-Origin": "*",
 				redirect: "follow",
+				// ca: [fs.readFileSync("CA_cert.pem")],
 			},
 		});
 		console.log(
@@ -125,5 +137,65 @@ export class SyncthingFromREST {
 				console.error("requestEndpoint: error: ", error);
 				throw new RestFailure(error);
 			});
+	}
+
+	/**
+	 * Private method to request an endpoint on mobile.
+	 * Test for making HTTPS requests on mobile.
+	 */
+	private async requestEndpointMobile(endpoint: string) {
+		console.log("requestEndpointMobile: Endpoint", endpoint);
+		let ip_address = this.plugin.settings.configuration.url?.ip_address;
+		if (ip_address === "localhost") {
+			ip_address = "127.0.0.1";
+		}
+		if (
+			// Platform.isMobileApp &&
+			this.plugin.settings.configuration.url?.protocol === "https"
+		) {
+			console.log("requestEndpoint: Mobile App");
+			const options = {
+				hostname: ip_address,
+				port: this.plugin.settings.configuration.url?.port,
+				path: endpoint,
+				method: "GET",
+				headers: {
+					"X-API-Key": this.plugin.settings.api_key,
+					Accept: "*/*",
+					"Content-Type": "application/json",
+					"Access-Control-Allow-Origin": "*",
+					redirect: "follow",
+				},
+				agent: new https.Agent({
+					rejectUnauthorized: false, // works on desktop but not on mobile.
+				}),
+			};
+			// let response: RequestUrlResponse;
+			console.log("requestEndpointMobile: ", options);
+
+			const req = https.request(options, (res) => {
+				console.log("statusCode:", res.statusCode);
+				console.log("headers:", res.headers);
+				if (!res.statusCode) throw new RestFailure("No status code");
+				// response.status = res.statusCode;
+				const chunck: Uint8Array[] = [];
+				res.on("data", (d) => {
+					console.log("data stream: ", d, d.buffer);
+					chunck.push(d);
+				});
+				res.on("end", () => {
+					const data = Buffer.concat(chunck);
+					console.log("data: ", data, data.toString());
+				});
+			});
+			req.on("connection", (e) => {
+				console.log("connection: ", e);
+			});
+			req.on("error", (e) => {
+				console.error(e);
+			});
+			req.end();
+			// return response;
+		}
 	}
 }
