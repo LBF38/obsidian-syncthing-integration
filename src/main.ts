@@ -1,4 +1,4 @@
-import { Notice, Plugin, addIcon } from "obsidian";
+import { Command, Notice, Plugin, addIcon } from "obsidian";
 import { SyncthingController } from "./controllers/main_controller";
 import {
 	DevModeModal,
@@ -31,8 +31,12 @@ const DEFAULT_SETTINGS: Partial<SyncthingPluginSettings> = {
 	devMode: false,
 };
 
+type DevModeType = {
+	ribbonIcon: HTMLElement;
+	command: Command;
+}
+
 export default class SyncthingPlugin extends Plugin {
-	static loadCount = 0;
 	settings!: SyncthingPluginSettings;
 	pluginsElements: HTMLElement[] = [];
 	syncthingFromCLI: SyncthingFromCLI = new SyncthingFromCLI();
@@ -44,13 +48,9 @@ export default class SyncthingPlugin extends Plugin {
 		this.syncthingFromAndroid,
 		this
 	);
-	devModeController: PluginDevModeController = new PluginDevModeController(
-		this
-	);
+	devMode: DevModeType | undefined;
 
 	async onload() {
-		// For devMode issue. (adding/removing commands when loading/unloading plugin)
-		SyncthingPlugin.loadCount++;
 		await this.loadSettings();
 
 		// Load Syncthing icon
@@ -64,10 +64,9 @@ export default class SyncthingPlugin extends Plugin {
 		});
 
 		// Settings tab
-		const pluginSettingTab = new SyncthingSettingTab(this.app, this);
-		if (SyncthingPlugin.loadCount === 1)
-			this.addSettingTab(pluginSettingTab);
-
+		const syncthingSettingTab = new SyncthingSettingTab(this.app, this);
+		this.addSettingTab(syncthingSettingTab);
+		// Syncthing Conflict Manager
 		const syncthingConflictManager = this.addRibbonIcon(
 			"syncthing",
 			"Open Syncthing conflict manager modal",
@@ -76,35 +75,15 @@ export default class SyncthingPlugin extends Plugin {
 			}
 		);
 
-		if (this.settings.devMode) {
-			new Notice("Dev mode is enabled.");
-			const devModeGenerator = this.addRibbonIcon(
-				"chevron-right-square",
-				"Generate Syncthing conflicts",
-				async () => {
-					new DevModeModal(
-						this.app,
-						new PluginDevModeController(this)
-					).open();
-				}
-			);
-			this.addCommand({
-				id: "generate-syncthing-conflicts",
-				name: "Generate Syncthing conflicts",
-				icon: "chevron-right-square",
-				callback: async () => {
-					new DevModeModal(
-						this.app,
-						new PluginDevModeController(this)
-					).open();
-				},
-			});
-			this.pluginsElements.push(devModeGenerator);
-		}
+		this.devModeSwitch();
 		this.pluginsElements.push(statusBarItemEl, syncthingConflictManager);
 	}
 
 	onunload(): void {
+		if (this.devMode) {
+			console.log("SyncthingPlugin: Dev mode disabled.");
+			this.unloadDevMode(this.devMode);
+		}
 		this.pluginsElements.forEach((element) => element.remove());
 	}
 
@@ -124,5 +103,45 @@ export default class SyncthingPlugin extends Plugin {
 		// @ts-ignore
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(this.app as any).commands.removeCommand(commandId`${this.manifest.id}:${id}`);
+	}
+
+	devModeSwitch() {
+		if (this.settings.devMode) {
+			console.log("Dev mode enabled.");
+			this.devMode = this.loadDevMode();
+		} else if (this.devMode) {
+			console.log("Dev mode disabled.");
+			this.unloadDevMode(this.devMode);
+		}
+	}
+
+	loadDevMode(): DevModeType {
+		new Notice("Dev mode is enabled.");
+		return {
+			ribbonIcon: this.addRibbonIcon(
+				"chevron-right-square",
+				"Generate Syncthing conflicts",
+				this.openDevModeModal
+			),
+			command: this.addCommand({
+				id: "generate-syncthing-conflicts",
+				name: "Generate Syncthing conflicts",
+				icon: "chevron-right-square",
+				callback: this.openDevModeModal
+			})
+		}
+	}
+
+	unloadDevMode(devMode: DevModeType) {
+		new Notice("Dev mode disabled.");
+		devMode.ribbonIcon.remove();
+		this.removeCommand(devMode.command.id);
+	}
+
+	private openDevModeModal() {
+		new DevModeModal(
+			this.app,
+			new PluginDevModeController(this)
+		).open();
 	}
 }
