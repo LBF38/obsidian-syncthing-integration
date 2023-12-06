@@ -1,6 +1,7 @@
 import { App, Menu, TFile } from "obsidian";
 import SyncthingPlugin from "src/main";
 import { Failure } from "src/models/failures";
+import { isConflictFilename, parseConflictFilename } from "./utils";
 
 export class SyncthingStatusBar {
 	app: App;
@@ -19,9 +20,19 @@ export class SyncthingStatusBar {
 				}
 				this.plugin.syncthingController.getConflicts().then((conflicts) => {
 					if (conflicts instanceof Failure) {
+						console.error(conflicts); // TODO: refactor w/ logging framework
 						return;
 					}
-					this.activeConflicts = conflicts.get(activeFile.basename);
+					if (isConflictFilename(activeFile.basename)) {
+						const conflictFilename = parseConflictFilename(activeFile.basename);
+						if (conflictFilename instanceof Failure) {
+							console.error(conflictFilename.message); // TODO: refactor w/ logging framework
+							return;
+						}
+						this.activeConflicts = conflicts.get(conflictFilename.filename);
+					} else {
+						this.activeConflicts = conflicts.get(activeFile.basename);
+					}
 					if (!this.activeConflicts) {
 						this.status_bar.empty();
 						return;
@@ -36,7 +47,7 @@ export class SyncthingStatusBar {
 		this.status_bar.onClickEvent((event) => {
 			const menu = new Menu();
 			menu.addItem((item) => {
-				item.setTitle("Open all conflicts").onClick(() => {
+				item.setTitle("Open all conflicts as splits").onClick(() => {
 					this.activeConflicts?.forEach(async (file) => {
 						await this.app.workspace.createLeafBySplit(this.app.workspace.getLeaf()).openFile(file);
 					});
@@ -52,6 +63,13 @@ export class SyncthingStatusBar {
 			menu.addSeparator();
 			this.activeConflicts?.forEach((file) => {
 				menu.addItem((item) => {
+					// if (isConflictFilename(file.basename)) {
+					// 	const conflict = parseConflictFilename(file.basename);
+					// 	if (conflict instanceof Failure) {
+					// 		return;
+					// 	}
+					// 	item.setTitle(`${conflict.dateTime.toISOString()} ${conflict.filename} - ${conflict.modifiedBy}`);
+					// }
 					item.setTitle(file.basename);
 					item.setIcon("file");
 					item.onClick(async () => {
