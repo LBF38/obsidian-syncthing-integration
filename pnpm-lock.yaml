@@ -96,8 +96,8 @@ devDependencies:
     specifier: ^5.1.1
     version: 5.1.1
   monaco-editor:
-    specifier: 0.40.0
-    version: 0.40.0
+    specifier: 0.45.0
+    version: 0.45.0
   obsidian:
     specifier: latest
     version: 1.4.0(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
@@ -2920,8 +2920,8 @@ packages:
     resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==}
     dev: true
 
-  /monaco-editor@0.40.0:
-    resolution: {integrity: sha512-1wymccLEuFSMBvCk/jT1YDW/GuxMLYwnFwF9CDyYCxoTw2Pt379J3FUhwy9c43j51JdcxVPjwk0jm0EVDsBS2g==}
+  /monaco-editor@0.45.0:
+    resolution: {integrity: sha512-mjv1G1ZzfEE3k9HZN0dQ2olMdwIfaeAAjFiwNprLfYNRSz7ctv9XuCT7gPtBGrMUeV1/iZzYKj17Khu1hxoHOA==}
     dev: true
 
   /ms@2.1.2:
