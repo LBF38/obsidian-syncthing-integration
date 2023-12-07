@@ -95,8 +95,8 @@ devDependencies:
     specifier: latest
     version: 1.4.0(@codemirror/state@6.2.1)(@codemirror/view@6.13.0)
   sass:
-    specifier: ^1.69.0
-    version: 1.69.0
+    specifier: ^1.69.5
+    version: 1.69.5
   semantic-release:
     specifier: ^22.0.10
     version: 22.0.10(typescript@5.0.2)
@@ -105,7 +105,7 @@ devDependencies:
     version: 4.2.0
   svelte-preprocess:
     specifier: ^5.0.4
-    version: 5.0.4(postcss@8.4.31)(sass@1.69.0)(svelte@4.2.0)(typescript@5.0.2)
+    version: 5.0.4(postcss@8.4.31)(sass@1.69.5)(svelte@4.2.0)(typescript@5.0.2)
   tslib:
     specifier: 2.6.2
     version: 2.6.2
@@ -4133,8 +4133,8 @@ packages:
       rimraf: 2.7.1
     dev: true
 
-  /sass@1.69.0:
-    resolution: {integrity: sha512-l3bbFpfTOGgQZCLU/gvm1lbsQ5mC/WnLz3djL2v4WCJBDrWm58PO+jgngcGRNnKUh6wSsdm50YaovTqskZ0xDQ==}
+  /sass@1.69.5:
+    resolution: {integrity: sha512-qg2+UCJibLr2LCVOt3OlPhr/dqVHWOa9XtZf2OjbLs/T4VPSJ00udtgJxH3neXZm+QqX8B+3cU7RaLqp1iVfcQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -4448,7 +4448,7 @@ packages:
       svelte: 4.2.0
     dev: true
 
-  /svelte-preprocess@5.0.4(postcss@8.4.31)(sass@1.69.0)(svelte@4.2.0)(typescript@5.0.2):
+  /svelte-preprocess@5.0.4(postcss@8.4.31)(sass@1.69.5)(svelte@4.2.0)(typescript@5.0.2):
     resolution: {integrity: sha512-ABia2QegosxOGsVlsSBJvoWeXy1wUKSfF7SWJdTjLAbx/Y3SrVevvvbFNQqrSJw89+lNSsM58SipmZJ5SRi5iw==}
     engines: {node: '>= 14.10.0'}
     requiresBuild: true
@@ -4490,7 +4490,7 @@ packages:
       detect-indent: 6.1.0
       magic-string: 0.27.0
       postcss: 8.4.31
-      sass: 1.69.0
+      sass: 1.69.5
       sorcery: 0.11.0
       strip-indent: 3.0.0
       svelte: 4.2.0
