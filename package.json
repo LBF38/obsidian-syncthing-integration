@@ -26,7 +26,6 @@
 		"@semantic-release/git": "^10.0.1",
 		"@total-typescript/ts-reset": "^0.5.1",
 		"@tsconfig/svelte": "^5.0.0",
-		"@types/diff": "^5.0.3",
 		"@types/marked": "^5.0.1",
 		"@types/node": "^18.0.0",
 		"@typescript-eslint/eslint-plugin": "6.11.0",
@@ -36,22 +35,17 @@
 		"codemirror": "^6.0.1",
 		"commitlint": "^18.4.3",
 		"css-minify": "^2.0.0",
-		"diff": "^5.1.0",
-		"diff2html": "^3.4.35",
 		"esbuild": "0.19.4",
 		"esbuild-svelte": "^0.8.0",
 		"eslint": "^8.53.0",
 		"eslint-plugin-svelte": "^2.32.4",
 		"fs": "0.0.1-security",
-		"highlight.js": "^11.8.0",
 		"husky": "^8.0.0",
 		"lorem-ipsum": "^2.0.8",
 		"marked": "^5.1.1",
-		"monaco-editor": "0.40.0",
 		"obsidian": "latest",
 		"sass": "^1.69.0",
 		"semantic-release": "^21.0.7",
-		"style-mod": "^4.0.3",
 		"svelte": "^4.2.0",
 		"svelte-preprocess": "^5.0.4",
 		"tslib": "2.6.2",
@@ -60,5 +54,8 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/LBF38/obsidian-syncthing-integration.git"
+	},
+	"dependencies": {
+		"style-mod": "^4.1.0"
 	}
 }
