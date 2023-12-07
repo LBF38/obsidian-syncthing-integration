@@ -73,6 +73,9 @@ export function sortByConflictDate(
 	return sortByConflictDate(fileA, fileB);
 }
 
+
+const SYNCTHING_CONFLICT_FILENAME_REGEX = /(.*).sync-conflict-(\d{8})-(\d{6})-(\w+).(\w+)/;
+
 /**
  * Parses a Syncthing conflict filename.
  * The filename format is as follow : `{filename}.sync-conflict-{date}-{time}-{modifiedBy}.{extension}`
@@ -89,7 +92,7 @@ export function sortByConflictDate(
 export function parseConflictFilename(
 	filename: string
 ): ConflictFilename | Failure {
-	const regex = new RegExp(/(.*).sync-conflict-(\d{8})-(\d{6})-(\w+).(\w+)/);
+	const regex = new RegExp(SYNCTHING_CONFLICT_FILENAME_REGEX);
 	const match = regex.exec(filename);
 	if (!match) {
 		return new Failure(`Error parsing conflict filename : ${filename}`);
@@ -110,6 +113,17 @@ export function parseConflictFilename(
 		modifiedBy: match[4],
 		extension: match[5],
 	};
+}
+
+/**
+ * Check if the given filename is in the format of a Syncthing conflict like `{filename}.sync-conflict-{date}-{time}-{modifiedBy}.{extension}`.
+ *
+ * @param filename The filename to check.
+ */
+export function isConflictFilename(filename: string): boolean {
+	const regex = new RegExp(SYNCTHING_CONFLICT_FILENAME_REGEX);
+	const match = regex.exec(filename);
+	return !!match;
 }
 
 /**

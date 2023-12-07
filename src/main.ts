@@ -1,9 +1,10 @@
-import { Notice, Plugin, addIcon } from "obsidian";
+import { Notice, Platform, Plugin, addIcon } from "obsidian";
 import { SyncthingController } from "./controllers/main_controller";
 import {
 	DevModeModal,
 	PluginDevModeController,
 } from "./controllers/plugin_dev_mode";
+import { SyncthingStatusBar } from "./controllers/status_bar";
 import { SyncthingFromAndroid } from "./data/syncthing_android_datasource";
 import { SyncthingFromCLI } from "./data/syncthing_local_datasource";
 import { SyncthingFromREST } from "./data/syncthing_remote_datasource";
@@ -47,6 +48,7 @@ export default class SyncthingPlugin extends Plugin {
 	devModeController: PluginDevModeController = new PluginDevModeController(
 		this
 	);
+	statusBar?: SyncthingStatusBar;
 
 	async onload() {
 		// For devMode issue. (adding/removing commands when loading/unloading plugin)
@@ -57,11 +59,11 @@ export default class SyncthingPlugin extends Plugin {
 		addIcon("syncthing", SyncthingLogoSVG);
 
 		// Status bar. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText("Syncthing status");
-		statusBarItemEl.onClickEvent(() => {
-			new Notice("Syncthing integration is not yet implemented.");
-		});
+		if (!Platform.isMobileApp) {
+			this.statusBar = new SyncthingStatusBar(this.addStatusBarItem(), this);
+			this.statusBar.onload();
+			this.pluginsElements.push(this.statusBar.status_bar);
+		}
 
 		// Settings tab
 		const pluginSettingTab = new SyncthingSettingTab(this.app, this);
@@ -101,10 +103,11 @@ export default class SyncthingPlugin extends Plugin {
 			});
 			this.pluginsElements.push(devModeGenerator);
 		}
-		this.pluginsElements.push(statusBarItemEl, syncthingConflictManager);
+		this.pluginsElements.push(syncthingConflictManager);
 	}
 
 	onunload(): void {
+		this.statusBar?.onunload();
 		this.pluginsElements.forEach((element) => element.remove());
 	}
 
