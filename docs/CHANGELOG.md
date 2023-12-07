@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.1.0...2.1.1) (2023-12-07)
+
+
+### Bug Fixes
+
+* **ui:** :adhesive_bandage: overflow bug on diff modal ([c0e38a7](https://github.com/LBF38/obsidian-syncthing-integration/commit/c0e38a75da5d42bf64f73f3b6bc135c6f35d3e2b))
+
 # [2.1.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.0.1...2.1.0) (2023-12-07)
 
 
