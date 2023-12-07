@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.0.1...2.1.0) (2023-12-07)
+
+
+### Features
+
+* **ui:** :sparkles: add status bar conflict notifier ([#138](https://github.com/LBF38/obsidian-syncthing-integration/issues/138)) ([ce857cd](https://github.com/LBF38/obsidian-syncthing-integration/commit/ce857cd2e190fe230a33a65907a3e2e7d6865611))
+
 ## [2.0.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.0.0...2.0.1) (2023-08-25)
 
 
