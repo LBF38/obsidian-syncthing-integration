@@ -16,7 +16,6 @@
 	let currentConflict = parentModal.conflictingFiles[0];
 
 	// Modal elements styling
-	parentModal.modalEl.style.overflow = "hidden";
 	parentModal.titleEl.setText("Difference view");
 	parentModal.titleEl.style.textAlign = "center";
 
