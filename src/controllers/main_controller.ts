@@ -10,7 +10,7 @@ import {
 	type ConflictFilename,
 } from "src/models/entities";
 import { CliFailure, Failure, RestFailure } from "src/models/failures";
-import { parseConflictFilename, sortByConflictDate } from "./utils";
+import { isConflictFilename, parseConflictFilename, sortByConflictDate } from "./utils";
 
 /**
  * Main controller of the plugin.
@@ -36,7 +36,7 @@ export class SyncthingController {
 		 * @see https://docs.obsidian.md/Reference/TypeScript+API/Plugin/Plugin
 		 */
 		public plugin: SyncthingPlugin
-	) {}
+	) { }
 
 	/**
 	 * Checks if Syncthing is running.
@@ -100,6 +100,40 @@ export class SyncthingController {
 					});
 			});
 	}
+
+	async getConflictsWithOriginal(activeFile: TFile): Promise<{ originalFile?: TFile, conflicts: TFile[] }> {
+		const allFiles = this.plugin.app.vault.getFiles();
+		if (isConflictFilename(activeFile.basename)) {
+			const properties = parseConflictFilename(activeFile.basename);
+			if (properties instanceof Failure) {
+				console.error(properties.message);
+				throw new Error("Error parsing conflict filename.");
+			}
+			const conflictFiles = allFiles.filter((file) => {
+				return (
+					(file.name.contains(".sync-conflict") &&
+						file.name.contains(properties.filename)) ||
+					file.basename === properties.filename
+				);
+			});
+			const originalFile = allFiles.find((file) => file.basename === properties.filename);
+			if (originalFile) conflictFiles.remove(originalFile);
+			return {
+				originalFile: originalFile,
+				conflicts: conflictFiles,
+			};
+		}
+		const conflicts = allFiles.filter((file) => {
+			return (
+				file.name.contains(".sync-conflict") &&
+				file.name.contains(activeFile.basename)
+			);
+		});
+		return {
+			conflicts: conflicts,
+		};
+	}
+
 
 	/**
 	 * Gets the Syncthing conflicting files for the ConflictsModal.
