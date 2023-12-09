@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { Notice, Platform } from "obsidian";
 	import { Failure } from "src/models/failures";
+	import { ConfigurationModal } from "src/views/configuration_modal";
 	import { ObsidianLogo, SyncthingLogo } from "src/views/logos";
 	import { SyncthingSettingTab } from "src/views/settings_tab";
+	import { SyncthingRestTestModal } from "src/views/syncthing_configuration_test_modal";
 	import { onMount } from "svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
 	import ObsidianToggle from "./obsidian_toggle.svelte";
-	import { ConfigurationModal } from "src/views/configuration_modal";
 	export let parent: SyncthingSettingTab;
 	let hasSyncthing = true;
 	let apiInputType = "password";
@@ -196,7 +197,7 @@
 						}
 						console.log("Syncthing Configuration: ", result);
 						new Notice(
-							`Syncthing configuration version: ${result.version}`
+							`Syncthing configuration version: ${result.version}`,
 						);
 					})
 					.catch((error) => {
@@ -237,7 +238,7 @@
 					console.log(
 						"select change: ",
 						event,
-						event.currentTarget.value
+						event.currentTarget.value,
 					);
 					if (!parent.plugin.settings.url) {
 						parent.plugin.settings.url = {
@@ -267,7 +268,7 @@
 					console.log(
 						"ip address change: ",
 						event,
-						event.currentTarget.value
+						event.currentTarget.value,
 					);
 					const valueChange = event.currentTarget.value;
 					if (!parent.plugin.settings.url) {
@@ -293,7 +294,7 @@
 					console.log(
 						"port change: ",
 						event,
-						event.currentTarget.value
+						event.currentTarget.value,
 					);
 					const valueChange = event.currentTarget.value;
 					if (!parent.plugin.settings.url) {
@@ -370,7 +371,7 @@
 				Platform.isMobileApp
 			) {
 				new Notice(
-					"Please set your GUI credentials first. There are needed on mobile app."
+					"Please set your GUI credentials first. There are needed on mobile app.",
 				);
 				return;
 			}
@@ -432,6 +433,16 @@
 			slot="control"
 		/>
 	</ObsidianSettingsItem>
+	<ObsidianSettingsItem name="Open Syncthing Configuration Testing modal">
+		<button
+			on:click={async (event) => {
+				new SyncthingRestTestModal(parent.app, parent.plugin).open();
+			}}
+			slot="control"
+		>
+			<ObsidianLucideIcon name="boxes" />
+		</button>
+	</ObsidianSettingsItem>
 {/if}
 
 <!-- Open Mobile app -->
@@ -447,7 +458,7 @@
 					if (!Platform.isAndroidApp) {
 						new Notice(
 							"The feature is not implemented for your platform. Please open the Syncthing app for your platform. You can create an issue on GitHub if you want to request this feature.",
-							5000
+							5000,
 						);
 						return;
 					}
@@ -485,7 +496,7 @@
 			on:click={() => {
 				// eslint-disable-next-line no-undef
 				open(
-					"https://github.com/LBF38/obsidian-syncthing-integration/issues/new/choose"
+					"https://github.com/LBF38/obsidian-syncthing-integration/issues/new/choose",
 				);
 			}}
 		>
