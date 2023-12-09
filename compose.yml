@@ -1,0 +1,16 @@
+version: "3"
+services:
+  syncthing:
+    image: syncthing/syncthing:latest
+    ports:
+      - 1234:8384
+      - 22001:22000/tcp
+      - 22001:22000/udp
+      - 21028:21027/udp
+    volumes:
+      - /wherever/st-sync:/var/syncthing
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - STGUIADDRESS=0.0.0.0:8384
+    hostname: my-second-syncthing
