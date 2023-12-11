@@ -4,58 +4,42 @@
 	import SyncthingPlugin from "src/main";
 	export let plugin: SyncthingPlugin;
 	const syncthingREST = new SyncthingFromREST(plugin);
-	// for (const property in syncthingREST) {
-	// 	if (Object.prototype.hasOwnProperty.call(syncthingREST, property)) {
-	// 		console.log(`Property or method: ${property}`);
-	// 		console.log(
-	// 			`Value: ${syncthingREST[property as keyof SyncthingFromREST]}`,
-	// 		);
-	// 	}
-	// }
-	function getParamNames(func: Function) {
-		const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
-		const ARGUMENT_NAMES = /([^\s,]+)/g;
-		let fnStr = func.toString().replace(STRIP_COMMENTS, "");
-		let result = fnStr
-			.slice(fnStr.indexOf("(") + 1, fnStr.indexOf(")"))
-			.match(ARGUMENT_NAMES);
-		if (result === null) result = [];
-		return result;
-	}
-	function logMethodParameters(value: any) {
-		if (typeof value === "function") {
-			console.log(`Method: ${value}`);
-			console.log(`Parameters: ${getParamNames(value)}`);
-		}
-	}
-	// for (const property in syncthingREST) {
-	// 	if (typeof syncthingREST[property] === "function") {
-	// 		console.log(`Method: ${property}`);
-	// 		console.log(
-	// 			`Parameters: ${getParamNames(syncthingREST[property])}`,
-	// 		);
-	// 	}
-	// }
+	const systemMethods = [
+		syncthingREST.system.ping,
+		syncthingREST.system.version,
+		syncthingREST.system.status,
+		syncthingREST.system.connections,
+		syncthingREST.system.browse,
+		syncthingREST.system.shutdown,
+		syncthingREST.system.restart,
+		syncthingREST.system.reset,
+	];
+	const all = new Map<string, Array<CallableFunction>>();
+	all.set("system", systemMethods);
 </script>
 
-{#each Object.keys(syncthingREST) as value}
+{#each all.entries() as entry}
 	<h1>
-		{value}
+		{entry[0]}
 	</h1>
 	<div class="button-container">
-		{#each Object.keys(syncthingREST[value]) as item}
+		{#each entry[1] as item}
 			<button
-				on:click={() => {
-					console.log(syncthingREST[value][item]);
-					logMethodParameters(syncthingREST[value][item]);
-					syncthingREST[value][item]();
+				on:click={async () => {
+					console.log(item);
+					const result = await item();
+					console.log(result);
 				}}
 			>
-				{item}
+				{Object(item).name}
 			</button>
 		{/each}
 	</div>
 {/each}
+<h1>Other - test</h1>
+<button on:click={async () => console.log(await syncthingREST.system.ping())}>
+	test
+</button>
 
 <style>
 	.button-container {
