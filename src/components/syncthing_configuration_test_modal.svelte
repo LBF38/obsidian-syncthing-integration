@@ -4,42 +4,72 @@
 	import SyncthingPlugin from "src/main";
 	export let plugin: SyncthingPlugin;
 	const syncthingREST = new SyncthingFromREST(plugin);
-	const systemMethods = [
-		syncthingREST.system.ping,
-		syncthingREST.system.version,
-		syncthingREST.system.status,
-		syncthingREST.system.connections,
-		syncthingREST.system.browse,
-		syncthingREST.system.shutdown,
-		syncthingREST.system.restart,
-		syncthingREST.system.reset,
+
+	const categories = [
+		"system",
+		"config",
+		"cluster",
+		"folder",
+		"db",
+		"event",
+		"stats",
+		"svc",
+		"debug",
+		"noauth",
 	];
-	const all = new Map<string, Array<CallableFunction>>();
-	all.set("system", systemMethods);
+	let result = "";
 </script>
 
-{#each all.entries() as entry}
-	<h1>
-		{entry[0]}
-	</h1>
+{#each categories as category}
+	<h2>{category}</h2>
 	<div class="button-container">
-		{#each entry[1] as item}
-			<button
-				on:click={async () => {
-					console.log(item);
-					const result = await item();
-					console.log(result);
-				}}
-			>
-				{Object(item).name}
-			</button>
+		{#each Object.keys(syncthingREST[category]) as method}
+			{#if typeof syncthingREST[category][method] === "function"}
+				<button
+					on:click={async () => {
+						result = JSON.stringify(
+							await syncthingREST[category][method](),
+							null,
+							2,
+						);
+					}}
+				>
+					{method}
+				</button>
+			{/if}
 		{/each}
 	</div>
 {/each}
-<h1>Other - test</h1>
-<button on:click={async () => console.log(await syncthingREST.system.ping())}>
-	test
-</button>
+
+<pre>{result}</pre>
+
+<!-- <h1>System</h1>
+<div class="button-container">
+	<button
+		on:click={async () => {
+			const result = await syncthingREST.system.ping();
+			console.log(result);
+		}}
+	>
+		Ping - GET
+	</button>
+	<button
+		on:click={async () => {
+			const result = await syncthingREST.system.ping("POST");
+			console.log(result);
+		}}
+	>
+		Ping - POST
+	</button>
+	<button
+		on:click={async () => {
+			const result = await syncthingREST.system.version();
+			console.log(result);
+		}}
+	>
+		version
+	</button>
+</div> -->
 
 <style>
 	.button-container {
