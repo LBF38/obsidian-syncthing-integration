@@ -1,25 +1,28 @@
 <script lang="ts">
 	// your script goes here
-	import { SyncthingFromREST } from "src/data/syncthing_remote_datasource";
-	import SyncthingPlugin from "src/main";
-	export let plugin: SyncthingPlugin;
-	const syncthingREST = new SyncthingFromREST(plugin);
+	// import { SyncthingFromREST } from "src/data/syncthing_remote_datasource";
+	// import SyncthingPlugin from "src/main";
+	import LightBulb from "./light_bulb.svelte";
+	// export let plugin: SyncthingPlugin;
+	// const syncthingREST = new SyncthingFromREST(plugin);
 
-	const categories = [
-		"system",
-		"config",
-		"cluster",
-		"folder",
-		"db",
-		"event",
-		"stats",
-		"svc",
-		"debug",
-		"noauth",
-	];
-	let result = "";
+	// const categories = [
+	// 	"system",
+	// 	"config",
+	// 	"cluster",
+	// 	"folder",
+	// 	"db",
+	// 	"event",
+	// 	"stats",
+	// 	"svc",
+	// 	"debug",
+	// 	"noauth",
+	// ];
+	// let result = "";
 </script>
 
+<LightBulb />
+<!--
 {#each categories as category}
 	<h2>{category}</h2>
 	<div class="button-container">
@@ -41,7 +44,7 @@
 	</div>
 {/each}
 
-<pre>{result}</pre>
+<pre>{result}</pre> -->
 
 <!-- <h1>System</h1>
 <div class="button-container">
@@ -71,7 +74,7 @@
 	</button>
 </div> -->
 
-<style>
+<!-- <style>
 	.button-container {
 		display: grid;
 		grid-template-columns: repeat(
@@ -80,4 +83,4 @@
 		); /* adjust 100px to your preferred minimum button width */
 		gap: 10px; /* adjust for your preferred gap between buttons */
 	}
-</style>
+</style> -->
