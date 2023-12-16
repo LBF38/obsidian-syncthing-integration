@@ -18,6 +18,7 @@
 		"strictNullChecks": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true,
 		"lib": [
 			"DOM",
 			"ES5",
