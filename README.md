@@ -53,7 +53,7 @@ Finally, you can install the plugin with [Obsidian42 BRAT](https://github.com/Tf
 
 :construction: This plugin is still in development. The configuration might not yet be fully available. :construction:
 
-> **Warning**
+> [!WARNING]
 > Please backup your vault and use this plugin wisely. Some features could modify files in your vault so please always remember to backup your vault in a different location.
 
 The plugin should work out-of-the-box, but you can configure it by going to the plugin settings. The main objective of this plugin is to provide a complete integration of Syncthing functionalities into the Obsidian app. Therefore, you don't have to rely on other apps to synchronize your vault. You only have to open the Obsidian app on the devices you want to synchronize and the plugin will take care of the rest.
@@ -62,7 +62,7 @@ The integration would interact with Syncthing using the CLI or the REST API. And
 
 However, it doesn't aim to manage multiple folders synced with Syncthing. The idea is to have the control over the Syncthing synchronization from the vault's settings. Feel free to synchronize other folders with Syncthing, but the plugin will only manage the vault's folder. All the plugin's features will only work on the vault's folder (for the conflict/diff modals and the settings).
 
-> **Warning**
+> [!IMPORTANT]
 > The synchronization is done in real-time, using peer-to-peer connections. Therefore, all the devices you want to synchronize must be connected at the same time.
 
 ## :heart: Contributing
@@ -79,7 +79,7 @@ If you want to develop this plugin locally, please follow the instructions below
 3. Build the plugin using `pnpm dev`
 4. (Optional) Use the [hot-reload plugin](https://github.com/pjeby/hot-reload) in Obsidian to reload the plugin automatically when you make changes
 
-> **Note**
+> [!NOTE]
 > When using the hot-reload plugin, you have to clone this plugin in the `.obsidian/plugins` folder of your vault.
 > And the plugin's files should be at the root of the folder. (`main.js`, `manifest.json` and `styles.css`)
 > It should be automatically set up.
