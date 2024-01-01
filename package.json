@@ -19,7 +19,7 @@
 		"@codemirror/merge": "^6.1.1",
 		"@codemirror/state": "^6.2.1",
 		"@codemirror/view": "^6.13.0",
-		"@commitlint/config-conventional": "^17.7.0",
+		"@commitlint/config-conventional": "^18.0.0",
 		"@js-random/date": "^0.3.5",
 		"@semantic-release/changelog": "^6.0.3",
 		"@semantic-release/exec": "^6.0.3",
