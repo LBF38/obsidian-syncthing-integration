@@ -11,8 +11,8 @@ dependencies:
 
 devDependencies:
   '@codemirror/merge':
-    specifier: ^6.1.1
-    version: 6.1.1
+    specifier: ^6.4.0
+    version: 6.4.0
   '@codemirror/state':
     specifier: ^6.2.1
     version: 6.2.1
@@ -198,7 +198,7 @@ packages:
     resolution: {integrity: sha512-r1paAyWOZkfY0RaYEZj3Kul+MiQTEbDvYqf8gPGaRvNneHXCmfSaAVFjwRUPlgxS8yflMxw2CTu6uCMp8R8A2g==}
     dependencies:
       '@codemirror/state': 6.2.1
-      '@codemirror/view': 6.13.0
+      '@codemirror/view': 6.23.0
       '@lezer/common': 1.0.3
       '@lezer/highlight': 1.1.6
       '@lezer/lr': 1.3.9
@@ -213,12 +213,12 @@ packages:
       crelt: 1.0.6
     dev: true
 
-  /@codemirror/merge@6.1.1:
-    resolution: {integrity: sha512-NylzAJr8zTReQpAmqoB3WkeqKFnfnLtZ0gqdB0Pp1LtFNqrSIRMT8t1wrfPJD0MvrkUxsRZd5A7x9WCUGaDbmg==}
+  /@codemirror/merge@6.4.0:
+    resolution: {integrity: sha512-b9khHrsDD6chscJk25nX0Y7es5/JyLtdlhTom3ct4CyIXRKxLnHN6yfefLIFFUic71gZRJjOQv+sW+QbWXlFZA==}
     dependencies:
       '@codemirror/language': 6.8.0
       '@codemirror/state': 6.2.1
-      '@codemirror/view': 6.13.0
+      '@codemirror/view': 6.23.0
       '@lezer/highlight': 1.1.6
     dev: true
 
@@ -234,10 +234,22 @@ packages:
     resolution: {integrity: sha512-RupHSZ8+OjNT38zU9fKH2sv+Dnlr8Eb8sl4NOnnqz95mCFTZUaiRP8Xv5MeeaG0px2b8Bnfe7YGwCV3nsBhbuw==}
     dev: true
 
+  /@codemirror/state@6.4.0:
+    resolution: {integrity: sha512-hm8XshYj5Fo30Bb922QX9hXB/bxOAVH+qaqHBzw5TKa72vOeslyGwd4X8M0c1dJ9JqxlaMceOQ8RsL9tC7gU0A==}
+    dev: true
+
   /@codemirror/view@6.13.0:
     resolution: {integrity: sha512-oXTfJzHJ5Tl7f6T8ZO0HKf981zubxgKohjddLobbntbNZHlOZGMRL+pPZGtclDWFaFJWtGBYRGyNdjQ6Xsx5yA==}
     dependencies:
       '@codemirror/state': 6.2.1
+      style-mod: 4.1.0
+      w3c-keyname: 2.2.7
+    dev: true
+
+  /@codemirror/view@6.23.0:
+    resolution: {integrity: sha512-/51px9N4uW8NpuWkyUX+iam5+PM6io2fm+QmRnzwqBy5v/pwGg9T0kILFtYeum8hjuvENtgsGNKluOfqIICmeQ==}
+    dependencies:
+      '@codemirror/state': 6.4.0
       style-mod: 4.1.0
       w3c-keyname: 2.2.7
     dev: true
