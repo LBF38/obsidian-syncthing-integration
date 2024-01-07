@@ -1,10 +1,14 @@
 import { SyncthingFromREST } from 'src/data/syncthing_remote_datasource';
-import { SyncthingConfiguration } from 'src/models/entities';
+import { SyncthingConfiguration, SyncthingSystemStatus } from 'src/models/entities';
 import { Output } from 'valibot';
 import { assign, fromPromise, setup } from 'xstate';
 
 const fetchConfiguration = fromPromise(async ({ input }: { input: { syncthingREST: SyncthingFromREST } }) => {
 	return await input.syncthingREST.config.all();
+});
+
+const fetchSystemStatus = fromPromise(async ({ input }: { input: { syncthingREST: SyncthingFromREST } }) => {
+	return await input.syncthingREST.system.status();
 });
 
 
@@ -68,7 +72,153 @@ export const syncthingConfigurationMachine = setup({
 		}
 	},
 
-})
+});
+
+export const syncthingControllerMachine = setup({
+	types: {
+		context: {} as {
+			system_status?: Output<typeof SyncthingSystemStatus>;
+			configuration?: Output<typeof SyncthingConfiguration>;
+			syncthingREST: SyncthingFromREST;
+			error?: string[];
+		},
+		input: {} as {
+			syncthingREST: SyncthingFromREST;
+		},
+	}
+}).createMachine({
+	id: "syncthingController",
+	context: ({ input }) => ({
+		syncthingREST: input.syncthingREST,
+		configuration: undefined,
+	}),
+	initial: "idle",
+	states: {
+		idle: {
+			after: {
+				1000: "update syncthing",
+			},
+		},
+		"update syncthing": {
+			invoke: [
+				{
+					src: fetchConfiguration,
+					input: ({ context: { syncthingREST } }) => ({ syncthingREST }),
+					onDone: {
+						actions: assign({
+							configuration: ({ event }) => {
+								return event.output
+							}
+						}),
+					},
+					onError: {
+						target: "failure",
+						actions: assign({
+							error: ({ event, context }) => {
+								return context.error?.concat(`${event.type} ${event.error}`) ?? [`${event.type} ${event.error}`]
+							}
+						})
+					}
+				},
+				{
+					src: fetchSystemStatus,
+					input: ({ context: { syncthingREST } }) => ({
+						syncthingREST
+					}),
+					onDone: {
+						actions: assign({
+							system_status: ({ event }) => {
+								return event.output
+							}
+						})
+					},
+					onError: {
+						target: "failure",
+						actions: assign({
+							error: ({ event, context }) => {
+								return context.error?.concat(`${event.type} ${event.error}`) ?? [`${event.type} ${event.error}`]
+							}
+						})
+					}
+				},
+			],
+			onDone: {
+				guard: ({ context: { error } }) => error?.length === 0 || error === undefined,
+				target: "success"
+			},
+		},
+		success: {
+			type: "final",
+		},
+		failure: {
+			on: {
+				RETRY: "update syncthing"
+			}
+		}
+	}
+});
+
+
+export const syncthingSystemStatusMachine = setup({
+	types: {
+		context: {} as {
+			system_status?: Output<typeof SyncthingSystemStatus>;
+			syncthingREST: SyncthingFromREST;
+			error?: string;
+		},
+		input: {} as {
+			syncthingREST: SyncthingFromREST;
+		},
+	},
+}).createMachine({
+	id: "syncthingSystemStatus",
+	context: ({ input }) => ({
+		syncthingREST: input.syncthingREST,
+		system_status: undefined,
+	}),
+	initial: "idle",
+	states: {
+		idle: {
+			after: {
+				1000: "fetch",
+			}
+		},
+		"fetch": {
+			invoke: {
+				id: "fetchConfig",
+				src: fetchSystemStatus,
+				input: ({ context: { syncthingREST } }) => ({ syncthingREST }),
+				onDone: {
+					target: "success",
+					actions: assign({
+						system_status: ({ event }) => {
+							return event.output
+						}
+					})
+				},
+				onError: {
+					target: "failure",
+					actions: assign({
+						error: () => {
+							return "An error occured"
+						}
+					})
+				}
+			},
+		},
+		success: {
+			on: {
+				FETCH: "idle"
+			}
+		},
+		failure: {
+			on: {
+				RETRY: "fetch"
+			}
+		}
+	},
+});
+
 
 export const lightMachine = setup({}).createMachine({
 	/** @xstate-layout N4IgpgJg5mDOIC5QBsCWUAWAXAQgV2QCMA6AewDNyBiAFQHkBxBgGQFEBtABgF1FQAHUrFRZUpAHZ8QAD0QBGAGwLicgJzrVAdgBMAVm2cAHJ22aANCACe8gMydiGjdoAsczs8ObDAX28W0mLgEJBK0jCwcPFKCwqISUrIIispqGjr6RibmVoiGcsTajjY2upqcqh66vn4g4qQQcFIB2PhE0UIiYpJIMogAtAoW1ggDxJzjE5OTmr7+6C3BZJTtsV0JiM7aQ7nKqobFhZq6hoZanHKzIM1BRGTdAh1x970I2qfEmnIuqiZ2ngoVbYId4eA5aY6nMoXapAA */

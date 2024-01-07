@@ -5,7 +5,7 @@
 	import { derived } from "svelte/store";
 	import ConfigurationItem from "./configuration_item.svelte";
 	import FolderItem from "./folder_item.svelte";
-	import { syncthingConfigurationMachine } from "./machines";
+	import { syncthingControllerMachine } from "./machines";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import RemoteItem from "./remote_item.svelte";
 	import WarningMessage from "./warning_message.svelte";
@@ -14,7 +14,7 @@
 	parent.titleEl.setText("Syncthing Configuration");
 	parent.titleEl.style.textAlign = "center";
 
-	let { snapshot } = useActor(syncthingConfigurationMachine, {
+	let { send, snapshot } = useActor(syncthingControllerMachine, {
 		input: {
 			syncthingREST: parent.plugin.syncthingFromREST,
 		},
@@ -30,7 +30,14 @@
 		snapshot,
 		($snapshot) => $snapshot.context.configuration?.devices ?? [],
 	);
-	const thisDevice = derived(devices, ($devices) => $devices[0]);
+	const thisDevice = derived(
+		snapshot,
+		($snapshot) =>
+			$devices.filter(
+				(device) =>
+					$snapshot.context.system_status?.myID === device.deviceID,
+			)[0],
+	);
 </script>
 
 <WarningMessage
@@ -39,9 +46,11 @@
 
 {#if $snapshot.matches("failure")}
 	<WarningMessage
-		title="Failed fetching Syncthing configuration"
+		title="An error occurred"
 		message="Something wrong happened. The configuration might not be correctly shown. Expect some errors."
-	/>
+	>
+		<button on:click={() => send({ type: "RETRY" })}> Retry </button>
+	</WarningMessage>
 {/if}
 
 <!-- {#if restartRequired}
