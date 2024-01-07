@@ -14,7 +14,8 @@ export const syncthingConfigurationMachine = setup({
 			configuration?: Output<typeof SyncthingConfiguration>;
 			syncthingREST: SyncthingFromREST;
 			error?: string;
-		}, input: {} as {
+		},
+		input: {} as {
 			syncthingREST: SyncthingFromREST;
 		},
 	},
