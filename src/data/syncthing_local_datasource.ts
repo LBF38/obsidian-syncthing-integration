@@ -77,6 +77,19 @@ export class SyncthingFromCLI {
 		}
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const { promisify } = require("util");
+		// MacOS - try the syncthing-macos application package first, 
+		// otherwise we'll fall back to the regular path traversal search
+		if (Platform.isMacOS && command.startsWith("syncthing")) {
+			// application folder for syncthing-macos install
+			const APP_REF = "/Applications/Syncthing.app/Contents/Resources/syncthing/";
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const { stat } = require("fs");
+			const statPromise = promisify(stat);
+			const stats = await statPromise(APP_REF);
+			if (stats.isDirectory()) {
+				command = APP_REF + command;
+			}
+		}
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const { exec } = require("child_process");
 		const execPromise = promisify(exec);
