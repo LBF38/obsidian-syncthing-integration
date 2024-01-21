@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.1.1...2.2.0) (2024-01-21)
+
+
+### Features
+
+* :sparkles: add support for syncthing-macos app install ([#167](https://github.com/LBF38/obsidian-syncthing-integration/issues/167)) ([c679e1e](https://github.com/LBF38/obsidian-syncthing-integration/commit/c679e1e56d5464754e8572289b9c2907e79fb9e5)), closes [#166](https://github.com/LBF38/obsidian-syncthing-integration/issues/166)
+
 ## [2.1.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.1.0...2.1.1) (2023-12-07)
 
 
