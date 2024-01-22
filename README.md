@@ -108,6 +108,7 @@ Here are some inspirations for this plugin :
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/LBF38"><img src="https://avatars.githubusercontent.com/u/96347823?v=4?s=100" width="100px;" alt="LBF38"/><br /><sub><b>LBF38</b></sub></a><br /><a href="https://github.com/LBF38/obsidian-syncthing-integration/commits?author=LBF38" title="Code">💻</a> <a href="https://github.com/LBF38/obsidian-syncthing-integration/commits?author=LBF38" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jsamuel1"><img src="https://avatars.githubusercontent.com/u/3156090?v=4?s=100" width="100px;" alt="Josh Samuel"/><br /><sub><b>Josh Samuel</b></sub></a><br /><a href="https://github.com/LBF38/obsidian-syncthing-integration/commits?author=jsamuel1" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
