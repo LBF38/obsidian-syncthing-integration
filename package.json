@@ -18,7 +18,7 @@
 	"devDependencies": {
 		"@codemirror/merge": "^6.1.1",
 		"@codemirror/state": "^6.4.0",
-		"@codemirror/view": "^6.13.0",
+		"@codemirror/view": "^6.23.1",
 		"@commitlint/config-conventional": "^18.0.0",
 		"@js-random/date": "^0.3.5",
 		"@semantic-release/changelog": "^6.0.3",
