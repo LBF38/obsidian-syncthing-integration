@@ -38,8 +38,8 @@ devDependencies:
     specifier: ^0.5.1
     version: 0.5.1
   '@tsconfig/svelte':
-    specifier: ^5.0.0
-    version: 5.0.0
+    specifier: ^5.0.4
+    version: 5.0.4
   '@types/marked':
     specifier: ^5.0.1
     version: 5.0.1
@@ -1074,8 +1074,8 @@ packages:
     engines: {node: '>=10.13.0'}
     dev: true
 
-  /@tsconfig/svelte@5.0.0:
-    resolution: {integrity: sha512-iu5BqFjU0+OcLTNQp7fHe6Bf6zdNeJ9IZjLZMqWLuGzVFm/xx+lm//Tf6koPyRmxo55/Snm6RRQ990n89cRKFw==}
+  /@tsconfig/svelte@5.0.4:
+    resolution: {integrity: sha512-BV9NplVgLmSi4mwKzD8BD/NQ8erOY/nUE/GpgWe2ckx+wIQF5RyRirn/QsSSCPeulVpc3RA/iJt6DpfTIZps0Q==}
     dev: true
 
   /@types/codemirror@5.60.8:
