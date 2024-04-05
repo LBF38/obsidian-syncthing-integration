@@ -1,12 +1,12 @@
 <p align=center>
  <a href="https://github.com/lbf38/obsidian-syncthing-integration">
-  <img src="assets/syncthing-logo-horizontal.svg" height=100>
-  <img src="assets/obsidian-logo-gradient.svg" height=100>
+  <img src="assets/syncthing-logo-horizontal.svg" alt="syncthing logo" height=100>
+  <img src="assets/obsidian-logo-gradient.svg" alt="obsidian logo" height=100>
  </a>
  <h1 align=center>Obsidian Syncthing integration</h1>
 </p>
 
-This plugin allows you to synchronize your Obsidian vault with a remote device using [Syncthing](https://syncthing.net/).
+This plugin allows you to integrate tools in your Obsidian vault for managing synchronization using [Syncthing][syncthing website].
 
 ## :label: Badges
 
@@ -18,12 +18,16 @@ This plugin allows you to synchronize your Obsidian vault with a remote device u
 [![Join the Community : GitHub Discussions badge](https://img.shields.io/badge/Join%20the%20community-on%20GitHub%20Discussions-blue?style=flat-square)][discussions]
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release&style=flat-square)](https://github.com/semantic-release/semantic-release)
 
+[![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/LBF38/obsidian-syncthing-integration)](https://github.com/LBF38/obsidian-syncthing-integration/issues)
+[![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/LBF38/obsidian-syncthing-integration)](https://github.com/LBF38/obsidian-syncthing-integration/pulls)
+[![GitHub license](https://img.shields.io/github/license/LBF38/obsidian-syncthing-integration?color=blue&style=flat-square)](./LICENSE)
+
 ## :link: Useful links
 
 ### Related softwares
 
-- [Syncthing](https://syncthing.net/)
-- [Obsidian](https://obsidian.md/)
+- [Syncthing][syncthing website]
+- [Obsidian][obsidian website]
 
 ### Plugin's related links
 
@@ -49,21 +53,46 @@ If you want to install the plugin from the source code, please see [the Developm
 
 Finally, you can install the plugin with [Obsidian42 BRAT](https://github.com/TfTHacker/obsidian42-brat) and provide the GitHub repository URL. Please see the [BRAT documentation](https://tfthacker.com/Obsidian+Plugins+by+TfTHacker/BRAT+-+Beta+Reviewer's+Auto-update+Tool/Quick+guide+for+using+BRAT)
 
-## :wrench: Configuration
+## :eyes: Plugin Vision
 
-:construction: This plugin is still in development. The configuration might not yet be fully available. :construction:
+> [!NOTE]
+> The [initial vision](docs/initial_vision.md) of this plugin has evolved since its creation. As I have tested and tried to implement the plugin, I have realized that some features are not feasible or not necessary.
+> Therefore, some expected features or behaviours might misdirect users. An updated description of the plugin's goals is described below.
+
+This plugin now aims to provide integrated features related to [Syncthing][syncthing website] and [Obsidian][obsidian website]. You can see the [Roadmap](docs/ROADMAP.md) for more information about the plugin's features and future developments.
+
+> [!NOTE]
+> If you want a full integrated [Syncthing][syncthing website] synchronization with your notes app, you can try the [anytype notetaking app](https://anytype.io/). It provides a full integration of a syncing protocol in the note-taking app, [see more about this here](https://github.com/anyproto/any-sync).
+
+This project provides features like conflicting files resolution, status bar feature, diff conflicting files, ignoring files from synchronization (`coming soon`), and more.
+It is mainly features based on files available in the vault and that are specific to [Syncthing][syncthing website].
+Feel free to suggest new features or improvements in the [Discussions tab][discussions] or via [a new issue][issues].
+
+Moreover, the integrated [Syncthing][syncthing website] configuration panel (`coming soon`) will provide a way to configure [Syncthing][syncthing website] directly from [Obsidian][obsidian website]. It will be a lighter version than the official [Syncthing][syncthing website] app, due to technical limitations.
+
+The plugin is more focused on getting information from an active [Syncthing][syncthing website] instance on your device (PC, mobile or tablet) and provide you meaningful information about the status of the synchronization.
+
+## :wrench: Configuration
 
 > [!WARNING]
 > Please backup your vault and use this plugin wisely. Some features could modify files in your vault so please always remember to backup your vault in a different location.
 
-The plugin should work out-of-the-box, but you can configure it by going to the plugin settings. The main objective of this plugin is to provide a complete integration of Syncthing functionalities into the Obsidian app. Therefore, you don't have to rely on other apps to synchronize your vault. You only have to open the Obsidian app on the devices you want to synchronize and the plugin will take care of the rest.
+:construction: This plugin is still in development. The configuration might not yet be fully available. :construction:
 
-The integration would interact with Syncthing using the CLI or the REST API. And the main objective is to handle all the vault synchronization process from the Obsidian app. Therefore, you don't have to open the Syncthing app on your devices to synchronize your vault.
+The plugin's configuration provides a way to set up the connection to your [Syncthing][syncthing website] instance.
+On Desktop, it should be straightforward if you have the CLI installed. Otherwise, you can use the GUI to set up the connection.
 
-However, it doesn't aim to manage multiple folders synced with Syncthing. The idea is to have the control over the Syncthing synchronization from the vault's settings. Feel free to synchronize other folders with Syncthing, but the plugin will only manage the vault's folder. All the plugin's features will only work on the vault's folder (for the conflict/diff modals and the settings).
+<details>
+<summary>Click here to see an example of the configuration settings</summary>
+
+![current Syncthing configuration](assets/plugin_syncthing_settings.png)
+
+</details>
 
 > [!IMPORTANT]
 > The synchronization is done in real-time, using peer-to-peer connections. Therefore, all the devices you want to synchronize must be connected at the same time.
+>
+> To overcome this, you could setup one device as a relay server. This device will be always connected and will relay the data between the other devices, like a NAS or a VPS.
 
 ## :heart: Contributing
 
@@ -125,3 +154,5 @@ This project is licensed under the MIT License. See [`LICENSE`](LICENSE) for mor
 [issues]: https://github.com/lbf38/obsidian-syncthing-integration/issues/new/choose
 [pull requests]: https://github.com/lbf38/obsidian-syncthing-integration/compare
 [discussions]: https://github.com/lbf38/obsidian-syncthing-integration/discussions
+[syncthing website]: https://syncthing.net/
+[obsidian website]: https://obsidian.md/
