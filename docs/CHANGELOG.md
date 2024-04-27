@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.2.0...2.2.1) (2024-04-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency style-mod to v4.1.2 ([#189](https://github.com/LBF38/obsidian-syncthing-integration/issues/189)) ([545e55c](https://github.com/LBF38/obsidian-syncthing-integration/commit/545e55c1361563a155db3eafd77bc93ed2da9fd5))
+
 # [2.2.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.1.1...2.2.0) (2024-01-21)
 
 
