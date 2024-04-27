@@ -9,6 +9,7 @@ import randomDate from "@js-random/date";
 import { loremIpsum } from "lorem-ipsum";
 import { App, Modal, Notice, Setting } from "obsidian";
 import SyncthingPlugin from "../main";
+import { randomUUID } from "crypto";
 
 export class PluginDevModeController {
 	constructor(public plugin: SyncthingPlugin) {}
@@ -25,18 +26,26 @@ export class PluginDevModeController {
 				`Progress (main files): ${k}/${distinctFiles}`
 			);
 			// Create main file.
+			const length = this.plugin.app.vault.getMarkdownFiles().length - 1;
+			const randomFile =
+				this.plugin.app.vault.getMarkdownFiles()[
+					Math.floor(Math.random() * length)
+				];
 			const mainFile = await this.plugin.app.vault.create(
-				`${loremIpsum({ count: 1, units: "words" })}.md`,
+				`${loremIpsum({
+					count: 1,
+					units: "words",
+				})}-${randomUUID()}.md`,
 				`# ${loremIpsum({ count: 1, units: "words" })}\n\n${loremIpsum({
 					count: 1,
 					units: "paragraphs",
-				})}`
+				})}\n\n[[${randomFile.basename || "randomFile"}]]`
 			);
 			console.log("In the generateSyncthingConflicts function.");
 
 			// Create conflict files corresponding to main file.
-			new Notice("Creating conflict files...");
 			for (let j = 0; j < conflictsPerFile; j++) {
+				// j == 0 && new Notice("Creating conflict files...");
 				conflictFilesNotice.setMessage(
 					`Progress (conflicts): ${j}/${conflictsPerFile}`
 				);
@@ -101,7 +110,7 @@ export class DevModeModal extends Modal {
 				slider
 					.setValue(this.distinctFiles)
 					.setDynamicTooltip()
-					.setLimits(1, 50, 1)
+					.setLimits(1, 5000, 1)
 					.onChange((value) => {
 						this.distinctFiles = value;
 					});
@@ -113,7 +122,7 @@ export class DevModeModal extends Modal {
 				slider
 					.setValue(this.conflictsPerFile)
 					.setDynamicTooltip()
-					.setLimits(1, 25, 1)
+					.setLimits(0, 25, 1)
 					.onChange((value) => {
 						this.conflictsPerFile = value;
 					});
