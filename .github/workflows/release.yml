@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 
 permissions:
   contents: write # for GH Release
@@ -42,7 +45,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       # - run: pnpm test # Need to add tests for this to work #49
+      - name: Build
+        run: pnpm build
       - name: Release
+        if: github.ref == 'refs/heads/master'
         run: pnpm release
         env:
           GITHUB_TOKEN: ${{ github.token }}

@@ -10,7 +10,7 @@
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"prepare": "husky install",
 		"lint": "tsc -noEmit -skipLibCheck && eslint . --ext .ts,.svelte src",
-		"release": "pnpm build && semantic-release"
+		"release": "semantic-release"
 	},
 	"keywords": [],
 	"author": "LBF38",
