@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { Notice, Platform, normalizePath } from "obsidian";
+	import { Notice, Platform } from "obsidian";
 	import { Failure } from "src/models/failures";
+	import { ConfigurationModal } from "src/views/configuration_modal";
 	import { ObsidianLogo, SyncthingLogo } from "src/views/logos";
 	import { SyncthingSettingTab } from "src/views/settings_tab";
 	import { onMount } from "svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
 	import ObsidianToggle from "./obsidian_toggle.svelte";
-	import { ConfigurationModal } from "src/views/configuration_modal";
-	import FileSuggester from "./suggesters/file_suggester.svelte";
+	import SyncthingIgnoreFiles from "./syncthing_ignore_files.svelte";
 	export let parent: SyncthingSettingTab;
 	let hasSyncthing = true;
 	let apiInputType = "password";
@@ -363,51 +363,7 @@
 </ObsidianSettingsItem>
 
 <!-- Ignoring files -->
-<ObsidianSettingsItem name="Syncthing Ignored Files" heading={true} />
-<ObsidianSettingsItem
-	name="Set the ignored files"
-	description="Please set the files you want to ignore in the sync process."
->
-	<svelte:fragment slot="control">
-		<FileSuggester {parent} />
-		<!-- <input
-			type="text"
-			on:change={async (event) => {
-				console.log(event.currentTarget.value);
-				const file = parent.app.vault.getAbstractFileByPath(
-					event.currentTarget.value,
-				);
-				if (!file) {
-					new Notice("The file does not exist in the vault.");
-					return;
-				}
-				new Notice("The file exists in the vault.");
-				console.log("Result of the file search: ", file);
-				console.log(
-					"file content of %s: %s",
-					event.currentTarget.value,
-					await parent.app.vault.adapter.read(
-						event.currentTarget.value,
-					),
-				);
-			}}
-		/> -->
-		<input
-			type="text"
-			placeholder="Enter some text..."
-			on:change={async (event) => {
-				const value = event.currentTarget.value;
-				console.log("value: ", value);
-				const content =
-					await parent.app.vault.adapter.read(".stignore");
-				await parent.app.vault.adapter.write(
-					normalizePath(".stignore"),
-					`${content}\n${value}`,
-				);
-			}}
-		/>
-	</svelte:fragment>
-</ObsidianSettingsItem>
+<SyncthingIgnoreFiles {parent} />
 
 <!-- Plugin developer mode -->
 {#if Platform.isDesktopApp}
