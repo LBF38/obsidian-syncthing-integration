@@ -18,7 +18,7 @@
 		[
 			"@semantic-release/exec",
 			{
-				"prepareCmd": "./scripts/prepareRelease.sh ${nextRelease.version} \"$(printf '%q' \"${nextRelease.notes}\")\""
+				"prepareCmd": "./scripts/prepareRelease.sh ${nextRelease.version} \"${nextRelease.notes//\"/\\\"}\""
 			}
 		],
 		[
