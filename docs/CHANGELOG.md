@@ -1,3 +1,13 @@
+# [2.3.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.2.1...2.3.0) (2024-04-28)
+
+
+### Features
+
+* **syncthing:** :construction: working on ignoring files ([326297c](https://github.com/LBF38/obsidian-syncthing-integration/commit/326297cea32ff6440e5de971f1d1dbb331372884))
+* **syncthing:** :sparkles: add ignore files management setting ([cc489c2](https://github.com/LBF38/obsidian-syncthing-integration/commit/cc489c24c6b1c3082b483e5623820ba144776502))
+* **syncthing:** :sparkles: add ignoring files management ([6dfceb6](https://github.com/LBF38/obsidian-syncthing-integration/commit/6dfceb6f333340b67c234998421400c288018377))
+* **syncthing:** ✨ add ignoring files management ([#203](https://github.com/LBF38/obsidian-syncthing-integration/issues/203)) ([4f9f4c4](https://github.com/LBF38/obsidian-syncthing-integration/commit/4f9f4c448b2a1f9d2058d5adf6fc9ed31423d6d9))
+
 ## [2.2.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.2.0...2.2.1) (2024-04-27)
 
 
