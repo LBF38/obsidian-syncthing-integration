@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Notice, Platform } from "obsidian";
+	import { Notice, Platform, normalizePath } from "obsidian";
 	import { Failure } from "src/models/failures";
 	import { ObsidianLogo, SyncthingLogo } from "src/views/logos";
 	import { SyncthingSettingTab } from "src/views/settings_tab";
@@ -8,6 +8,7 @@
 	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
 	import ObsidianToggle from "./obsidian_toggle.svelte";
 	import { ConfigurationModal } from "src/views/configuration_modal";
+	import FileSuggester from "./suggesters/file_suggester.svelte";
 	export let parent: SyncthingSettingTab;
 	let hasSyncthing = true;
 	let apiInputType = "password";
@@ -189,7 +190,7 @@
 					console.log(
 						"select change: ",
 						event,
-						event.currentTarget.value
+						event.currentTarget.value,
 					);
 					if (!parent.plugin.settings.configuration.url) {
 						parent.plugin.settings.configuration.url = {
@@ -220,7 +221,7 @@
 					console.log(
 						"ip address change: ",
 						event,
-						event.currentTarget.value
+						event.currentTarget.value,
 					);
 					const valueChange = event.currentTarget.value;
 					if (!parent.plugin.settings.configuration.url) {
@@ -246,7 +247,7 @@
 					console.log(
 						"port change: ",
 						event,
-						event.currentTarget.value
+						event.currentTarget.value,
 					);
 					const valueChange = event.currentTarget.value;
 					if (!parent.plugin.settings.configuration.url) {
@@ -323,7 +324,7 @@
 				Platform.isMobileApp
 			) {
 				new Notice(
-					"Please set your GUI credentials first. There are needed on mobile app."
+					"Please set your GUI credentials first. There are needed on mobile app.",
 				);
 				return;
 			}
@@ -359,6 +360,53 @@
 	>
 		<ObsidianLucideIcon name="cog" />
 	</button>
+</ObsidianSettingsItem>
+
+<!-- Ignoring files -->
+<ObsidianSettingsItem name="Syncthing Ignored Files" heading={true} />
+<ObsidianSettingsItem
+	name="Set the ignored files"
+	description="Please set the files you want to ignore in the sync process."
+>
+	<svelte:fragment slot="control">
+		<FileSuggester {parent} />
+		<!-- <input
+			type="text"
+			on:change={async (event) => {
+				console.log(event.currentTarget.value);
+				const file = parent.app.vault.getAbstractFileByPath(
+					event.currentTarget.value,
+				);
+				if (!file) {
+					new Notice("The file does not exist in the vault.");
+					return;
+				}
+				new Notice("The file exists in the vault.");
+				console.log("Result of the file search: ", file);
+				console.log(
+					"file content of %s: %s",
+					event.currentTarget.value,
+					await parent.app.vault.adapter.read(
+						event.currentTarget.value,
+					),
+				);
+			}}
+		/> -->
+		<input
+			type="text"
+			placeholder="Enter some text..."
+			on:change={async (event) => {
+				const value = event.currentTarget.value;
+				console.log("value: ", value);
+				const content =
+					await parent.app.vault.adapter.read(".stignore");
+				await parent.app.vault.adapter.write(
+					normalizePath(".stignore"),
+					`${content}\n${value}`,
+				);
+			}}
+		/>
+	</svelte:fragment>
 </ObsidianSettingsItem>
 
 <!-- Plugin developer mode -->
@@ -400,7 +448,7 @@
 					if (!Platform.isAndroidApp) {
 						new Notice(
 							"The feature is not implemented for your platform. Please open the Syncthing app for your platform. You can create an issue on GitHub if you want to request this feature.",
-							5000
+							5000,
 						);
 						return;
 					}
@@ -438,7 +486,7 @@
 			on:click={() => {
 				// eslint-disable-next-line no-undef
 				open(
-					"https://github.com/LBF38/obsidian-syncthing-integration/issues/new/choose"
+					"https://github.com/LBF38/obsidian-syncthing-integration/issues/new/choose",
 				);
 			}}
 		>
