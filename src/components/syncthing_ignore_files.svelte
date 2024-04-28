@@ -7,6 +7,8 @@
 
 	export let parent: SyncthingSettingTab;
 	const syncthingIgnoreFilePath = normalizePath(".stignore");
+	let selectedFile: string = "";
+	let typedPattern: string = "";
 
 	async function getIgnoredFiles() {
 		let ignoredFilesContent = "";
@@ -54,42 +56,62 @@
 	(async () => {
 		ignoredFiles.set(await getIgnoredFiles());
 	})();
-	console.log("ignoredFiles: ", $ignoredFiles);
 </script>
 
 <ObsidianSettingsItem name="Syncthing Ignored Files" heading={true} />
-<ObsidianSettingsItem name="Set the ignored files">
+<ObsidianSettingsItem>
+	<svelte:fragment slot="name">
+		Manage the ignored files and patterns in <code>.stignore</code>
+	</svelte:fragment>
 	<svelte:fragment slot="description">
 		<p>
 			Please set the files you want to ignore in your vault when syncing
-			with Syncthing. See <a
+			with Syncthing.
+			<br />
+			See
+			<a
 				href="https://docs.syncthing.net/users/ignoring.html"
 				target="_blank">Syncthing documentation</a
 			> for more information.
 		</p>
 	</svelte:fragment>
 	<svelte:fragment slot="control">
-		<div class="input-container">
+		<div class="container">
+			<button
+				on:click={async () => {
+					console.log("selectedFile: ", selectedFile);
+					await updateIgnoredFiles(selectedFile);
+					selectedFile = "";
+				}}
+			>
+				Add file/folder
+			</button>
 			<FileSuggester
 				{parent}
 				onChange={async (value) => {
-					console.log("value: ", value);
-					await updateIgnoredFiles(value);
+					console.log("fileSuggester: ", value);
+					selectedFile = value;
 				}}
 			/>
+			<button
+				on:click={async () => {
+					console.log("typedPattern: ", typedPattern);
+					await updateIgnoredFiles(typedPattern);
+					typedPattern = "";
+				}}
+			>
+				Add pattern
+			</button>
 			<input
 				type="text"
+				bind:value={typedPattern}
 				placeholder="Enter some text..."
-				on:change={async (event) => {
-					const value = event.currentTarget.value;
-					console.log("value: ", value);
-					await updateIgnoredFiles(value);
-				}}
 			/>
 		</div>
 	</svelte:fragment>
 </ObsidianSettingsItem>
 
+<!-- Display the current content in .stignore -->
 {#if $ignoredFiles.length > 0}
 	{#each $ignoredFiles.filter((item) => item !== "") as item}
 		<ObsidianSettingsItem name={item}>
@@ -103,9 +125,9 @@
 {/if}
 
 <style>
-	.input-container {
-		display: flex;
-		flex-direction: column;
+	.container {
+		display: grid;
+		grid-template-columns: auto 1fr;
 		gap: 10px;
 	}
 </style>

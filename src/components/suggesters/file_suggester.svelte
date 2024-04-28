@@ -5,7 +5,7 @@
 	import { Setting, debounce } from "obsidian";
 
 	export let parent: SyncthingSettingTab;
-	export let onChange: (value: string) => void;
+	export let onChange: (value: string) => void = () => {};
 	let className = "";
 	export { className as class };
 
