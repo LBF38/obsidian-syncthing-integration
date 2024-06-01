@@ -36,7 +36,7 @@
 		"commitlint": "^18.6.1",
 		"css-minify": "^2.0.0",
 		"esbuild": "0.20.2",
-		"esbuild-svelte": "^0.8.0",
+		"esbuild-svelte": "^0.8.1",
 		"eslint": "^8.57.0",
 		"eslint-plugin-svelte": "^2.38.0",
 		"fs": "0.0.1-security",
