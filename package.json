@@ -38,7 +38,7 @@
 		"esbuild": "0.20.2",
 		"esbuild-svelte": "^0.8.0",
 		"eslint": "^8.57.0",
-		"eslint-plugin-svelte": "^2.38.0",
+		"eslint-plugin-svelte": "^2.43.0",
 		"fs": "0.0.1-security",
 		"husky": "^8.0.3",
 		"lorem-ipsum": "^2.0.8",
