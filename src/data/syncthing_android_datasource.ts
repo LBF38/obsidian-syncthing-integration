@@ -15,7 +15,7 @@ export class SyncthingFromAndroid {
 		// });
 		// return value;
 		console.log("Platform: ", Platform);
-		console.log("Obsidian App: ", app);
+		// console.log("Obsidian App: ", app);
 		return true;
 	}
 
