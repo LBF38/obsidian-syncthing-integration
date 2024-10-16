@@ -48,7 +48,7 @@
 		"semantic-release": "^22.0.12",
 		"svelte": "^4.2.15",
 		"svelte-preprocess": "^5.1.4",
-		"tslib": "2.6.2",
+		"tslib": "2.8.0",
 		"typescript": "^5.4.5"
 	},
 	"repository": {
