@@ -43,6 +43,7 @@ export class SyncthingStatusBar {
 							return;
 						}
 						new Notice("Not implemented yet");
+						// this.app.fileManager.renameFile(file, conflict.filename);
 						// if (await this.app.vault.adapter.exists(normalizePath(file.name))) {
 						// 	new Notice("File with original name already exists");
 						// 	await this.app.vault.delete(this.app.vault.getAbstractFileByPath(normalizePath(file.name)) as TFile, true);
