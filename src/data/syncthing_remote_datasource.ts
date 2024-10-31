@@ -40,7 +40,7 @@ import {
  * @see https://docs.syncthing.net/dev/rest.html
  */
 export class SyncthingFromREST {
-	constructor(public plugin: SyncthingPlugin) {}
+	constructor(public plugin: SyncthingPlugin) { }
 
 	//! System Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#system-endpoint
@@ -48,7 +48,7 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/system-browse-get.html
 	 */
-	private async system_browse(current?: string) {
+	private system_browse = async (current?: string) => {
 		return await this.requestEndpoint(
 			`/rest/system/browse?current=${current}`,
 			array(string())
@@ -58,7 +58,7 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/system-connections-get.html
 	 */
-	private async system_connections() {
+	private system_connections = async () => {
 		const connectionsTypeSchema = union(
 			[
 				literal("TCP (Client)"),
@@ -105,7 +105,7 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/system-discovery-get.html
 	 */
-	private async system_discovery() {
+	private system_discovery = async () => {
 		return await this.requestEndpoint(
 			"/rest/system/discovery",
 			nullable(record(array(string())))
@@ -116,14 +116,14 @@ export class SyncthingFromREST {
 	 * @see https://docs.syncthing.net/rest/system-debug-get.html
 	 * @see https://docs.syncthing.net/rest/system-debug-post.html
 	 */
-	private async system_debug(
+	private system_debug = async (
 		method: "GET" | "POST" = "GET",
 		// TODO: export the facilities type.
 		// disable?: keyof typeof facilitiesSchema,
 		// enable?: keyof typeof facilitiesSchema
 		disable?: string[],
 		enable?: string[]
-	) {
+	) => {
 		// TODO: export the type and simplify it.
 		const facilitiesSchema = object({
 			api: literal("REST API"),
@@ -178,7 +178,7 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/system-error-clear-post.html
 	 */
-	private async system_clearErrors() {
+	private system_clearErrors = async () => {
 		return await this.requestEndpoint(
 			"/rest/system/error/clear",
 			voidType(),
@@ -190,10 +190,10 @@ export class SyncthingFromREST {
 	 * @see https://docs.syncthing.net/rest/system-error-get.html
 	 * @see https://docs.syncthing.net/rest/system-error-post.html
 	 */
-	private async system_error(
+	private system_error = async (
 		method: "GET" | "POST" = "GET",
 		message?: string
-	) {
+	) => {
 		if (method == "GET") {
 			return await this.requestEndpoint(
 				"/rest/system/error",
@@ -225,7 +225,7 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/system-log-get.html
 	 */
-	private async system_log(json = true) {
+	private system_log = async (json = true) => {
 		const logSchema = object({
 			messages: array(
 				object({
@@ -244,7 +244,7 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/system-paths-get.html
 	 */
-	private async system_paths() {
+	private system_paths = async () => {
 		return await this.requestEndpoint(
 			"/rest/system/paths",
 			object({
@@ -275,7 +275,7 @@ export class SyncthingFromREST {
 	 * Returns status 200 and no content upon success, or status 500 and a plain text error on failure.
 	 * @see https://docs.syncthing.net/rest/system-pause-post.html
 	 */
-	private async system_pause(deviceID?: string) {
+	private system_pause = async (deviceID?: string) => {
 		return await this.requestEndpoint(
 			`/rest/system/pause?device=${deviceID}`,
 			voidType()
@@ -286,7 +286,7 @@ export class SyncthingFromREST {
 	 * @see https://docs.syncthing.net/rest/system-ping-get.html
 	 * @see https://docs.syncthing.net/rest/system-ping-post.html
 	 */
-	private async system_ping(method: "GET" | "POST" = "GET") {
+	private system_ping = async (method: "GET" | "POST" = "GET") => {
 		return (
 			await this.requestEndpoint(
 				"/rest/system/ping",
@@ -308,7 +308,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/system-reset-post.html
 	 */
-	private async system_reset(folderID?: string) {
+	private system_reset = async (folderID?: string) => {
 		// TODO: test this endpoint in a new Syncthing configuration OR inside a Docker in a Docker.
 		return await this.requestEndpoint(
 			`/rest/system/reset?folder=${folderID}`,
@@ -322,7 +322,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/system-restart-post.html
 	 */
-	private async system_restart() {
+	private system_restart = async () => {
 		return await this.requestEndpoint(
 			"/rest/system/restart",
 			voidType(),
@@ -338,7 +338,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/system-resume-post.html
 	 */
-	private async system_resume(deviceID?: string) {
+	private system_resume = async (deviceID?: string) => {
 		return await this.requestEndpoint(
 			`/rest/system/resume?device=${deviceID}`,
 			voidType()
@@ -350,7 +350,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/system-shutdown-post.html
 	 */
-	private async system_shutdown() {
+	private system_shutdown = async () => {
 		return await this.requestEndpoint(
 			"/rest/system/shutdown",
 			voidType(),
@@ -361,7 +361,7 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/system-status-get.html
 	 */
-	private async system_status() {
+	private system_status = async () => {
 		return await this.requestEndpoint(
 			"/rest/system/status",
 			SyncthingSystemStatus
@@ -393,7 +393,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/system-upgrade-post.html
 	 */
-	private async system_upgrade(method: "GET" | "POST" = "GET") {
+	private system_upgrade = async (method: "GET" | "POST" = "GET") => {
 		if (method == "GET") {
 			return await this.requestEndpoint(
 				"/rest/system/upgrade",
@@ -416,7 +416,7 @@ export class SyncthingFromREST {
 	 * Returns the current Syncthing version information.
 	 * @see https://docs.syncthing.net/rest/system-version-get.html
 	 */
-	private async system_version() {
+	private system_version = async () => {
 		return await this.requestEndpoint(
 			"/rest/system/version",
 			object({
@@ -445,10 +445,10 @@ export class SyncthingFromREST {
 	 * ``GET`` returns the entire config and ``PUT`` replaces it.
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
-	private async config_all(
+	private config_all = async (
 		method: "GET" | "PUT" = "GET",
 		config?: Output<typeof SyncthingConfiguration>
-	) {
+	) => {
 		return await this.requestEndpoint(
 			"/rest/config",
 			SyncthingConfiguration,
@@ -466,7 +466,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
-	private async config_folders(id?: string) {
+	private config_folders = async (id?: string) => {
 		// TODO: implement same as config_devices.
 	}
 
@@ -478,11 +478,11 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
-	private async config_devices(
+	private config_devices = async (
 		id?: string,
 		method: "GET" | "PUT" | "POST" | "PATCH" | "DELETE" = "GET",
 		device?: Output<typeof SyncthingDevice>
-	) {
+	) => {
 		if (id) {
 			return await this.requestEndpoint(
 				`/rest/config/devices/${id}`,
@@ -505,7 +505,7 @@ export class SyncthingFromREST {
 	 * ``GET`` returns whether a restart of Syncthing is required for the current config to take effect.
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
-	private async config_restart_required() {
+	private config_restart_required = async () => {
 		return (
 			await this.requestEndpoint(
 				"/rest/config/restart-required",
@@ -522,9 +522,9 @@ export class SyncthingFromREST {
 	 * `PUT` replaces the default config (omitted values are reset to the hard-coded defaults), `PATCH` replaces only the given child objects.
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
-	private async config_defaults_folder(
+	private config_defaults_folder = async (
 		method: "GET" | "PUT" | "PATCH" = "GET"
-	) {
+	) => {
 		return await this.requestEndpoint(
 			"/rest/config/defaults/folder",
 			SyncthingFolder,
@@ -538,9 +538,9 @@ export class SyncthingFromREST {
 	 * `PUT` replaces the default config (omitted values are reset to the hard-coded defaults), `PATCH` replaces only the given child objects.
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
-	private async config_defaults_device(
+	private config_defaults_device = async (
 		method: "GET" | "PUT" | "PATCH" = "GET"
-	) {
+	) => {
 		return await this.requestEndpoint(
 			"/rest/config/defaults/device",
 			SyncthingDevice,
@@ -551,10 +551,10 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
-	private async config_defaults_ignores(
+	private config_defaults_ignores = async (
 		method: "GET" | "PUT" = "GET",
 		linesToIgnore: { lines: string[] } // TODO refactor
-	) {
+	) => {
 		const ignoresLineSchema = object({
 			lines: array(string()),
 		});
@@ -570,7 +570,7 @@ export class SyncthingFromREST {
 	 * `GET` returns the respective object, `PUT` replaces the entire object and `PATCH` replaces only the given child objects.
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
-	private async config_options() {
+	private config_options = async () => {
 		// TODO: implement & verify
 	}
 
@@ -578,7 +578,7 @@ export class SyncthingFromREST {
 	 * `GET` returns the respective object, `PUT` replaces the entire object and `PATCH` replaces only the given child objects.
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
-	private async config_ldap(method: "GET" | "PUT" | "PATCH" = "GET") {
+	private config_ldap = async (method: "GET" | "PUT" | "PATCH" = "GET") => {
 		// TODO: implement & verify
 		return await this.requestEndpoint(
 			"/rest/config/ldap",
@@ -598,7 +598,7 @@ export class SyncthingFromREST {
 	 * `GET` returns the respective object, `PUT` replaces the entire object and `PATCH` replaces only the given child objects.
 	 * @see https://docs.syncthing.net/rest/config.html
 	 */
-	private async config_gui() {
+	private config_gui = async () => {
 		// TODO: implement & verify
 	}
 
@@ -645,10 +645,10 @@ export class SyncthingFromREST {
 	 *
 	 * For a more permanent effect, also for future connections from the same device ID, the device should be ignored in the `configuration </users/config>` instead.
 	 */
-	private async cluster_pending_devices(
+	private cluster_pending_devices = async (
 		method: "GET" | "DELETE" = "GET",
 		device?: string
-	) {
+	) => {
 		// TODO: implement DELETE
 		return await this.requestEndpoint(
 			"/rest/cluster/pending/devices",
@@ -724,7 +724,7 @@ export class SyncthingFromREST {
 	 * For a more permanent effect, also for future announcements of the same folder ID, the folder should be ignored in the `configuration </users/config>` instead.
 	 *
 	 */
-	private async cluster_pending_folders(method: "GET" | "DELETE" = "GET") {
+	private cluster_pending_folders = async (method: "GET" | "DELETE" = "GET") => {
 		// TODO: implement DELETE
 		return await this.requestEndpoint(
 			"/rest/cluster/pending/folders",
@@ -750,11 +750,11 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/folder-errors-get.html
 	 */
-	private async folder_errors(
+	private folder_errors = async (
 		folder: string,
 		page?: number,
 		perpage?: number
-	) {
+	) => {
 		return await this.requestEndpoint(
 			`/rest/folder/errors?folder=${folder}&page=${page}&perpage=${perpage}`,
 			object({
@@ -775,10 +775,10 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/folder-versions-get.html
 	 */
-	private async folder_versions(
+	private folder_versions = async (
 		folder: string,
 		method: "GET" | "POST" = "GET"
-	) {
+	) => {
 		// TODO: implement the POST method.
 		return await this.requestEndpoint(
 			`/rest/folder/versions?folder=${folder}`,
@@ -807,7 +807,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/db-browse-get.html
 	 */
-	private async db_browse(folder: string, levels?: number, prefix?: string) {
+	private db_browse = async (folder: string, levels?: number, prefix?: string) => {
 		const dbFileSchema = object({
 			modTime: dateSchema,
 			name: string(),
@@ -832,7 +832,7 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/db-completion-get.html
 	 */
-	private async db_completion(folder?: string, device?: string) {
+	private db_completion = async (folder?: string, device?: string) => {
 		return await this.requestEndpoint(
 			`/rest/db/completion?folder=${folder}&device=${device}`,
 			object({
@@ -855,12 +855,12 @@ export class SyncthingFromREST {
 	 * `local` and `global` refer to the current file on disk and the globally newest file, respectively.
 	 * @see https://docs.syncthing.net/rest/db-file-get.html
 	 */
-	private async db_file(
+	private db_file = async (
 		folder: string,
 		file: string,
 		local?: string,
 		global?: string
-	) {
+	) => {
 		return await this.requestEndpoint(
 			`/rest/db/file?folder=${folder}&file=${file}&local=${local}&global=${global}`,
 			any() // TODO: add validation
@@ -885,11 +885,11 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/db-ignores-post.html
 	 */
-	private async db_ignores(
+	private db_ignores = async (
 		method: "GET" | "POST" = "GET",
 		folder: string,
 		input?: { ignore: string[] }
-	) {
+	) => {
 		return await this.requestEndpoint(
 			`/rest/db/ignores?folder=${folder}`,
 			object({
@@ -906,11 +906,11 @@ export class SyncthingFromREST {
 	 * Takes one mandatory parameter, `folder`, and returns the list of files which were changed locally in a receive-only folder. Thus they differ from the global state and could be reverted by pulling from remote devices again, see POST /rest/db/revert.
 	 * @see https://docs.syncthing.net/rest/db-localchanged-get.html
 	 */
-	private async db_localchanged(
+	private db_localchanged = async (
 		folder: string,
 		page?: number,
 		perpage?: number
-	) {
+	) => {
 		const fileSchema = object({
 			flags: string(),
 			sequence: number(),
@@ -932,7 +932,7 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/db-need-get.html
 	 */
-	private async db_need(folder: string, page?: number, perpage?: number) {
+	private db_need = async (folder: string, page?: number, perpage?: number) => {
 		const fileSchema = object({
 			flags: string(),
 			sequence: number(),
@@ -961,7 +961,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/db-override-post.html
 	 */
-	private async db_override(folder: string) {
+	private db_override = async (folder: string) => {
 		return await this.requestEndpoint(
 			"/rest/db/override",
 			voidType(),
@@ -975,7 +975,7 @@ export class SyncthingFromREST {
 	 * Response contains the same output as GET /rest/db/need.
 	 * @see https://docs.syncthing.net/rest/db-prio-post.html
 	 */
-	private async db_prio(folder: string, file: string) {
+	private db_prio = async (folder: string, file: string) => {
 		const fileSchema = object({
 			flags: string(),
 			sequence: number(),
@@ -1001,12 +1001,12 @@ export class SyncthingFromREST {
 	 * Similar to {@linkcode db_localchanged}, but returns the list of files which were changed remotely in a send-only folder.
 	 * @see https://docs.syncthing.net/rest/db-remoteneed-get.html
 	 */
-	private async db_remoteneed(
+	private db_remoteneed = async (
 		folder: string,
 		device: string,
 		page?: number,
 		perpage?: number
-	) {
+	) => {
 		const fileSchema = object({
 			flags: string(),
 			sequence: number(),
@@ -1033,7 +1033,7 @@ export class SyncthingFromREST {
 	 * Takes the mandatory parameter folder (folder ID).
 	 * @see https://docs.syncthing.net/rest/db-revert-post.html
 	 */
-	private async db_revert(folder: string) {
+	private db_revert = async (folder: string) => {
 		return await this.requestEndpoint(
 			`/rest/db/revert?folder=${folder}`,
 			voidType(),
@@ -1055,7 +1055,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/db-scan-post.html
 	 */
-	private async db_scan(folder?: string, sub?: string, next?: number) {
+	private db_scan = async (folder?: string, sub?: string, next?: number) => {
 		return await this.requestEndpoint(
 			`/rest/db/scan?folder=${folder}&sub=${sub}&next=${next}`,
 			voidType(),
@@ -1070,7 +1070,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/db-status-get.html
 	 */
-	private async db_status(folder: string) {
+	private db_status = async (folder: string) => {
 		return await this.requestEndpoint(
 			`/rest/db/status?folder=${folder}`,
 			object({
@@ -1120,12 +1120,12 @@ export class SyncthingFromREST {
 	/**
 	 * @see https://docs.syncthing.net/rest/events-get.html
 	 */
-	private async events(
+	private events = async (
 		eventsFilter?: Output<typeof SyncthingEventTypes>[],
 		lastSeenID?: number,
 		timeout?: number,
 		limit?: number
-	) {
+	) => {
 		return await this.requestEndpoint(
 			`/rest/events?events=${eventsFilter}&since=${lastSeenID}&timeout=${timeout}&limit=${limit}`,
 			array(UnionSyncthingEvents)
@@ -1138,7 +1138,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/events-get.html#get-rest-events-disk
 	 */
-	private async disk(lastSeenID?: number, timeout?: number, limit?: number) {
+	private disk = async (lastSeenID?: number, timeout?: number, limit?: number) => {
 		return await this.requestEndpoint(
 			`/rest/events/disk?since=${lastSeenID}&timeout=${timeout}&limit=${limit}`,
 			array(UnionSyncthingEvents)
@@ -1153,7 +1153,7 @@ export class SyncthingFromREST {
 	 * Currently, only contains the time the device was last seen and the last connection duration.
 	 * @see https://docs.syncthing.net/rest/stats-device-get.html
 	 */
-	private async stats_device() {
+	private stats_device = async () => {
 		return await this.requestEndpoint(
 			"/rest/stats/device",
 			record(
@@ -1171,7 +1171,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/stats-folder-get.html
 	 */
-	private async stats_folder() {
+	private stats_folder = async () => {
 		return await this.requestEndpoint(
 			"/rest/stats/folder",
 			record(
@@ -1198,7 +1198,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/svc-deviceid-get.html
 	 */
-	private async svc_deviceid(id: string) {
+	private svc_deviceid = async (id: string) => {
 		// TODO implement
 		return await this.requestEndpoint(
 			`/rest/svc/deviceid?id=${id}`,
@@ -1213,7 +1213,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/svc-lang-get.html
 	 */
-	private async svc_lang() {
+	private svc_lang = async () => {
 		return await this.requestEndpoint("/rest/svc/lang", array(string()));
 	}
 
@@ -1224,7 +1224,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/svc-random-string-get.html
 	 */
-	private async svc_random_string(length?: number) {
+	private svc_random_string = async (length?: number) => {
 		return await this.requestEndpoint(
 			`/rest/svc/random/string${length ? `?length=${length}` : ""}`,
 			object({ random: string() })
@@ -1238,7 +1238,7 @@ export class SyncthingFromREST {
 	 *
 	 * @see https://docs.syncthing.net/rest/svc-report-get.html
 	 */
-	private async svc_report() {
+	private svc_report = async () => {
 		return await this.requestEndpoint(
 			"/rest/svc/report",
 			any()
@@ -1250,12 +1250,12 @@ export class SyncthingFromREST {
 	//? https://docs.syncthing.net/dev/rest.html#debug-endpoint
 
 	//TODO: implement all endpoints
-	private async debug_block() {}
+	private async debug_block() { }
 
 	//! Noauth Endpoint
 	//? https://docs.syncthing.net/dev/rest.html#noauth-endpoint
 
-	private async noauth_health() {
+	private noauth_health = async () => {
 		return (
 			(
 				await this.requestEndpoint(
