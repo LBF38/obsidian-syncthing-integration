@@ -13,13 +13,13 @@ importers:
         version: 4.1.2
     devDependencies:
       '@codemirror/merge':
-        specifier: ^6.6.1
+        specifier: ^6.7.2
         version: 6.7.2
       '@codemirror/state':
         specifier: ^6.4.1
         version: 6.4.1
       '@codemirror/view':
-        specifier: ^6.26.3
+        specifier: ^6.34.1
         version: 6.34.1
       '@commitlint/config-conventional':
         specifier: ^18.6.3
@@ -73,7 +73,7 @@ importers:
         specifier: 0.24.0
         version: 0.24.0
       esbuild-svelte:
-        specifier: ^0.8.0
+        specifier: ^0.8.2
         version: 0.8.2(esbuild@0.24.0)(svelte@4.2.19)
       eslint:
         specifier: ^8.57.0
@@ -97,13 +97,13 @@ importers:
         specifier: latest
         version: 1.7.2(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)
       sass:
-        specifier: ^1.75.0
+        specifier: ^1.79.5
         version: 1.79.5
       semantic-release:
         specifier: ^22.0.12
         version: 22.0.12(typescript@5.6.3)
       svelte:
-        specifier: ^4.2.15
+        specifier: ^4.2.19
         version: 4.2.19
       svelte-preprocess:
         specifier: ^5.1.4
@@ -112,7 +112,7 @@ importers:
         specifier: 2.8.0
         version: 2.8.0
       typescript:
-        specifier: ^5.4.5
+        specifier: ^5.6.3
         version: 5.6.3
 
 packages:
@@ -906,8 +906,8 @@ packages:
   caniuse-api@3.0.0:
     resolution: {integrity: sha512-bsTwuIg/BZZK/vreVTYYbSWoe2F+71P7K5QGEX+pT250DZbfU1MQ5prOKpPR+LL6uWKK3KMwMCAS74QB3Um1uw==}
 
-  caniuse-lite@1.0.30001613:
-    resolution: {integrity: sha512-BNjJULJfOONQERivfxte7alLfeLW4QnwHvNW4wEcLEbXfV6VSCYvr+REbf2Sojv8tC1THpjPXBxWgDbq4NtLWg==}
+  caniuse-lite@1.0.30001669:
+    resolution: {integrity: sha512-DlWzFDJqstqtIVx1zeSpIMLjunf5SmwOw0N2Ck/QSQdS8PLS4+9HrLaYei4w8BIAL7IB/UEDu889d8vhCTPA0w==}
 
   cardinal@2.1.1:
     resolution: {integrity: sha512-JSr5eOgoEymtYHBjNWyjrMqet9Am2miJhlfKNdqLp6zoeAh0KN5dRAcxlecj5mAJrmQomgiOBj35xHLrFjqBpw==}
@@ -3893,7 +3893,7 @@ snapshots:
 
   browserslist@4.23.0:
     dependencies:
-      caniuse-lite: 1.0.30001613
+      caniuse-lite: 1.0.30001669
       electron-to-chromium: 1.4.750
       node-releases: 2.0.14
       update-browserslist-db: 1.0.13(browserslist@4.23.0)
@@ -3923,11 +3923,11 @@ snapshots:
   caniuse-api@3.0.0:
     dependencies:
       browserslist: 4.23.0
-      caniuse-lite: 1.0.30001613
+      caniuse-lite: 1.0.30001669
       lodash.memoize: 4.1.2
       lodash.uniq: 4.5.0
 
-  caniuse-lite@1.0.30001613: {}
+  caniuse-lite@1.0.30001669: {}
 
   cardinal@2.1.1:
     dependencies:
