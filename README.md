@@ -64,7 +64,9 @@ This plugin now aims to provide integrated features related to [Syncthing][synct
 > [!NOTE]
 > If you want a full integrated [Syncthing][syncthing website] synchronization with your notes app, you can try the [anytype notetaking app](https://anytype.io/). It provides a full integration of a syncing protocol in the note-taking app, [see more about this here](https://github.com/anyproto/any-sync).
 
-This project provides features like conflicting files resolution, status bar feature, diff conflicting files, ignoring files from synchronization (`coming soon`), and more.
+This project provides features like [conflicting files resolution](./docs/features/conflict_files_resolutions.md), [status bar feature](./docs/features/status_bar.md), diff conflicting files, [ignoring files from synchronization](./docs/features/ignoring_files.md), and more.
+See all plugin's features documentation in the [`docs/features` folder](./docs/features/).
+
 It is mainly features based on files available in the vault and that are specific to [Syncthing][syncthing website].
 Feel free to suggest new features or improvements in the [Discussions tab][discussions] or via [a new issue][issues].
 
@@ -93,6 +95,14 @@ On Desktop, it should be straightforward if you have the CLI installed. Otherwis
 > The synchronization is done in real-time, using peer-to-peer connections. Therefore, all the devices you want to synchronize must be connected at the same time.
 >
 > To overcome this, you could setup one device as a relay server. This device will be always connected and will relay the data between the other devices, like a NAS or a VPS.
+
+## :memo: Documentation
+
+You can browse the current plugin's documentation in the [`docs` folder](./docs/).
+
+There, you'll find documentation about the plugin's roadmap, current features and other notes concerning the project.
+
+Feel free to open [a new GH discussion][discussions] if you need some help.
 
 ## :heart: Contributing
 
