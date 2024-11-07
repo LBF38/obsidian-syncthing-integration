@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.3.0...2.3.1) (2024-11-07)
+
+
+### Bug Fixes
+
+* **project:** :adhesive_bandage: small issue fixes ([c399c1e](https://github.com/LBF38/obsidian-syncthing-integration/commit/c399c1e084c6a18132b5a20fba27a3378d8e9634))
+
 # [2.3.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.2.1...2.3.0) (2024-04-28)
 
 
