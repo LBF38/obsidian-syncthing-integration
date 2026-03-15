@@ -10,7 +10,11 @@ import {
 	type ConflictFilename,
 } from "src/models/entities";
 import { CliFailure, Failure, RestFailure } from "src/models/failures";
-import { isConflictFilename, parseConflictFilename, sortByConflictDate } from "./utils";
+import {
+	isConflictFilename,
+	parseConflictFilename,
+	sortByConflictDate,
+} from "./utils";
 
 /**
  * Main controller of the plugin.
@@ -35,8 +39,8 @@ export class SyncthingController {
 		 * To make it easier to call plugin's methods.
 		 * @see https://docs.obsidian.md/Reference/TypeScript+API/Plugin/Plugin
 		 */
-		public plugin: SyncthingPlugin
-	) { }
+		public plugin: SyncthingPlugin,
+	) {}
 
 	/**
 	 * Checks if Syncthing is running.
@@ -101,7 +105,9 @@ export class SyncthingController {
 			});
 	}
 
-	async getConflictsWithOriginal(activeFile: TFile): Promise<{ originalFile?: TFile, conflicts: TFile[] }> {
+	async getConflictsWithOriginal(
+		activeFile: TFile,
+	): Promise<{ originalFile?: TFile; conflicts: TFile[] }> {
 		const allFiles = this.plugin.app.vault.getFiles();
 		if (isConflictFilename(activeFile.basename)) {
 			const properties = parseConflictFilename(activeFile.basename);
@@ -116,7 +122,9 @@ export class SyncthingController {
 					file.basename === properties.filename
 				);
 			});
-			const originalFile = allFiles.find((file) => file.basename === properties.filename);
+			const originalFile = allFiles.find(
+				(file) => file.basename === properties.filename,
+			);
 			if (originalFile) conflictFiles.remove(originalFile);
 			return {
 				originalFile: originalFile,
@@ -134,7 +142,6 @@ export class SyncthingController {
 		};
 	}
 
-
 	/**
 	 * Gets the Syncthing conflicting files for the ConflictsModal.
 	 * It returns a list of all files that are in conflict.
@@ -145,11 +152,9 @@ export class SyncthingController {
 		// Get all conflicting files
 		const allFiles = this.plugin.app.vault.getFiles();
 		const conflictsFiles = allFiles.filter((currentFile) => {
+			// TODO: enhance this with better pattern matching
 			return currentFile.name.contains(".sync-conflict");
 		});
-		if (conflictsFiles.length === 0) {
-			return new Failure("No conflicts found.");
-		}
 		// Reorder conflicting files by filename in a Map
 		const conflictsFilesMap = new Map<string, TFile[]>();
 		for (const file of conflictsFiles) {
@@ -166,7 +171,7 @@ export class SyncthingController {
 					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					conflictsFilesMap
 						.get(filename)!
-						.sort((a, b) => sortByConflictDate(a, b))
+						.sort((a, b) => sortByConflictDate(a, b)),
 				);
 				continue;
 			}
@@ -191,7 +196,7 @@ export class SyncthingController {
 				conflictingFiles: filenameProperties,
 				conflictingFilesProperties: new Map<TFile, Failure>().set(
 					file,
-					filenameProperties
+					filenameProperties,
 				),
 			};
 		}
@@ -205,23 +210,9 @@ export class SyncthingController {
 		});
 		const originalFile = conflictsFiles.find(
 			(currentFile) =>
-				currentFile.basename === filenameProperties.filename
+				currentFile.basename === filenameProperties.filename,
 		);
 		if (originalFile) conflictsFiles.remove(originalFile);
-		const result =
-			conflictsFiles.length > 0
-				? conflictsFiles
-				: new Failure("No conflicts found.");
-		if (result instanceof Failure) {
-			return {
-				originalFile: originalFile ? originalFile : file,
-				conflictingFiles: result,
-				conflictingFilesProperties: new Map<TFile, Failure>().set(
-					file,
-					result
-				),
-			};
-		}
 		const conflictingFilesProperties = new Map<
 			TFile,
 			Failure | ConflictFilename
@@ -243,7 +234,7 @@ export class SyncthingController {
 	async getAPIKey(): Promise<string | Failure> {
 		if (Platform.isMobileApp) {
 			return new Failure(
-				"Cannot get API key on mobile. Please enter it manually."
+				"Cannot get API key on mobile. Please enter it manually.",
 			);
 		}
 		if (!this.plugin.settings.api_key) {
