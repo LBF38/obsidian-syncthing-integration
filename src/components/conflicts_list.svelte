@@ -24,7 +24,7 @@
 					conflicts = sortFilesBy(
 						conflicts,
 						value as keyof typeof sortOptions,
-						parentModal.syncthingController
+						parentModal.syncthingController,
 					);
 					console.log("dropdown", conflicts);
 				});
@@ -32,7 +32,7 @@
 		conflicts = sortFilesBy(
 			conflicts,
 			"recent",
-			parentModal.syncthingController
+			parentModal.syncthingController,
 		);
 	});
 
@@ -40,9 +40,11 @@
 	$: if (conflicts) console.log("conflicts", conflicts);
 </script>
 
-<div bind:this={sortSettingContainer} />
-{#key conflicts}
-	{#each conflicts.keys() as conflictNames, i}
+{#if conflicts.size === 0}
+	<p>No conflicts found.</p>
+{:else}
+	<div bind:this={sortSettingContainer} />
+	{#each conflicts.keys() as conflictNames, i (conflictNames)}
 		{#if i !== 0}
 			<div class="divider" />
 		{/if}
@@ -52,7 +54,7 @@
 			{parentModal}
 		/>
 	{/each}
-{/key}
+{/if}
 
 <style>
 	.divider {
