@@ -1,4 +1,13 @@
-import { Notice, Platform, Plugin, addIcon } from "obsidian";
+import {
+	Command,
+	Editor,
+	MarkdownFileInfo,
+	MarkdownView,
+	Notice,
+	Platform,
+	Plugin,
+	addIcon,
+} from "obsidian";
 import { SyncthingController } from "./controllers/main_controller";
 import {
 	DevModeModal,
@@ -10,8 +19,10 @@ import { SyncthingFromCLI } from "./data/syncthing_local_datasource";
 import { SyncthingFromREST } from "./data/syncthing_remote_datasource";
 import { SyncthingConfiguration } from "./models/entities";
 import { ConflictsModal } from "./views/conflicts_modal";
+import { DiffModal } from "./views/diff_modal";
 import { SyncthingLogoSVG } from "./views/logos";
 import { SyncthingSettingTab } from "./views/settings_tab";
+import { ConfigurationModal } from "./views/configuration_modal";
 
 interface SyncthingPluginSettings {
 	api_key: string;
@@ -33,6 +44,7 @@ const DEFAULT_SETTINGS: Partial<SyncthingPluginSettings> = {
 };
 
 export default class SyncthingPlugin extends Plugin {
+	PLUGIN_ID = "syncthing-integration";
 	static loadCount = 0;
 	settings!: SyncthingPluginSettings;
 	pluginsElements: HTMLElement[] = [];
@@ -43,10 +55,10 @@ export default class SyncthingPlugin extends Plugin {
 		this.syncthingFromCLI,
 		this.syncthingFromREST,
 		this.syncthingFromAndroid,
-		this
+		this,
 	);
 	devModeController: PluginDevModeController = new PluginDevModeController(
-		this
+		this,
 	);
 	statusBar?: SyncthingStatusBar;
 
@@ -60,7 +72,10 @@ export default class SyncthingPlugin extends Plugin {
 
 		// Status bar. Does not work on mobile apps.
 		if (!Platform.isMobileApp) {
-			this.statusBar = new SyncthingStatusBar(this.addStatusBarItem(), this);
+			this.statusBar = new SyncthingStatusBar(
+				this.addStatusBarItem(),
+				this,
+			);
 			this.statusBar.onload();
 			this.pluginsElements.push(this.statusBar.status_bar);
 		}
@@ -70,14 +85,16 @@ export default class SyncthingPlugin extends Plugin {
 		if (SyncthingPlugin.loadCount === 1)
 			this.addSettingTab(pluginSettingTab);
 
+		// Ribbon Icon
 		const syncthingConflictManager = this.addRibbonIcon(
 			"syncthing",
 			"Open Syncthing conflict manager modal",
 			() => {
 				new ConflictsModal(this.app, this.syncthingController).open();
-			}
+			},
 		);
 
+		// Dev Mode
 		if (this.settings.devMode) {
 			new Notice("Dev mode is enabled.");
 			const devModeGenerator = this.addRibbonIcon(
@@ -86,9 +103,9 @@ export default class SyncthingPlugin extends Plugin {
 				async () => {
 					new DevModeModal(
 						this.app,
-						new PluginDevModeController(this)
+						new PluginDevModeController(this),
 					).open();
-				}
+				},
 			);
 			this.addCommand({
 				id: "generate-syncthing-conflicts",
@@ -97,13 +114,16 @@ export default class SyncthingPlugin extends Plugin {
 				callback: async () => {
 					new DevModeModal(
 						this.app,
-						new PluginDevModeController(this)
+						new PluginDevModeController(this),
 					).open();
 				},
 			});
 			this.pluginsElements.push(devModeGenerator);
 		}
 		this.pluginsElements.push(syncthingConflictManager);
+
+		// Commands
+		this.syncthingCommands();
 	}
 
 	onunload(): void {
@@ -115,11 +135,91 @@ export default class SyncthingPlugin extends Plugin {
 		this.settings = Object.assign(
 			{},
 			DEFAULT_SETTINGS,
-			await this.loadData()
+			await this.loadData(),
 		);
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	// This method adds commands for the Syncthing Plugin
+	// It can be related to conflicts, the diff modal or other useful commands.
+	private syncthingCommands() {
+		const commands: Command[] = [
+			{
+				id: "syncthing-conflicts-modal",
+				name: "Open conflicts modal",
+				callback: () => {
+					new ConflictsModal(
+						this.app,
+						this.syncthingController,
+					).open();
+				},
+			},
+			{
+				id: "syncthing-diff-modal",
+				name: "Open diff modal",
+				editorCheckCallback: (
+					checking: boolean,
+					editor: Editor,
+					ctx: MarkdownView | MarkdownFileInfo,
+				): boolean | void => {
+					const file = ctx.file;
+
+					if (file) {
+						if (!checking) {
+							new DiffModal(
+								this.app,
+								file,
+								this.syncthingController,
+							).open();
+						}
+						return true;
+					}
+
+					return false;
+				},
+			},
+			{
+				id: "syncthing-configuration-modal",
+				name: "Open configuration modal",
+				callback: () => {
+					new ConfigurationModal(this.app, this).open();
+				},
+			},
+			{
+				id: "syncthing-plugin-settings",
+				name: "Open plugin settings",
+				callback: () => {
+					// @ts-expect-error
+					this.app.setting.open();
+					// @ts-expect-error
+					this.app.setting.openTabById(this.PLUGIN_ID);
+				},
+			},
+			{
+				id: "syncthing-bug-report",
+				name: "Report a bug / Suggest a new feature",
+				callback: () => {
+					open(
+						"https://github.com/LBF38/obsidian-syncthing-integration/issues/new/choose",
+					);
+				},
+			},
+			// {
+			// 	id: "syncthing-plugin-documentation",
+			// 	name: "Open online documentation",
+			// 	callback: () => {
+			// 		open(
+			// 			"https://LBF38.github.io/obsidian-syncthing-integration",
+			// 		);
+			// 	},
+			// },
+		];
+
+		for (const command of commands) {
+			this.addCommand(command);
+		}
 	}
 }
