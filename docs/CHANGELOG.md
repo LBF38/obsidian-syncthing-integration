@@ -11,6 +11,19 @@
 
 * **plugin:** add new commands ([#281](https://github.com/LBF38/obsidian-syncthing-integration/issues/281)) ([df84da5](https://github.com/LBF38/obsidian-syncthing-integration/commit/df84da5cfc7dc376637bf4d94011b4a0406ee175))
 
+# [2.4.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.3.0...2.4.0) (2026-03-15)
+
+
+### Bug Fixes
+
+* **project:** :adhesive_bandage: small issue fixes ([c399c1e](https://github.com/LBF38/obsidian-syncthing-integration/commit/c399c1e084c6a18132b5a20fba27a3378d8e9634))
+* **ui:** update modal when no conflicts found ([#280](https://github.com/LBF38/obsidian-syncthing-integration/issues/280)) ([2bb8d62](https://github.com/LBF38/obsidian-syncthing-integration/commit/2bb8d624c7528be571c4e29f0ee4b0afdac31a63))
+
+
+### Features
+
+* **plugin:** add new commands ([#281](https://github.com/LBF38/obsidian-syncthing-integration/issues/281)) ([df84da5](https://github.com/LBF38/obsidian-syncthing-integration/commit/df84da5cfc7dc376637bf4d94011b4a0406ee175))
+
 # [2.3.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.2.1...2.3.0) (2024-04-28)
 
 
