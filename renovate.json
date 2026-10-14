@@ -1,9 +1,56 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": [
-		"config:base"
-	],
-	"schedule": [
-		"every 3 months on the first day of the month"
+	"extends": ["config:recommended", ":dependencyDashboard", ":semanticCommits"],
+	"timezone": "Europe/Paris",
+	"schedule": ["before 6am on monday"],
+	"lockFileMaintenance": {
+		"enabled": true,
+		"schedule": ["before 6am on the first day of the month"]
+	},
+	"osvVulnerabilityAlerts": true,
+	"vulnerabilityAlerts": {
+		"labels": ["security"],
+		"schedule": ["at any time"]
+	},
+	"rangeStrategy": "bump",
+	"packageRules": [
+		{
+			"matchDepTypes": ["devDependencies"],
+			"groupName": "devDependencies",
+			"schedule": ["before 6am on the first day of the month"]
+		},
+		{
+			"matchUpdateTypes": ["patch", "minor"],
+			"groupName": "non-major deps"
+		},
+		{
+			"matchPackagePatterns": ["^@codemirror/", "^codemirror$", "^style-mod$"],
+			"groupName": "codemirror"
+		},
+		{
+			"matchManagers": ["github-actions"],
+			"pinDigests": true,
+			"groupName": "github-actions"
+		},
+		{
+			"matchUpdateTypes": ["patch", "minor"],
+			"matchDepTypes": ["devDependencies"],
+			"automerge": true,
+			"platformAutomerge": true
+		},
+		{
+			"matchUpdateTypes": ["pin", "digest"],
+			"automerge": true,
+			"platformAutomerge": true
+		},
+		{
+			"matchUpdateTypes": ["major"],
+			"dependencyDashboardApproval": true,
+			"automerge": false
+		},
+		{
+			"matchDepTypes": ["dependencies"],
+			"automerge": false
+		}
 	]
 }
