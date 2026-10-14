@@ -113,6 +113,9 @@ If you want to develop this plugin locally, please follow the instructions below
 > And the plugin's files should be at the root of the folder. (`main.js`, `manifest.json` and `styles.css`)
 > It should be automatically set up.
 
+> [!TIP]
+> For a reproducible development environment, a [`flake.nix`](flake.nix) provides the Node.js and pnpm versions used in CI. If you have [Nix](https://nixos.org/) and [direnv](https://direnv.net/) installed, run `direnv allow` once to activate it automatically when entering the repository; otherwise use `nix develop`.
+
 ## :clap: Credits
 
 Here are some inspirations for this plugin :

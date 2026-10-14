@@ -1,0 +1,33 @@
+{
+	"format_on_save": "off",
+	"ensure_final_newline_on_save": true,
+	"remove_trailing_whitespace_on_save": true,
+	"tab_size": 4,
+	"hard_tabs": true,
+	"preferred_line_length": 100,
+	"languages": {
+		"Svelte": {
+			"tab_size": 4,
+			"hard_tabs": true,
+			"format_on_save": "off"
+		},
+		"TypeScript": {
+			"tab_size": 4,
+			"hard_tabs": true,
+			"format_on_save": "off"
+		},
+		"JavaScript": {
+			"tab_size": 4,
+			"hard_tabs": true,
+			"format_on_save": "off"
+		},
+		"YAML": {
+			"tab_size": 2,
+			"hard_tabs": false
+		},
+		"Markdown": {
+			"tab_size": 4,
+			"hard_tabs": true
+		}
+	}
+}
