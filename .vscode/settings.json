@@ -12,7 +12,8 @@
 		"project",
 		"gh actions",
 		"release",
-		"mobile"
+		"mobile",
+		"datasource"
 	],
 	"markdownlint.config": {
 		"MD033": false,
