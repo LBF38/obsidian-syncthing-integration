@@ -15,6 +15,9 @@ export default defineConfig({
 		}),
 	],
 	resolve: {
+		// Svelte ships separate browser and server builds; the component tests
+		// need the browser build so that `mount` is available.
+		conditions: ["browser"],
 		alias: [
 			// The real `obsidian` package only ships types, so the runtime is
 			// replaced by a hand-written mock.
