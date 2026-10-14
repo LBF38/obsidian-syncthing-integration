@@ -42,6 +42,12 @@
 		],
 		"@typescript-eslint/ban-ts-comment": "off",
 		"no-prototype-builtins": "off",
-		"@typescript-eslint/no-empty-function": "off"
+		"@typescript-eslint/no-empty-function": "off",
+		"@typescript-eslint/consistent-type-imports": [
+			"error",
+			{
+				"fixStyle": "inline-type-imports"
+			}
+		]
 	}
 }

@@ -1,5 +1,5 @@
 import MergeEditor from "../components/merge_editor.svelte";
-import { App, Modal, TFile } from "obsidian";
+import { type App, Modal, type TFile } from "obsidian";
 import { mount, unmount } from "svelte";
 
 export class MergeModal extends Modal {

@@ -1,12 +1,12 @@
-import { Platform, TFile } from "obsidian";
+import { Platform, type TFile } from "obsidian";
 import { type SyncthingFromAndroid } from "src/data/syncthing_android_datasource";
-import { SyncthingFromCLI } from "src/data/syncthing_local_datasource";
-import { SyncthingFromREST } from "src/data/syncthing_remote_datasource";
-import SyncthingPlugin from "src/main";
+import { type SyncthingFromCLI } from "src/data/syncthing_local_datasource";
+import { type SyncthingFromREST } from "src/data/syncthing_remote_datasource";
+import type SyncthingPlugin from "src/main";
 import {
-	SyncthingConfiguration,
-	SyncthingDevice,
-	SyncthingFolder,
+	type SyncthingConfiguration,
+	type SyncthingDevice,
+	type SyncthingFolder,
 	type ConflictFilename,
 } from "src/models/entities";
 import { CliFailure, Failure, RestFailure } from "src/models/failures";

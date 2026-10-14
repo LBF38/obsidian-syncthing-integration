@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { TFile } from "obsidian";
-	import { SyncthingController } from "src/controllers/main_controller";
+	import { type TFile } from "obsidian";
+	import { type SyncthingController } from "src/controllers/main_controller";
 	import { Failure } from "src/models/failures";
-	import { ConflictsModal } from "src/views/conflicts_modal";
+	import { type ConflictsModal } from "src/views/conflicts_modal";
 	import { DiffModal } from "src/views/diff_modal";
 	import ConflictFileDetails from "./conflict_file_details.svelte";
 	import { parseConflictFilename } from "src/controllers/utils";

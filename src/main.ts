@@ -1,8 +1,8 @@
 import {
-	Command,
-	Editor,
-	MarkdownFileInfo,
-	MarkdownView,
+	type Command,
+	type Editor,
+	type MarkdownFileInfo,
+	type MarkdownView,
 	Notice,
 	Platform,
 	Plugin,
@@ -17,7 +17,7 @@ import { SyncthingStatusBar } from "./controllers/status_bar";
 import { SyncthingFromAndroid } from "./data/syncthing_android_datasource";
 import { SyncthingFromCLI } from "./data/syncthing_local_datasource";
 import { SyncthingFromREST } from "./data/syncthing_remote_datasource";
-import { SyncthingConfiguration } from "./models/entities";
+import { type SyncthingConfiguration } from "./models/entities";
 import { ConflictsModal } from "./views/conflicts_modal";
 import { DiffModal } from "./views/diff_modal";
 import { SyncthingLogoSVG } from "./views/logos";

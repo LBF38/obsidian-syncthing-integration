@@ -1,5 +1,5 @@
-import { App, Menu, Notice, TFile } from "obsidian";
-import SyncthingPlugin from "src/main";
+import { type App, Menu, Notice, type TFile } from "obsidian";
+import type SyncthingPlugin from "src/main";
 import { Failure } from "src/models/failures";
 import { isConflictFilename, parseConflictFilename } from "./utils";
 

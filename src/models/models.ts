@@ -1,11 +1,11 @@
 import { isStringArray, logErrorIfNotValidJson } from "src/controllers/utils";
 import {
 	ReducedSyncthingDevice,
-	SyncTypes,
+	type SyncTypes,
 	SyncthingConfiguration,
 	SyncthingDevice,
 	SyncthingFolder,
-	SyncthingURL,
+	type SyncthingURL,
 } from "src/models/entities";
 
 export class SyncthingConfigurationModel extends SyncthingConfiguration {

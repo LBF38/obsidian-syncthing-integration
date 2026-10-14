@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SyncthingSettingTab } from "src/views/settings_tab";
+	import { type SyncthingSettingTab } from "src/views/settings_tab";
 	import { onMount } from "svelte";
 	import { FileSuggester } from "./FileSuggester";
 	import { Setting, debounce } from "obsidian";

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Setting, TFile } from "obsidian";
-	import { ConflictsModal } from "src/views/conflicts_modal";
+	import { Setting, type TFile } from "obsidian";
+	import { type ConflictsModal } from "src/views/conflicts_modal";
 	import { onMount } from "svelte";
 	import ConflictItem from "./conflict_item.svelte";
 	import { sortFilesBy } from "src/controllers/utils";

@@ -1,4 +1,4 @@
-import { App, Modal, Notice, TFile } from "obsidian";
+import { type App, Modal, Notice, type TFile } from "obsidian";
 import { mount, unmount } from "svelte";
 import { type SyncthingController } from "src/controllers/main_controller";
 import { type ConflictFilename } from "src/models/entities";
