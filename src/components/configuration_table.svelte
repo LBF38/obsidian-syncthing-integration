@@ -1,73 +1,62 @@
 <script lang="ts">
-	import { useActor } from "@xstate/svelte";
 	import { Notice } from "obsidian";
-	import { ConfigurationModal } from "src/views/configuration_modal";
 	import { derived } from "svelte/store";
+	import { onMount } from "svelte";
+	import { ConfigurationModal } from "src/views/configuration_modal";
 	import ConfigurationItem from "./configuration_item.svelte";
 	import FolderItem from "./folder_item.svelte";
-	import { syncthingControllerMachine } from "./machines";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import RemoteItem from "./remote_item.svelte";
+	import {
+		refreshSyncthingData,
+		syncthingConfiguration,
+		syncthingSystemStatus,
+	} from "./stores";
 	import WarningMessage from "./warning_message.svelte";
 
 	export let parent: ConfigurationModal;
 	parent.titleEl.setText("Syncthing Configuration");
 	parent.titleEl.style.textAlign = "center";
 
-	let { send, snapshot } = useActor(syncthingControllerMachine, {
-		input: {
-			syncthingREST: parent.plugin.syncthingFromREST,
-		},
-	});
-	snapshot.subscribe((data) => {
-		console.log("snapshot: ", data);
-	});
+	let error: string | undefined = undefined;
+
 	const folders = derived(
-		snapshot,
-		($snapshot) => $snapshot.context.configuration?.folders ?? [],
+		syncthingConfiguration,
+		($configuration) => $configuration?.folders ?? [],
 	);
 	const devices = derived(
-		snapshot,
-		($snapshot) => $snapshot.context.configuration?.devices ?? [],
+		syncthingConfiguration,
+		($configuration) => $configuration?.devices ?? [],
 	);
 	const thisDevice = derived(
-		snapshot,
-		($snapshot) =>
-			$devices.filter(
-				(device) =>
-					$snapshot.context.system_status?.myID === device.deviceID,
-			)[0],
+		[devices, syncthingSystemStatus],
+		([$devices, $systemStatus]) =>
+			$devices.find((device) => device.deviceID === $systemStatus?.myID),
 	);
+
+	async function refresh() {
+		error = undefined;
+		try {
+			await refreshSyncthingData(parent.plugin.syncthingFromREST);
+		} catch (e) {
+			console.error("Failed to fetch the Syncthing configuration.", e);
+			error = e instanceof Error ? e.message : String(e);
+			new Notice("Failed to fetch the Syncthing configuration.");
+		}
+	}
+
+	onMount(refresh);
 </script>
 
 <WarningMessage
 	message="The following configuration is not fully implemented yet. Some data aren't real-time and some controls are not implemented yet. It is mainly to reproduce the Syncthing GUI and then, real-time data and controls will be added."
 />
 
-{#if $snapshot.matches("failure")}
-	<WarningMessage
-		title="An error occurred"
-		message="Something wrong happened. The configuration might not be correctly shown. Expect some errors."
-	>
-		<button on:click={() => send({ type: "RETRY" })}> Retry </button>
+{#if error}
+	<WarningMessage title="An error occurred" message={error}>
+		<button on:click={refresh}> Retry </button>
 	</WarningMessage>
 {/if}
-
-<!-- {#if restartRequired}
-	TODO: make it change when configuration changes. (note for later)
-	<WarningMessage
-		message="The configuration has been saved but not activated. Syncthing must restart to activate the new configuration."
-	>
-		<button
-			on:click={async () => {
-				await parent.plugin.syncthingFromREST.restart();
-				restartRequired = !restartRequired;
-			}}
-		>
-			Restart
-		</button>
-	</WarningMessage>
-{/if} -->
 
 <div class="left">
 	<div class="folder">
@@ -76,27 +65,15 @@
 			<FolderItem {folder} />
 		{/each}
 		<div class="controls">
-			<button
-				on:click={async (event) => {
-					new Notice("Not implemented yet!");
-				}}
-			>
+			<button on:click={() => new Notice("Not implemented yet!")}>
 				<ObsidianLucideIcon name="pause" />
 				<span>Pause All</span>
 			</button>
-			<button
-				on:click={async (event) => {
-					new Notice("Not implemented yet!");
-				}}
-			>
+			<button on:click={() => new Notice("Not implemented yet!")}>
 				<ObsidianLucideIcon name="refresh-cw" />
 				<span>Rescan All</span>
 			</button>
-			<button
-				on:click={async (event) => {
-					new Notice("Not implemented yet!");
-				}}
-			>
+			<button on:click={() => new Notice("Not implemented yet!")}>
 				<ObsidianLucideIcon name="plus" />
 				<span>Add Folder</span>
 			</button>
@@ -106,7 +83,9 @@
 <div class="right">
 	<div class="mydevice">
 		<h2>This Device</h2>
-		<ConfigurationItem isThisDevice device={$thisDevice} />
+		{#if $thisDevice}
+			<ConfigurationItem isThisDevice device={$thisDevice} />
+		{/if}
 	</div>
 	<div class="remote">
 		<h2>
@@ -117,27 +96,15 @@
 			<RemoteItem {device} />
 		{/each}
 		<div class="controls">
-			<button
-				on:click={async (event) => {
-					new Notice("Not implemented yet!");
-				}}
-			>
+			<button on:click={() => new Notice("Not implemented yet!")}>
 				<ObsidianLucideIcon name="pause" />
 				<span>Pause All</span>
 			</button>
-			<button
-				on:click={async (event) => {
-					new Notice("Not implemented yet!");
-				}}
-			>
+			<button on:click={() => new Notice("Not implemented yet!")}>
 				<ObsidianLucideIcon name="info" />
 				<span>Recent Changes</span>
 			</button>
-			<button
-				on:click={async (event) => {
-					new Notice("Not implemented yet!");
-				}}
-			>
+			<button on:click={() => new Notice("Not implemented yet!")}>
 				<ObsidianLucideIcon name="plus" />
 				<span>Add Remote Device</span>
 			</button>

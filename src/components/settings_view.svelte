@@ -4,7 +4,6 @@
 	import { ConfigurationModal } from "src/views/configuration_modal";
 	import { ObsidianLogo, SyncthingLogo } from "src/views/logos";
 	import { SyncthingSettingTab } from "src/views/settings_tab";
-	import { SyncthingRestTestModal } from "src/views/syncthing_configuration_test_modal";
 	import { onMount } from "svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
@@ -436,16 +435,6 @@
 			}}
 			slot="control"
 		/>
-	</ObsidianSettingsItem>
-	<ObsidianSettingsItem name="Open Syncthing Configuration Testing modal">
-		<button
-			on:click={async (event) => {
-				new SyncthingRestTestModal(parent.app, parent.plugin).open();
-			}}
-			slot="control"
-		>
-			<ObsidianLucideIcon name="boxes" />
-		</button>
 	</ObsidianSettingsItem>
 {/if}
 
