@@ -28,7 +28,9 @@ import {
 	nullable,
 	number,
 	object,
+	optional,
 	record,
+	recursive,
 	safeParseAsync,
 	string,
 	union,
@@ -231,7 +233,7 @@ export class SyncthingFromREST {
 				object({
 					message: string(),
 					when: dateSchema,
-					level: number(),
+					level: string(),
 				})
 			),
 		});
@@ -254,13 +256,16 @@ export class SyncthingFromREST {
 				"baseDir-userHome": string(),
 				certFile: string(),
 				config: string(),
-				csrfTokens: string(),
+				// Syncthing omits some of these fields depending on the version/platform.
+				csrfTokens: optional(string()),
 				database: string(),
 				defFolder: string(),
 				guiAssets: string(),
 				httpsCertFile: string(),
 				httpsKeyFile: string(),
 				keyFile: string(),
+				legacyDatabase: optional(string()),
+				lockFile: optional(string()),
 				logFile: string(),
 				panicLog: string(),
 			})
@@ -759,7 +764,9 @@ export class SyncthingFromREST {
 			`/rest/folder/errors?folder=${folder}&page=${page}&perpage=${perpage}`,
 			object({
 				folder: string(),
-				errors: array(object({ path: string(), error: string() })),
+				errors: nullable(
+					array(object({ path: string(), error: string() }))
+				),
 				page: number(),
 				perpage: number(),
 			})
@@ -814,18 +821,22 @@ export class SyncthingFromREST {
 			size: number(),
 			type: literal("FILE_INFO_TYPE_FILE"),
 		});
-		const dbFolderSchema = object({
-			modTime: dateSchema,
-			name: string(),
-			size: number(),
-			type: literal("FILE_INFO_TYPE_DIRECTORY"),
-
-			children: nullable(array(dbFileSchema)),
-		});
-		// TODO: verify the schema and implementation. Not sure if it's correct.
+		// Directories can contain both files and other directories, recursively.
+		const dbBrowseEntry: BaseSchema = recursive(() =>
+			union([
+				dbFileSchema,
+				object({
+					modTime: dateSchema,
+					name: string(),
+					size: number(),
+					type: literal("FILE_INFO_TYPE_DIRECTORY"),
+					children: nullable(array(dbBrowseEntry)),
+				}),
+			])
+		);
 		return await this.requestEndpoint(
 			`/rest/db/browse?folder=${folder}&prefix=${prefix}&levels=${levels}`,
-			array(union([dbFileSchema, dbFolderSchema]))
+			array(dbBrowseEntry)
 		);
 	}
 
@@ -886,8 +897,8 @@ export class SyncthingFromREST {
 	 * @see https://docs.syncthing.net/rest/db-ignores-post.html
 	 */
 	private db_ignores = async (
-		method: "GET" | "POST" = "GET",
 		folder: string,
+		method: "GET" | "POST" = "GET",
 		input?: { ignore: string[] }
 	) => {
 		return await this.requestEndpoint(
@@ -1447,8 +1458,8 @@ export class SyncthingFromREST {
 	 */
 	async getDeviceStatistics() {
 		return await this.requestEndpoint(
-			"/rest/stats/device/",
-			array(SyncthingDeviceStats)
+			"/rest/stats/device",
+			SyncthingDeviceStats
 		);
 	}
 
@@ -1459,8 +1470,8 @@ export class SyncthingFromREST {
 	 */
 	async getFolderStatistics() {
 		return await this.requestEndpoint(
-			"/rest/stats/folder/",
-			array(SyncthingFolderStats)
+			"/rest/stats/folder",
+			SyncthingFolderStats
 		);
 	}
 
@@ -1523,30 +1534,25 @@ export class SyncthingFromREST {
 		contentType = "application/json"
 	): Promise<Output<TSchema>> {
 		// FIXME: Fix the issue when connecting to the REST API. (error 403)
-		console.log("requestEndpoint: Endpoint", endpoint);
 		let ip_address = this.plugin.settings.url?.ip_address;
+		// On mobile, `localhost` is not resolved to the loopback interface.
 		if (ip_address === "localhost" && Platform.isMobileApp)
 			ip_address = "127.0.0.1";
 		const url = `${this.plugin.settings.url?.protocol}://${ip_address}:${this.plugin.settings.url?.port}${endpoint}`;
-		const response = requestUrl({
-			url: url,
-			method: method,
-			headers: {
-				"X-API-Key": this.plugin.settings.api_key,
-				Accept: "*/*",
-				"Content-Type": contentType,
-				"Access-Control-Allow-Origin": "*",
-				redirect: "follow",
-			},
-			body: body,
-		});
-		console.log(
-			"requestEndpoint: API Key set ?",
-			this.plugin.settings.api_key !== ""
-		);
-		console.log("requestEndpoint: url requested ", url);
 		try {
-			const res = await response;
+			const res = await requestUrl({
+				url: url,
+				method: method,
+				headers: {
+					"X-API-Key": this.plugin.settings.api_key,
+					Accept: "*/*",
+					"Content-Type": contentType,
+					"Access-Control-Allow-Origin": "*",
+					redirect: "follow",
+				},
+				// A GET/HEAD request must not carry a body.
+				body: method === "GET" ? undefined : body,
+			});
 			if (res.status >= 400) {
 				throw new RestFailure(res.text);
 			}

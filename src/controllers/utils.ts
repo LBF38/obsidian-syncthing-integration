@@ -193,8 +193,9 @@ export function iso<TInput extends string>(options?: {
 		} = options || { date: true, time: true };
 
 		const dateRegex = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
+		// Syncthing returns RFC3339 timestamps with up to nanosecond precision.
 		const timeRegex = `([01]\\d|2[0-3]):[0-5]\\d:${
-			seconds ? `[0-5]\\d${milliseconds ? "\\.\\d{3}" : ""}` : ""
+			seconds ? `[0-5]\\d${milliseconds ? "(\\.\\d{1,9})?" : ""}` : ""
 		}${timezone ? "([+-]([01]\\d|2[0-3]):[0-5]\\d|Z)" : ""}`;
 		const regex = new RegExp(
 			`^${date ? dateRegex : ""}${date && time ? "T" : time ? "T?" : ""}${
@@ -225,7 +226,7 @@ export const dateSchema = transform(
 	union(
 		[
 			date(),
-			string([iso({ date: true, time: true, milliseconds: false })]),
+			string([iso({ date: true, time: true, milliseconds: true })]),
 			number([minValue(0)]),
 		],
 		"Must be a valid Date object, ISO string, or UNIX timestamp"

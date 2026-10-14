@@ -108,7 +108,8 @@ export const SyncthingConfiguration = object({
 		apiKey: string(),
 		insecureAdminAccess: boolean(),
 		theme: string(),
-		debugging: boolean(),
+		// Syncthing omits fields set to their default value from the JSON payload.
+		debugging: optional(boolean()),
 		insecureSkipHostcheck: boolean(),
 		insecureAllowFrameLoading: boolean(),
 	}),
@@ -141,12 +142,13 @@ export const SyncthingConfiguration = object({
 		urSeen: number(),
 		urUniqueId: string(),
 		urURL: string(),
-		urPostInsecurely: boolean(),
+		// Syncthing omits fields set to their default value from the JSON payload.
+		urPostInsecurely: optional(boolean()),
 		urInitialDelayS: number(),
 		autoUpgradeIntervalH: number(),
 		upgradeToPreReleases: boolean(),
 		keepTemporariesH: number(),
-		cacheIgnoredFiles: boolean(),
+		cacheIgnoredFiles: optional(boolean()),
 		progressUpdateIntervalS: number(),
 		limitBandwidthInLan: boolean(),
 		minHomeDiskFree: object({
@@ -166,14 +168,16 @@ export const SyncthingConfiguration = object({
 		stunKeepaliveStartS: number(),
 		stunKeepaliveMinS: number(),
 		stunServers: array(string()),
-		databaseTuning: string(),
+		// Syncthing omits fields set to their default value from the JSON payload.
+		databaseTuning: optional(string()),
 		maxConcurrentIncomingRequestKiB: number(),
 		announceLANAddresses: boolean(),
 		sendFullIndexOnUpgrade: boolean(),
 		featureFlags: array(string()),
 		connectionLimitEnough: number(),
 		connectionLimitMax: number(),
-		insecureAllowOldTLSVersions: boolean(),
+		// Syncthing omits fields set to their default value from the JSON payload.
+		insecureAllowOldTLSVersions: optional(boolean()),
 	}),
 	remoteIgnoredDevices: array(string()),
 	defaults: object({
