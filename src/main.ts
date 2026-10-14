@@ -24,6 +24,7 @@ import { SyncthingLogoSVG } from "./views/logos";
 import { SyncthingSettingTab } from "./views/settings_tab";
 import { Output } from "valibot";
 import { ConfigurationModal } from "./views/configuration_modal";
+import { SyncthingGUIModal } from "./views/syncthing_gui_modal";
 
 interface SyncthingPluginSettings {
 	api_key: string;
@@ -34,6 +35,7 @@ interface SyncthingPluginSettings {
 		| Output<typeof SyncthingConfiguration>
 		| Partial<Output<typeof SyncthingConfiguration>>;
 	devMode: boolean;
+	embedSyncthingGUI: boolean;
 }
 
 const DEFAULT_SETTINGS: Partial<SyncthingPluginSettings> = {
@@ -43,6 +45,7 @@ const DEFAULT_SETTINGS: Partial<SyncthingPluginSettings> = {
 		port: 8384,
 	},
 	devMode: false,
+	embedSyncthingGUI: false,
 };
 
 export default class SyncthingPlugin extends Plugin {
@@ -188,6 +191,14 @@ export default class SyncthingPlugin extends Plugin {
 				name: "Open configuration modal",
 				callback: () => {
 					new ConfigurationModal(this.app, this).open();
+				},
+			},
+			{
+				id: "syncthing-gui-modal",
+				name: "Open Syncthing Web GUI (embedded)",
+				icon: "syncthing",
+				callback: () => {
+					new SyncthingGUIModal(this.app, this).open();
 				},
 			},
 			{

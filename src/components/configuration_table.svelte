@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Notice } from "obsidian";
+	import { Notice, Platform } from "obsidian";
 	import { derived } from "svelte/store";
 	import { onMount } from "svelte";
 	import { ConfigurationModal } from "src/views/configuration_modal";
@@ -7,6 +7,7 @@
 	import FolderItem from "./folder_item.svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import RemoteItem from "./remote_item.svelte";
+	import SyncthingGUI from "./syncthing_gui.svelte";
 	import {
 		refreshSyncthingData,
 		syncthingConfiguration,
@@ -112,6 +113,13 @@
 	</div>
 </div>
 
+{#if parent.plugin.settings.embedSyncthingGUI && !Platform.isMobileApp}
+	<div class="embedded-gui">
+		<h2>Syncthing Web GUI</h2>
+		<SyncthingGUI plugin={parent.plugin} height="500px" />
+	</div>
+{/if}
+
 <style>
 	.left {
 		float: left;
@@ -135,5 +143,9 @@
 	.controls button {
 		gap: 0.5em;
 		margin: 0 0.5em;
+	}
+	.embedded-gui {
+		clear: both;
+		padding-top: 1em;
 	}
 </style>

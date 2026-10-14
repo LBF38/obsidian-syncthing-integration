@@ -4,6 +4,7 @@
 	import { ConfigurationModal } from "src/views/configuration_modal";
 	import { ObsidianLogo, SyncthingLogo } from "src/views/logos";
 	import { SyncthingSettingTab } from "src/views/settings_tab";
+	import { SyncthingGUIModal } from "src/views/syncthing_gui_modal";
 	import { onMount } from "svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
@@ -132,7 +133,6 @@
 						new Notice(`Syncthing Ping : ${status}`);
 					})
 					.catch((error) => {
-						console.log("settings tab error: ", error);
 						new Notice(error.message);
 					});
 			}}
@@ -170,11 +170,9 @@
 				parent.syncthingController
 					.getSystemStatus()
 					.then((result) => {
-						console.log("Syncthing System Status: ", result);
 						new Notice(`This device ID: ${result.myID}`);
 					})
 					.catch((error) => {
-						console.log("Syncthing System Status ERROR: ", error);
 						new Notice(error.message);
 					});
 			}}
@@ -195,13 +193,11 @@
 							new Notice(result.message);
 							return;
 						}
-						console.log("Syncthing Configuration: ", result);
 						new Notice(
 							`Syncthing configuration version: ${result.version}`,
 						);
 					})
 					.catch((error) => {
-						console.log("Syncthing Configuration ERROR: ", error);
 						new Notice(error.message);
 					});
 			}}
@@ -235,11 +231,6 @@
 				style="border-radius: var(--input-radius) 0 0 var(--input-radius);"
 				value={parent.plugin.settings.url?.protocol ?? ""}
 				on:change={async (event) => {
-					console.log(
-						"select change: ",
-						event,
-						event.currentTarget.value,
-					);
 					if (!parent.plugin.settings.url) {
 						parent.plugin.settings.url = {
 							protocol: "http",
@@ -265,11 +256,6 @@
 				placeholder="Enter your Syncthing address here..."
 				value={parent.plugin.settings.url?.ip_address ?? ""}
 				on:change={async (event) => {
-					console.log(
-						"ip address change: ",
-						event,
-						event.currentTarget.value,
-					);
 					const valueChange = event.currentTarget.value;
 					if (!parent.plugin.settings.url) {
 						parent.plugin.settings.url = {
@@ -291,11 +277,6 @@
 				placeholder="Enter the port..."
 				value={parent.plugin.settings.url?.port ?? ""}
 				on:change={async (event) => {
-					console.log(
-						"port change: ",
-						event,
-						event.currentTarget.value,
-					);
 					const valueChange = event.currentTarget.value;
 					if (!parent.plugin.settings.url) {
 						parent.plugin.settings.url = {
@@ -358,8 +339,21 @@
 	</svelte:fragment>
 </ObsidianSettingsItem>
 <ObsidianSettingsItem
+	name="Embed Syncthing GUI in Obsidian"
+	description="When enabled, the Syncthing Web GUI is embedded inside Obsidian (desktop only) instead of being opened in your browser."
+>
+	<ObsidianToggle
+		initialValue={parent.plugin.settings.embedSyncthingGUI}
+		callback={async (value) => {
+			parent.plugin.settings.embedSyncthingGUI = value;
+			await parent.plugin.saveSettings();
+		}}
+		slot="control"
+	/>
+</ObsidianSettingsItem>
+<ObsidianSettingsItem
 	name="Open Syncthing GUI"
-	description="Open the Syncthing GUI in your browser."
+	description="Open the Syncthing GUI, either embedded in Obsidian or in your browser."
 >
 	<button
 		slot="control"
@@ -375,12 +369,19 @@
 				);
 				return;
 			}
+			if (
+				parent.plugin.settings.embedSyncthingGUI &&
+				!Platform.isMobileApp
+			) {
+				new SyncthingGUIModal(parent.app, parent.plugin).open();
+				return;
+			}
 			let url;
 			if (
 				parent.plugin.settings.gui_username &&
 				parent.plugin.settings.gui_password
 			) {
-				url = `${parent.plugin.settings.url?.protocol}://${parent.plugin.settings.gui_username}:${parent.plugin.settings.gui_password}@${parent.plugin.settings.url?.ip_address}:${parent.plugin.settings.url?.port}`;
+				url = `${parent.plugin.settings.url?.protocol}://${encodeURIComponent(parent.plugin.settings.gui_username)}:${encodeURIComponent(parent.plugin.settings.gui_password)}@${parent.plugin.settings.url?.ip_address}:${parent.plugin.settings.url?.port}`;
 			} else {
 				url = syncthingBaseUrl;
 			}
@@ -395,12 +396,11 @@
 <!-- Configuration display -->
 <ObsidianSettingsItem name="Syncthing Configuration" heading={true} />
 <ObsidianSettingsItem
-	name="In construction"
-	description="This part is in construction."
+	name="Open configuration view"
+	description="Open the Syncthing configuration, reimplemented inside Obsidian."
 >
 	<button
 		on:click={async (event) => {
-			new Notice("This part is in construction.");
 			new ConfigurationModal(parent.app, parent.plugin).open();
 		}}
 		slot="control"
