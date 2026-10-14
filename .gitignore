@@ -49,3 +49,9 @@ result
 
 # Vitest coverage output
 coverage
+
+# wdio-obsidian-service cache (downloaded Obsidian versions)
+.obsidian-cache
+
+# Local environment file (e.g. SYNCTHING_API_KEY)
+.env
