@@ -1,10 +1,10 @@
 import { App, Modal } from "obsidian";
 import ConfigurationTable from "src/components/configuration_table.svelte";
 import SyncthingPlugin from "src/main";
-import { SvelteComponent } from "svelte";
+import { mount, unmount } from "svelte";
 
 export class ConfigurationModal extends Modal {
-	private components: SvelteComponent[] = [];
+	private components: Array<ReturnType<typeof mount>> = [];
 	constructor(app: App, public plugin: SyncthingPlugin) {
 		super(app);
 	}
@@ -14,7 +14,7 @@ export class ConfigurationModal extends Modal {
 		this.modalEl.style.height = "100%";
 
 		this.components.push(
-			new ConfigurationTable({
+			mount(ConfigurationTable, {
 				target: this.contentEl,
 				props: {
 					parent: this,
@@ -25,7 +25,7 @@ export class ConfigurationModal extends Modal {
 
 	onClose() {
 		const { contentEl } = this;
-		this.components.forEach((component) => component.$destroy());
+		this.components.forEach((component) => void unmount(component));
 		contentEl.empty();
 	}
 }

@@ -1,6 +1,6 @@
 import { App, Modal } from "obsidian";
 import { Failure } from "src/models/failures";
-import { SvelteComponent } from "svelte";
+import { mount, unmount } from "svelte";
 import ConflictsListComponent from "../components/conflicts_list.svelte";
 import FailureComponent from "../components/error.svelte";
 import { type SyncthingController } from "../controllers/main_controller";
@@ -11,7 +11,7 @@ import { type SyncthingController } from "../controllers/main_controller";
  * @param app - The Obsidian App instance.
  */
 export class ConflictsModal extends Modal {
-	private components?: SvelteComponent[] = [];
+	private components: Array<ReturnType<typeof mount>> = [];
 	constructor(app: App, public syncthingController: SyncthingController) {
 		super(app);
 	}
@@ -20,8 +20,8 @@ export class ConflictsModal extends Modal {
 		this.titleEl.style.textAlign = "center";
 		const conflictFiles = await this.syncthingController.getConflicts();
 		if (conflictFiles instanceof Failure) {
-			this.components?.push(
-				new FailureComponent({
+			this.components.push(
+				mount(FailureComponent, {
 					target: this.contentEl,
 					props: {
 						failure: conflictFiles,
@@ -31,8 +31,8 @@ export class ConflictsModal extends Modal {
 			return;
 		}
 
-		this.components?.push(
-			new ConflictsListComponent({
+		this.components.push(
+			mount(ConflictsListComponent, {
 				target: this.contentEl,
 				props: {
 					parentModal: this,
@@ -43,9 +43,7 @@ export class ConflictsModal extends Modal {
 	}
 
 	onClose() {
-		this.components?.forEach((component) => {
-			component.$destroy();
-		});
+		this.components.forEach((component) => void unmount(component));
 		const { contentEl } = this;
 		contentEl.empty();
 	}

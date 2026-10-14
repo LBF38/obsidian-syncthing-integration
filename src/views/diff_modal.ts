@@ -1,4 +1,5 @@
 import { App, Modal, Notice, TFile } from "obsidian";
+import { mount, unmount } from "svelte";
 import { type SyncthingController } from "src/controllers/main_controller";
 import { type ConflictFilename } from "src/models/entities";
 import { Failure } from "src/models/failures";
@@ -11,7 +12,7 @@ export class DiffModal extends Modal {
 	conflictingFiles: TFile[] = [];
 	conflictingFilesOrFailure: TFile[] | Failure = [];
 	conflictingFilesProperties: Map<TFile, ConflictFilename | Failure>;
-	private component?: DiffView;
+	private component?: ReturnType<typeof mount>;
 	constructor(
 		app: App,
 		public file: TFile,
@@ -38,7 +39,7 @@ export class DiffModal extends Modal {
 		}
 		this.conflictingFiles = this.conflictingFilesOrFailure;
 
-		this.component = new DiffView({
+		this.component = mount(DiffView, {
 			target: this.contentEl,
 			props: {
 				parentModal: this,
@@ -48,7 +49,7 @@ export class DiffModal extends Modal {
 
 	onClose() {
 		const { contentEl } = this;
-		this.component?.$destroy();
+		if (this.component) void unmount(this.component);
 		contentEl.empty();
 	}
 }

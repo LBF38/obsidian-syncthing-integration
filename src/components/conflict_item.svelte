@@ -45,7 +45,7 @@
 	</summary>
 	{#each conflicts as conflict, i}
 		{#if i !== 0}
-			<div class="divider" />
+			<div class="divider"></div>
 		{/if}
 		<ConflictFileDetails file={conflict} counter={i} />
 	{/each}

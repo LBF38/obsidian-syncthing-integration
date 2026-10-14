@@ -125,7 +125,7 @@
 	<div class="conflicts">
 		{#each parentModal.conflictingFiles as file, i}
 			{#if i !== 0}
-				<div class="divider" />
+				<div class="divider"></div>
 			{/if}
 			<ConflictFileDetails
 				{file}
@@ -139,7 +139,7 @@
 </div>
 <div class="column">
 	<h1>Quick difference view</h1>
-	<div bind:this={unifiedMergeViewContainer} class="diff_view" />
+	<div bind:this={unifiedMergeViewContainer} class="diff_view"></div>
 </div>
 <div class="column">
 	<h1>Original file</h1>

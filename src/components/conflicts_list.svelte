@@ -43,10 +43,10 @@
 {#if conflicts.size === 0}
 	<p>No conflicts found.</p>
 {:else}
-	<div bind:this={sortSettingContainer} />
+	<div bind:this={sortSettingContainer}></div>
 	{#each conflicts.keys() as conflictNames, i (conflictNames)}
 		{#if i !== 0}
-			<div class="divider" />
+			<div class="divider"></div>
 		{/if}
 		<ConflictItem
 			conflicts={conflicts.get(conflictNames) ?? []}
