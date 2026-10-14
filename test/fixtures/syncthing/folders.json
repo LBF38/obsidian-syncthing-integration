@@ -1,0 +1,37 @@
+[
+	{
+		"id": "default",
+		"label": "Default Folder",
+		"path": "/home/user/Notes",
+		"filesystemType": "basic",
+		"type": "sendreceive",
+		"devices": [
+			{
+				"deviceID": "AAAAAAA-BBBBBBB-CCCCCCC-DDDDDDD-EEEEEEE-FFFFFFF-GGGGGGG-HHHHHHH",
+				"introducedBy": "",
+				"encryptionPassword": ""
+			},
+			{
+				"deviceID": "IIIIIII-JJJJJJJ-KKKKKKK-LLLLLLL-MMMMMMM-NNNNNNN-OOOOOOO-PPPPPPP",
+				"introducedBy": "",
+				"encryptionPassword": ""
+			}
+		],
+		"maxConflicts": 10
+	},
+	{
+		"id": "work",
+		"label": "Work",
+		"path": "/home/user/Work",
+		"filesystemType": "basic",
+		"type": "sendonly",
+		"devices": [
+			{
+				"deviceID": "AAAAAAA-BBBBBBB-CCCCCCC-DDDDDDD-EEEEEEE-FFFFFFF-GGGGGGG-HHHHHHH",
+				"introducedBy": "",
+				"encryptionPassword": ""
+			}
+		],
+		"maxConflicts": 5
+	}
+]

@@ -46,3 +46,6 @@ main.css
 # Nix / direnv
 .direnv
 result
+
+# Vitest coverage output
+coverage
