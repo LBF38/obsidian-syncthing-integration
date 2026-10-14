@@ -1,0 +1,29 @@
+[
+	{
+		"label": "Lint (tsc + eslint)",
+		"command": "pnpm lint",
+		"cwd": "$ZED_WORKTREE_ROOT",
+		"use_new_terminal": true,
+		"allow_concurrent_runs": false,
+		"reveal": "always",
+		"hide": "never"
+	},
+	{
+		"label": "Dev (esbuild watch)",
+		"command": "pnpm dev",
+		"cwd": "$ZED_WORKTREE_ROOT",
+		"use_new_terminal": true,
+		"allow_concurrent_runs": false,
+		"reveal": "always",
+		"hide": "never"
+	},
+	{
+		"label": "Build (lint + production bundle)",
+		"command": "pnpm build",
+		"cwd": "$ZED_WORKTREE_ROOT",
+		"use_new_terminal": true,
+		"allow_concurrent_runs": false,
+		"reveal": "always",
+		"hide": "never"
+	}
+]

@@ -12,3 +12,7 @@ tab_width = 4
 [*.{yaml,yml}]
 indent_size = 2
 indent_style = space
+
+[*.nix]
+indent_size = 2
+indent_style = space
