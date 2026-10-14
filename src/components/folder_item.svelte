@@ -3,14 +3,15 @@
 	import { SyncthingFolder } from "src/models/entities";
 	import ConfigurationItem from "./configuration_item.svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
-	export let folder: SyncthingFolder = {
+	import { Output } from "valibot";
+	export let folder: Output<typeof SyncthingFolder> = {
 		id: "folder ID",
 		label: "folder label",
 		path: "folder path",
 		type: "sendreceive",
 		devices: [
-			{ deviceID: "device 1", encryptionPassword: "", introducedBy: "" },
-			{ deviceID: "device 2", encryptionPassword: "", introducedBy: "" },
+			{ deviceID: "device 1", introducedBy: "" },
+			{ deviceID: "device 2", introducedBy: "" },
 		],
 		filesystemType: "filesystem type",
 		maxConflicts: 0,

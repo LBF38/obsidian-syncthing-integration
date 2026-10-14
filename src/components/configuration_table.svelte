@@ -1,10 +1,11 @@
 <script lang="ts">
+	import { useActor } from "@xstate/svelte";
 	import { Notice } from "obsidian";
-	import { SyncthingDevice, SyncthingFolder } from "src/models/entities";
 	import { ConfigurationModal } from "src/views/configuration_modal";
-	import { onMount } from "svelte";
+	import { derived } from "svelte/store";
 	import ConfigurationItem from "./configuration_item.svelte";
 	import FolderItem from "./folder_item.svelte";
+	import { syncthingControllerMachine } from "./machines";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import RemoteItem from "./remote_item.svelte";
 	import WarningMessage from "./warning_message.svelte";
@@ -13,29 +14,65 @@
 	parent.titleEl.setText("Syncthing Configuration");
 	parent.titleEl.style.textAlign = "center";
 
-	let syncthingBaseUrl = `${parent.plugin.settings.configuration.url?.protocol}://${parent.plugin.settings.configuration.url?.ip_address}:${parent.plugin.settings.configuration.url?.port}/`;
-	console.log(syncthingBaseUrl);
-	// TODO: refactor this to use Svelte stores.
-	let folders: SyncthingFolder[] = [];
-	let devices: SyncthingDevice[] = [];
-	let thisDevice: SyncthingDevice | undefined = undefined;
-	onMount(async () => {
-		folders = await parent.plugin.syncthingController.getFolders();
-		devices = await parent.plugin.syncthingController.getDevices();
-		thisDevice = devices.first();
-		console.log("Folders: ", folders);
-		console.log("Devices: ", devices);
+	let { send, snapshot } = useActor(syncthingControllerMachine, {
+		input: {
+			syncthingREST: parent.plugin.syncthingFromREST,
+		},
 	});
+	snapshot.subscribe((data) => {
+		console.log("snapshot: ", data);
+	});
+	const folders = derived(
+		snapshot,
+		($snapshot) => $snapshot.context.configuration?.folders ?? [],
+	);
+	const devices = derived(
+		snapshot,
+		($snapshot) => $snapshot.context.configuration?.devices ?? [],
+	);
+	const thisDevice = derived(
+		snapshot,
+		($snapshot) =>
+			$devices.filter(
+				(device) =>
+					$snapshot.context.system_status?.myID === device.deviceID,
+			)[0],
+	);
 </script>
 
 <WarningMessage
 	message="The following configuration is not fully implemented yet. Some data aren't real-time and some controls are not implemented yet. It is mainly to reproduce the Syncthing GUI and then, real-time data and controls will be added."
 />
 
+{#if $snapshot.matches("failure")}
+	<WarningMessage
+		title="An error occurred"
+		message="Something wrong happened. The configuration might not be correctly shown. Expect some errors."
+	>
+		<button on:click={() => send({ type: "RETRY" })}> Retry </button>
+	</WarningMessage>
+{/if}
+
+<!-- {#if restartRequired}
+	TODO: make it change when configuration changes. (note for later)
+	<WarningMessage
+		message="The configuration has been saved but not activated. Syncthing must restart to activate the new configuration."
+	>
+		<button
+			on:click={async () => {
+				await parent.plugin.syncthingFromREST.restart();
+				restartRequired = !restartRequired;
+			}}
+		>
+			Restart
+		</button>
+	</WarningMessage>
+{/if} -->
+
 <div class="left">
 	<div class="folder">
-		<h2>Folders ({folders.length})</h2>
-		{#each folders as folder}
+		<h2>Folders ({$folders.length})</h2>
+		{#each $folders as folder}
 			<FolderItem {folder} />
 		{/each}
 		<div class="controls">
@@ -69,14 +106,14 @@
 <div class="right">
 	<div class="mydevice">
 		<h2>This Device</h2>
-		<ConfigurationItem isThisDevice device={thisDevice} />
+		<ConfigurationItem isThisDevice device={$thisDevice} />
 	</div>
 	<div class="remote">
 		<h2>
-			Remote Devices ({devices.filter((value) => value !== thisDevice)
+			Remote Devices ({$devices.filter((value) => value !== $thisDevice)
 				.length})
 		</h2>
-		{#each devices.filter((value) => value !== thisDevice) as device}
+		{#each $devices.filter((value) => value !== $thisDevice) as device}
 			<RemoteItem {device} />
 		{/each}
 		<div class="controls">

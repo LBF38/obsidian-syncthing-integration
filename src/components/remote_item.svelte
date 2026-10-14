@@ -3,8 +3,9 @@
 	import { SyncthingDevice } from "src/models/entities";
 	import ConfigurationItem from "./configuration_item.svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
-	export let device: SyncthingDevice = {
-		address: ["dynamic"],
+	import { Output } from "valibot";
+	export let device: Output<typeof SyncthingDevice> = {
+		addresses: ["dynamic"],
 		deviceID: "device ID",
 		introducedBy: "introduced by",
 		name: "device name",
