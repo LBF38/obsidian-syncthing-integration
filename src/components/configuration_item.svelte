@@ -16,7 +16,8 @@
 		</slot>
 	</summary>
 	<table>
-		{#if folder && !isThisDevice}
+		<tbody>
+			{#if folder && !isThisDevice}
 			<tr>
 				<td>
 					<div>
@@ -291,6 +292,7 @@
 				</td>
 			</tr>
 		{/if}
+		</tbody>
 	</table>
 	<slot name="footer" class="footer">
 		{#if folder && !isThisDevice}
@@ -379,10 +381,10 @@
 		padding: 1%;
 		border-radius: var(--radius-l);
 	}
-	table > tr:last-child td:first-child {
+	table tbody > tr:last-child td:first-child {
 		border-bottom-left-radius: var(--radius-m);
 	}
-	table > tr:last-child td:last-child {
+	table tbody > tr:last-child td:last-child {
 		border-bottom-right-radius: var(--radius-m);
 	}
 	table tr td {

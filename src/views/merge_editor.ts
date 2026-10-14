@@ -1,8 +1,9 @@
 import MergeEditor from "../components/merge_editor.svelte";
 import { App, Modal, TFile } from "obsidian";
+import { mount, unmount } from "svelte";
 
 export class MergeModal extends Modal {
-	private component?: MergeEditor;
+	private component?: ReturnType<typeof mount>;
 	private originalContent?: string;
 	private modifiedContent?: string;
 	constructor(
@@ -16,7 +17,7 @@ export class MergeModal extends Modal {
 	async onOpen() {
 		this.originalContent = await this.app.vault.read(this.originalFile);
 		this.modifiedContent = await this.app.vault.read(this.modifiedFile);
-		this.component = new MergeEditor({
+		this.component = mount(MergeEditor, {
 			target: this.contentEl,
 			props: {
 				parentModal: this,
@@ -31,6 +32,6 @@ export class MergeModal extends Modal {
 		);
 	}
 	onClose(): void {
-		this.component?.$destroy();
+		if (this.component) void unmount(this.component);
 	}
 }

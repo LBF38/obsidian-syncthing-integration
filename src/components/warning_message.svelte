@@ -40,7 +40,7 @@
 				on:keypress={() => (dismiss = !dismiss)}
 				on:click={() => (dismiss = !dismiss)}
 				class="close-button"
-			/>
+			></div>
 		</div>
 		<div class="callout-content">
 			<p>{message}</p>

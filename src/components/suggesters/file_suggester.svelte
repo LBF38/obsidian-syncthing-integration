@@ -20,7 +20,7 @@
 	});
 </script>
 
-<div id="file-suggester" class={className} bind:this={containerEl} />
+<div id="file-suggester" class={className} bind:this={containerEl}></div>
 
 <style>
 	/* your styles go here */

@@ -4,6 +4,7 @@ import {
 	PluginSettingTab,
 	Setting
 } from "obsidian";
+import { mount } from "svelte";
 import { type SyncthingController } from "src/controllers/main_controller";
 import SyncthingPlugin from "src/main";
 import { SyncthingConfiguration, SyncthingDevice } from "src/models/entities";
@@ -24,7 +25,7 @@ export class SyncthingSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		new SettingView({
+		mount(SettingView, {
 			target: containerEl,
 			props: {
 				parent: this

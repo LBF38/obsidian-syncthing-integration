@@ -123,7 +123,9 @@ export class SyncthingFromREST {
 			})
 			.catch((error) => {
 				console.error("requestEndpoint: error: ", error);
-				throw new RestFailure(error);
+				throw new RestFailure(
+					error instanceof Error ? error.message : String(error)
+				);
 			});
 	}
 }

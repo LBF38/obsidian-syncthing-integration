@@ -112,7 +112,7 @@
 	});
 </script>
 
-<div class="merge" bind:this={mergeEditorContainer} />
+<div class="merge" bind:this={mergeEditorContainer}></div>
 
 <h3>Preview the merged file</h3>
 <div class="preview">
@@ -131,7 +131,7 @@
 	{/if}
 </div>
 
-<div bind:this={toolsContainer} class="tools" />
+<div bind:this={toolsContainer} class="tools"></div>
 
 <style>
 	.merge {

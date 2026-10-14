@@ -11,4 +11,4 @@
 	});
 </script>
 
-<div bind:this={element} {...$$restProps} style="display: flex;" />
+<div bind:this={element} {...$$restProps} style="display: flex;"></div>
