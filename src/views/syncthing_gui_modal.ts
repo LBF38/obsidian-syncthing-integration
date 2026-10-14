@@ -1,7 +1,7 @@
-import { App, Modal } from "obsidian";
+import { type App, Modal } from "obsidian";
 import { mount, unmount } from "svelte";
 import SyncthingGUI from "src/components/syncthing_gui.svelte";
-import SyncthingPlugin from "src/main";
+import type SyncthingPlugin from "src/main";
 
 /**
  * Modal embedding the Syncthing Web GUI inside Obsidian.

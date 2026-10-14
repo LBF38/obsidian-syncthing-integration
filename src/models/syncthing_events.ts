@@ -1,7 +1,7 @@
 import { dateSchema } from "src/controllers/utils";
 import {
-	BaseSchema,
-	Output,
+	type BaseSchema,
+	type Output,
 	array,
 	boolean,
 	literal,

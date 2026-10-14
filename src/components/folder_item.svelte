@@ -3,7 +3,7 @@
 	import { type SyncthingFolder } from "src/models/entities";
 	import ConfigurationItem from "./configuration_item.svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
-	import { Output } from "valibot";
+	import type { Output } from "valibot";
 	export let folder: Output<typeof SyncthingFolder> = {
 		id: "folder ID",
 		label: "folder label",

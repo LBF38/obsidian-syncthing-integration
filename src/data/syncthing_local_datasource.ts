@@ -1,7 +1,7 @@
 import { Platform } from "obsidian";
 import { SyncthingConfiguration } from "src/models/entities";
 import { CliFailure } from "src/models/failures";
-import { Output, safeParse } from "valibot";
+import { type Output, safeParse } from "valibot";
 
 /**
  * CLI of Syncthing.

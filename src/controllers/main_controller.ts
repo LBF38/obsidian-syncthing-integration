@@ -10,7 +10,7 @@ import {
 	type ConflictFilename,
 } from "src/models/entities";
 import { CliFailure, Failure, RestFailure } from "src/models/failures";
-import { Output } from "valibot";
+import { type Output } from "valibot";
 import {
 	isConflictFilename,
 	parseConflictFilename,

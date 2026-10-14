@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Platform } from "obsidian";
-	import SyncthingPlugin from "src/main";
+	import type SyncthingPlugin from "src/main";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import WarningMessage from "./warning_message.svelte";
 

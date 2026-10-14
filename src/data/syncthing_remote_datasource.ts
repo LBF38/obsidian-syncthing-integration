@@ -12,13 +12,13 @@ import {
 } from "src/models/entities";
 import { RestFailure } from "src/models/failures";
 import {
-	SyncthingEventTypes,
+	type SyncthingEventTypes,
 	UnionSyncthingEvents,
 } from "src/models/syncthing_events";
 import {
-	BaseSchema,
-	BaseSchemaAsync,
-	Output,
+	type BaseSchema,
+	type BaseSchemaAsync,
+	type Output,
 	any,
 	array,
 	boolean,

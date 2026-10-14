@@ -1,7 +1,7 @@
 import { type SyncthingFromREST } from "src/data/syncthing_remote_datasource";
-import { SyncthingConfiguration, SyncthingSystemStatus } from "src/models/entities";
+import { type SyncthingConfiguration, type SyncthingSystemStatus } from "src/models/entities";
 import { writable } from "svelte/store";
-import { Output } from "valibot";
+import { type Output } from "valibot";
 
 export type SyncthingConfigurationData = Output<typeof SyncthingConfiguration>;
 export type SyncthingSystemStatusData = Output<typeof SyncthingSystemStatus>;

@@ -2,7 +2,7 @@
 	import { Notice } from "obsidian";
 	import { type SyncthingDevice, type SyncthingFolder } from "src/models/entities";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
-	import { Output } from "valibot";
+	import type { Output } from "valibot";
 
 	export let folder: Output<typeof SyncthingFolder> | undefined = undefined;
 	export let device: Output<typeof SyncthingDevice> | undefined = undefined;
