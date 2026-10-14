@@ -1,6 +1,6 @@
 import { Platform, requestUrl } from "obsidian";
-import SyncthingPlugin from "src/main";
-import { SyncthingDevice } from "src/models/entities";
+import type SyncthingPlugin from "src/main";
+import { type SyncthingDevice } from "src/models/entities";
 import { RestFailure } from "src/models/failures";
 import {
 	SyncthingConfigurationModel,

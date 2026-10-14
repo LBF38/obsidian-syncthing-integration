@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Failure } from "src/models/failures";
+	import { type Failure } from "src/models/failures";
 
 	export let failure: Failure | { message: string }; // For the error message
 </script>

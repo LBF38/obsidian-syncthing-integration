@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Notice } from "obsidian";
-	import { SyncthingDevice, SyncthingFolder } from "src/models/entities";
+	import { type SyncthingDevice, type SyncthingFolder } from "src/models/entities";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 
 	export let folder: SyncthingFolder | undefined = undefined;

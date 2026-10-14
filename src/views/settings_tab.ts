@@ -1,13 +1,13 @@
 import {
-	App,
+	type App,
 	Notice,
 	PluginSettingTab,
 	Setting
 } from "obsidian";
 import { mount } from "svelte";
 import { type SyncthingController } from "src/controllers/main_controller";
-import SyncthingPlugin from "src/main";
-import { SyncthingConfiguration, SyncthingDevice } from "src/models/entities";
+import type SyncthingPlugin from "src/main";
+import { type SyncthingConfiguration, type SyncthingDevice } from "src/models/entities";
 import { Failure } from "src/models/failures";
 import SettingView from "../components/settings_view.svelte";
 

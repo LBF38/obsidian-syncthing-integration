@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Notice } from "obsidian";
-	import { SyncthingDevice, SyncthingFolder } from "src/models/entities";
-	import { ConfigurationModal } from "src/views/configuration_modal";
+	import { type SyncthingDevice, type SyncthingFolder } from "src/models/entities";
+	import { type ConfigurationModal } from "src/views/configuration_modal";
 	import { onMount } from "svelte";
 	import ConfigurationItem from "./configuration_item.svelte";
 	import FolderItem from "./folder_item.svelte";

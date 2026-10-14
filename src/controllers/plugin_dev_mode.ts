@@ -7,8 +7,8 @@
 
 import randomDate from "@js-random/date";
 import { loremIpsum } from "lorem-ipsum";
-import { App, Modal, Notice, Setting } from "obsidian";
-import SyncthingPlugin from "../main";
+import { type App, Modal, Notice, Setting } from "obsidian";
+import type SyncthingPlugin from "../main";
 
 export class PluginDevModeController {
 	constructor(public plugin: SyncthingPlugin) {}

@@ -1,4 +1,4 @@
-import { App, Modal } from "obsidian";
+import { type App, Modal } from "obsidian";
 import { Failure } from "src/models/failures";
 import { mount, unmount } from "svelte";
 import ConflictsListComponent from "../components/conflicts_list.svelte";

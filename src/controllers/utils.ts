@@ -2,8 +2,8 @@
 
 import { TFile } from "obsidian";
 import { Failure } from "src/models/failures";
-import { SyncthingController } from "./main_controller";
-import { ConflictFilename } from "src/models/entities";
+import { type SyncthingController } from "./main_controller";
+import { type ConflictFilename } from "src/models/entities";
 
 /**
  * This utility function is used to sort the files in conflict by date, name, etc.

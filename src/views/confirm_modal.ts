@@ -1,4 +1,4 @@
-import { App, ButtonComponent, Modal } from "obsidian";
+import { type App, ButtonComponent, Modal } from "obsidian";
 
 /**
  * Confirmation modal for actions that requires the user to confirm it.

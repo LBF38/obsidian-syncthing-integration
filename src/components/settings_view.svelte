@@ -3,7 +3,7 @@
 	import { Failure } from "src/models/failures";
 	import { ConfigurationModal } from "src/views/configuration_modal";
 	import { ObsidianLogo, SyncthingLogo } from "src/views/logos";
-	import { SyncthingSettingTab } from "src/views/settings_tab";
+	import { type SyncthingSettingTab } from "src/views/settings_tab";
 	import { onMount } from "svelte";
 	import ObsidianLucideIcon from "./obsidian_lucide_icon.svelte";
 	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
@@ -133,7 +133,7 @@
 					})
 					.catch((error) => {
 						console.log("settings tab error: ", error);
-						new Notice(error.message);
+						new Notice((error as Error).message);
 					});
 			}}
 		>
@@ -153,7 +153,7 @@
 							new Notice(`Syncthing Ping : ${status}`);
 						})
 						.catch((error) => {
-							new Notice(error.message);
+							new Notice((error as Error).message);
 						});
 				}}
 			>

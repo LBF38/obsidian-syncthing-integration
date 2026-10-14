@@ -1,6 +1,6 @@
 <!-- This file is for providing a reusable component to display information about a sync conflict file. -->
 <script lang="ts">
-	import { TFile } from "obsidian";
+	import { type TFile } from "obsidian";
 	import { formatBytes, parseConflictFilename } from "src/controllers/utils";
 	import { Failure } from "src/models/failures";
 	import { createEventDispatcher } from "svelte";

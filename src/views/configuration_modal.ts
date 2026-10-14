@@ -1,6 +1,6 @@
-import { App, Modal } from "obsidian";
+import { type App, Modal } from "obsidian";
 import ConfigurationTable from "src/components/configuration_table.svelte";
-import SyncthingPlugin from "src/main";
+import type SyncthingPlugin from "src/main";
 import { mount, unmount } from "svelte";
 
 export class ConfigurationModal extends Modal {

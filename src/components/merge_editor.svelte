@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { MergeView } from "@codemirror/merge";
-	import { EditorState, Text } from "@codemirror/state";
+	import { EditorState, type Text } from "@codemirror/state";
 	import { EditorView, basicSetup } from "codemirror";
 	import { marked } from "marked";
 	import { ButtonComponent, Notice } from "obsidian";
 	import { ConfirmModal } from "src/views/confirm_modal";
-	import { MergeModal } from "src/views/merge_editor";
+	import { type MergeModal } from "src/views/merge_editor";
 	import { onMount } from "svelte";
 
 	export let originalContent = "this is the original text";
@@ -118,16 +118,10 @@
 <div class="preview">
 	{#if contentEditorA}
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-		{@html marked(contentEditorA.toString(), {
-			mangle: false,
-			headerIds: false,
-		})}
+		{@html marked(contentEditorA.toString())}
 	{:else}
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-		{@html marked(originalContent, {
-			mangle: false,
-			headerIds: false,
-		})}
+		{@html marked(originalContent)}
 	{/if}
 </div>
 

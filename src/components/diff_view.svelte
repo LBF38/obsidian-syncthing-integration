@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { unifiedMergeView } from "@codemirror/merge";
-	import { EditorState, Transaction } from "@codemirror/state";
+	import { EditorState, type Transaction } from "@codemirror/state";
 	import { EditorView, basicSetup } from "codemirror";
 	import { marked } from "marked";
-	import { Notice, TFile } from "obsidian";
-	import { DiffModal } from "src/views/diff_modal";
+	import { Notice, type TFile } from "obsidian";
+	import { type DiffModal } from "src/views/diff_modal";
 	import { MergeModal } from "src/views/merge_editor";
 	import { onMount } from "svelte";
 	import ConflictFileDetails from "./conflict_file_details.svelte";
@@ -152,10 +152,7 @@
 		{:then content}
 			<div class="preview">
 				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-				{@html marked(content, {
-					mangle: false,
-					headerIds: false,
-				})}
+				{@html marked(content)}
 			</div>
 		{/await}
 		<h2>Conflicting file preview</h2>
@@ -164,10 +161,7 @@
 		{:then content}
 			<div class="preview">
 				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-				{@html marked(content, {
-					mangle: false,
-					headerIds: false,
-				})}
+				{@html marked(content)}
 			</div>
 		{/await}
 	</div>

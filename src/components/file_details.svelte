@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TFile } from "obsidian";
+	import { type TFile } from "obsidian";
 	import { formatBytes } from "src/controllers/utils";
 
 	export let file: TFile;

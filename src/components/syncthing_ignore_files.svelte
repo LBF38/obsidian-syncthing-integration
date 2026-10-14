@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Notice, normalizePath } from "obsidian";
-	import { SyncthingSettingTab } from "src/views/settings_tab";
+	import { type SyncthingSettingTab } from "src/views/settings_tab";
 	import { writable } from "svelte/store";
 	import ObsidianSettingsItem from "./obsidian_settings_item.svelte";
 	import FileSuggester from "./suggesters/file_suggester.svelte";
