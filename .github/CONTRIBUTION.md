@@ -42,6 +42,16 @@ The tests read the Syncthing connection from the `SYNCTHING_URL` (default `http:
 
 Both flavors also run automatically in CI (see [`.github/workflows/e2e.yml`](workflows/e2e.yml)): a `smoke` job runs the smoke spec, then an `e2e` job spins up a Syncthing container and runs the full suite.
 
+### Keeping `minAppVersion` accurate
+
+`manifest.json`'s `minAppVersion` is the oldest Obsidian version the plugin supports. It is shown to users, and `version-bump.mjs` records it for every release in `versions.json`. Keeping it honest matters, so it is enforced by the e2e tests:
+
+- The **PR gate** (`.github/workflows/e2e.yml`) always tests the declared `minAppVersion` together with the latest Obsidian. If the plugin regresses on its declared floor, the build fails.
+- The **Compatibility sweep** (`.github/workflows/compat.yml`) runs the smoke suite against one Obsidian version per minor release, from the oldest testable version up to the latest. Run it manually (`workflow_dispatch`) or wait for the weekly schedule, then look at the results: the lowest version that passes is the real floor.
+- `minAppVersion` must be at least `1.0.3` (the oldest version `wdio-obsidian-service` can test). If it is lower, the e2e config falls back to `1.0.3` and prints a warning.
+
+When you start using an Obsidian API that requires a newer version, raise `minAppVersion` in `manifest.json` and run the sweep to confirm the new floor. Never edit past entries in `versions.json` by hand; only the current release's entry is written by `version-bump.mjs`.
+
 ## Code Style
 
 <!-- TODO: add the code style guidelines of the project. -->

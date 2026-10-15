@@ -1,0 +1,124 @@
+# Compatibility sweep: find the plugin's real minimum Obsidian version.
+#
+# `manifest.json`'s minAppVersion is promised to users (and recorded per release
+# in versions.json), but it is easy for it to drift away from reality. This
+# workflow runs the smoke suite against one Obsidian version per minor release,
+# from the oldest version wdio-obsidian-service supports up to the latest
+# stable release.
+#
+# How to read the result: after a run, look at the "Obsidian <version>" jobs.
+# The lowest version that passes is the real floor. If it is lower than the
+# current `minAppVersion` you can lower `minAppVersion` in manifest.json; if the
+# declared version itself fails, you must raise it. Either way the PR-gate in
+# `e2e.yml` keeps the declared floor honest until you do.
+#
+# This runs on a schedule and on demand (not on every push, since it launches
+# many Obsidian instances).
+name: Compatibility sweep
+
+on:
+  schedule:
+    # Every Monday at 06:00 UTC.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: >-
+          Optional space-separated list of Obsidian versions to test. Leave
+          empty to auto-generate one version per minor release.
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  matrix:
+    name: Compute version matrix
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.generate.outputs.versions }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "9"
+          run_install: false
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate matrix
+        id: generate
+        env:
+          INPUT_VERSIONS: ${{ github.event.inputs.versions }}
+        run: |
+          if [ -n "$INPUT_VERSIONS" ]; then
+            versions=$(node -e 'process.stdout.write(JSON.stringify(process.env.INPUT_VERSIONS.trim().split(/\s+/)))')
+          else
+            versions=$(node scripts/obsidian-compat-matrix.mjs)
+          fi
+          echo "versions=$versions" >> "$GITHUB_OUTPUT"
+          echo "Testing Obsidian versions: $versions"
+
+  sweep:
+    name: Obsidian ${{ matrix.version }}
+    needs: matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ fromJSON(needs.matrix.outputs.versions) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "9"
+          run_install: false
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build plugin
+        run: pnpm build
+      - name: Cache Obsidian
+        uses: actions/cache@v4
+        with:
+          path: .obsidian-cache
+          key: obsidian-cache-${{ runner.os }}-${{ matrix.version }}
+      - name: Setup virtual graphics
+        run: |
+          sudo rm -rf /etc/apt/sources.list.d/*.list
+          echo "set man-db/auto-update false" | sudo debconf-communicate
+          sudo dpkg-reconfigure man-db
+          sudo apt-get update -q
+          sudo apt-get install -q herbstluftwm dzen2 x11-xserver-utils
+          export DISPLAY=:99
+          echo "DISPLAY=$DISPLAY" >> "$GITHUB_ENV"
+          Xvfb $DISPLAY -screen 0 1280x1024x24 +extension GLX -noreset &
+          sleep 1
+          herbstluftwm &
+          sleep 1
+      - name: Run smoke tests on Obsidian ${{ matrix.version }}
+        run: pnpm test:e2e:smoke
+        env:
+          OBSIDIAN_VERSIONS: ${{ matrix.version }}
