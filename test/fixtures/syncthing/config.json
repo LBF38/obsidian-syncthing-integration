@@ -1,0 +1,58 @@
+{
+	"version": "37",
+	"folders": [
+		{
+			"id": "default",
+			"label": "Default Folder",
+			"path": "/home/user/Notes",
+			"filesystemType": "basic",
+			"type": "sendreceive",
+			"devices": [
+				{
+					"deviceID": "AAAAAAA-BBBBBBB-CCCCCCC-DDDDDDD-EEEEEEE-FFFFFFF-GGGGGGG-HHHHHHH",
+					"introducedBy": "",
+					"encryptionPassword": ""
+				},
+				{
+					"deviceID": "IIIIIII-JJJJJJJ-KKKKKKK-LLLLLLL-MMMMMMM-NNNNNNN-OOOOOOO-PPPPPPP",
+					"introducedBy": "",
+					"encryptionPassword": ""
+				}
+			],
+			"maxConflicts": 10
+		},
+		{
+			"id": "work",
+			"label": "Work",
+			"path": "/home/user/Work",
+			"filesystemType": "basic",
+			"type": "sendonly",
+			"devices": [
+				{
+					"deviceID": "AAAAAAA-BBBBBBB-CCCCCCC-DDDDDDD-EEEEEEE-FFFFFFF-GGGGGGG-HHHHHHH",
+					"introducedBy": "",
+					"encryptionPassword": ""
+				}
+			],
+			"maxConflicts": 5
+		}
+	],
+	"devices": [
+		{
+			"deviceID": "AAAAAAA-BBBBBBB-CCCCCCC-DDDDDDD-EEEEEEE-FFFFFFF-GGGGGGG-HHHHHHH",
+			"introducedBy": "",
+			"addresses": ["dynamic"],
+			"paused": false,
+			"ignoredFolders": [],
+			"name": "local-device"
+		},
+		{
+			"deviceID": "IIIIIII-JJJJJJJ-KKKKKKK-LLLLLLL-MMMMMMM-NNNNNNN-OOOOOOO-PPPPPPP",
+			"introducedBy": "AAAAAAA",
+			"addresses": ["tcp://192.168.0.10:22000", "dynamic"],
+			"paused": true,
+			"ignoredFolders": ["work"],
+			"name": "remote-device"
+		}
+	]
+}

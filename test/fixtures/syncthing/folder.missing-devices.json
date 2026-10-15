@@ -1,0 +1,8 @@
+{
+	"id": "default",
+	"label": "Default Folder",
+	"path": "/home/user/Notes",
+	"filesystemType": "basic",
+	"type": "sendreceive",
+	"maxConflicts": 10
+}

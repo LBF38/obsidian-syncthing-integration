@@ -13,9 +13,9 @@ To get started with contributing, please follow these steps:
 5. Commit your changes using [conventional commits](https://www.conventionalcommits.org/) and follow the [commit message guidelines](https://www.conventionalcommits.org/en/v1.0.0/#summary).
    1. It is recommended to use VS Code's plugin [Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits) to help you with this.
    2. Or any other tool that helps you simplify the process of writing conventional commits.
-6. Push to your branch: `git push origin my-branch-name`.
-7. Submit a pull request to the `main` branch of the original project's repository.
-<!-- 5. Run the tests to ensure everything is working as expected. -->
+6. Run the tests to ensure everything is working as expected: `pnpm test`.
+7. Push to your branch: `git push origin my-branch-name`.
+8. Submit a pull request to the `main` branch of the original project's repository.
 
 ## Code Style
 

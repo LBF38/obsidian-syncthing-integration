@@ -44,7 +44,8 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install
-      # - run: pnpm test # Need to add tests for this to work #49
+      - name: Run tests
+        run: pnpm test
       - name: Build
         run: pnpm build
       - name: Release
