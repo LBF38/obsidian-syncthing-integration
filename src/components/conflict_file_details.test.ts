@@ -2,7 +2,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render } from "@testing-library/svelte";
 import { mount, unmount } from "svelte";
-import { ConflictParts, makeConflictFile, makeFile } from "../../test/helpers/files";
+import type { ConflictParts } from "../../test/helpers/files";
+import { makeConflictFile, makeFile } from "../../test/helpers/files";
 import ConflictFileDetails from "./conflict_file_details.svelte";
 
 afterEach(cleanup);

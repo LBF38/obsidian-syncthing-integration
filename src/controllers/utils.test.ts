@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { TFile } from "obsidian";
+import type { TFile } from "obsidian";
 import { Failure } from "src/models/failures";
 import { makeConflictFile, makeFile } from "../../test/helpers/files";
 import type { SyncthingController } from "./main_controller";

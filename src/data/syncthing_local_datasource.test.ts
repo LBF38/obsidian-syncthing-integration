@@ -1,4 +1,5 @@
 import { createRequire } from "node:module";
+import type * as UtilModule from "node:util";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Platform } from "obsidian";
 import { CliFailure } from "src/models/failures";
@@ -13,7 +14,7 @@ import { SyncthingFromCLI } from "./syncthing_local_datasource";
  * global `require`.
  */
 const nodeRequire = createRequire(import.meta.url);
-const util = nodeRequire("util") as typeof import("util");
+const util = nodeRequire("util") as typeof UtilModule;
 
 let stdout: string;
 let stderr: string;
