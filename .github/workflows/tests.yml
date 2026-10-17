@@ -12,6 +12,8 @@ permissions:
 
 jobs:
   test:
+    # Release PRs only bump version files.
+    if: "${{ github.event_name != 'pull_request' || !startsWith(github.head_ref, 'release/') }}"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
