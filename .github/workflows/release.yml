@@ -15,6 +15,8 @@ permissions:
 
 jobs:
   release:
+    # Release PRs only bump version files.
+    if: "${{ github.event_name != 'pull_request' || !startsWith(github.head_ref, 'release/') }}"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,8 +50,17 @@ jobs:
         run: pnpm test
       - name: Build
         run: pnpm build
+      # Exits with 1 on purpose when it creates/updates the release PR, to abort
+      # semantic-release before it publishes. The gate below decides if that is fatal.
       - name: Release
+        id: release
         if: github.ref == 'refs/heads/master'
+        continue-on-error: true
         run: pnpm release
         env:
           GITHUB_TOKEN: ${{ github.token }}
+      - name: Fail on severe release error
+        if: github.ref == 'refs/heads/master' && steps.release.outcome == 'failure' && steps.release.outputs.release_pr_created != 'true'
+        run: |
+          echo "::error::semantic-release failed without creating a release PR. See the Release step logs."
+          exit 1

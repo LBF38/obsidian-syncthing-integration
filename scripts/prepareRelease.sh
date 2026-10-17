@@ -4,7 +4,7 @@ if ! git log -1 --pretty=%B | grep -q "chore(release): :bookmark: $1"; then
 	pnpm run version
 	git add manifest.json versions.json package.json docs/CHANGELOG.md
 	git checkout -b release/"$1"
-	git commit -m "chore(release): :bookmark: $1 [skip ci]"
+	git commit -m "chore(release): :bookmark: $1"
 	git push --set-upstream origin release/"$1" --force
 	if gh pr list | grep -q "release/$1"; then
 		echo "a release PR already exists"
@@ -15,6 +15,9 @@ if ! git log -1 --pretty=%B | grep -q "chore(release): :bookmark: $1"; then
 		gh pr create --title "chore(release): :bookmark: $1" --body "$2" --base master --head release/"$1"
 	fi
 	git checkout master
+	if [ -n "${GITHUB_OUTPUT:-}" ]; then
+		echo "release_pr_created=true" >> "$GITHUB_OUTPUT"
+	fi
 	echo "Need to merge the release PR"
 	exit 1
 fi
