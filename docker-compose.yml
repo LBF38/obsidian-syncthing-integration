@@ -1,0 +1,29 @@
+# Spins up a real Syncthing instance for the local end-to-end tests.
+#
+#   pnpm syncthing:up        # start (waits until running)
+#   pnpm test:e2e            # run the e2e suite against it
+#   pnpm syncthing:down      # stop and remove
+#
+# The API key is fixed via STGUIAPIKEY so the tests are deterministic. It is
+# intentionally a throwaway value only ever bound to localhost.
+services:
+  syncthing:
+    image: syncthing/syncthing:2
+    container_name: obsidian-syncthing-e2e
+    environment:
+      STGUIADDRESS: 0.0.0.0:8384
+      STGUIAPIKEY: test-api-key
+    ports:
+      - "8384:8384"
+      - "22000:22000/tcp"
+      - "22000:22000/udp"
+      - "21027:21027/udp"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O - --header='X-API-Key: test-api-key' http://localhost:8384/rest/system/ping | grep -q pong",
+        ]
+      interval: 2s
+      timeout: 5s
+      retries: 30

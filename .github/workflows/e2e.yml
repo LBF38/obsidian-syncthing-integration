@@ -1,0 +1,163 @@
+# End-to-end tests: run the plugin inside a real Obsidian instance.
+#
+# The `smoke` job verifies the plugin loads and its core, vault-only features
+# work. The `e2e` job then runs the full suite against a real Syncthing
+# container (the plugin's REST API calls are exercised for real).
+name: E2E
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Matches the API key set on the Syncthing containers below / in
+  # docker-compose.yml, and the defaults used by the e2e specs.
+  SYNCTHING_API_KEY: test-api-key
+  SYNCTHING_URL: http://127.0.0.1:8384
+
+jobs:
+  smoke:
+    name: Smoke (plugin loads in Obsidian)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10.34.5"
+          run_install: false
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build plugin
+        run: pnpm build
+      # Run wdio.conf.mts directly to log the Obsidian versions under test and
+      # use that output as the cache key for the downloaded Obsidian binaries.
+      - name: Get Obsidian cache key
+        run: |
+          pnpm exec tsx wdio.conf.mts | grep 'obsidian-cache-key:' > obsidian-versions-lock.txt
+          rm -rf .obsidian-cache
+      - name: Cache Obsidian
+        uses: actions/cache@v4
+        with:
+          path: .obsidian-cache
+          key: obsidian-cache-${{ runner.os }}-${{ hashFiles('obsidian-versions-lock.txt') }}
+      - name: Setup virtual graphics
+        run: |
+          # Obsidian is an Electron app and needs a display and window manager.
+          sudo rm -rf /etc/apt/sources.list.d/*.list
+          echo "set man-db/auto-update false" | sudo debconf-communicate
+          sudo dpkg-reconfigure man-db
+          sudo apt-get update -q
+          sudo apt-get install -q herbstluftwm dzen2 x11-xserver-utils
+          export DISPLAY=:99
+          echo "DISPLAY=$DISPLAY" >> "$GITHUB_ENV"
+          Xvfb $DISPLAY -screen 0 1280x1024x24 +extension GLX -noreset &
+          sleep 1
+          herbstluftwm &
+          sleep 1
+      - name: Run smoke tests
+        run: pnpm test:e2e:smoke
+
+  e2e:
+    name: E2E (with Syncthing)
+    needs: smoke
+    runs-on: ubuntu-latest
+    services:
+      syncthing:
+        image: syncthing/syncthing:2
+        env:
+          STGUIADDRESS: 0.0.0.0:8384
+          STGUIAPIKEY: test-api-key
+        ports:
+          - 8384:8384
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10.34.5"
+          run_install: false
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build plugin
+        run: pnpm build
+      - name: Get Obsidian cache key
+        run: |
+          pnpm exec tsx wdio.conf.mts | grep 'obsidian-cache-key:' > obsidian-versions-lock.txt
+          rm -rf .obsidian-cache
+      - name: Cache Obsidian
+        uses: actions/cache@v4
+        with:
+          path: .obsidian-cache
+          key: obsidian-cache-${{ runner.os }}-${{ hashFiles('obsidian-versions-lock.txt') }}
+      - name: Setup virtual graphics
+        run: |
+          sudo rm -rf /etc/apt/sources.list.d/*.list
+          echo "set man-db/auto-update false" | sudo debconf-communicate
+          sudo dpkg-reconfigure man-db
+          sudo apt-get update -q
+          sudo apt-get install -q herbstluftwm dzen2 x11-xserver-utils
+          export DISPLAY=:99
+          echo "DISPLAY=$DISPLAY" >> "$GITHUB_ENV"
+          Xvfb $DISPLAY -screen 0 1280x1024x24 +extension GLX -noreset &
+          sleep 1
+          herbstluftwm &
+          sleep 1
+      - name: Wait for Syncthing
+        run: |
+          for _ in $(seq 1 60); do
+            if curl -fsS -H "X-API-Key: $SYNCTHING_API_KEY" \
+              "$SYNCTHING_URL/rest/system/ping" | grep -q pong; then
+              echo "Syncthing is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Syncthing did not become ready in time"
+          exit 1
+      - name: Run e2e tests
+        run: pnpm test:e2e

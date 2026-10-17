@@ -3,7 +3,9 @@
 	"compilerOptions": {
 		"types": [
 			"svelte",
-			"node"
+			"node",
+			"@wdio/globals/types",
+			"wdio-obsidian-service"
 		],
 		"baseUrl": ".",
 		"inlineSources": true,

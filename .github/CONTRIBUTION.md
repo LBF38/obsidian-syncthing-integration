@@ -17,6 +17,41 @@ To get started with contributing, please follow these steps:
 7. Push to your branch: `git push origin my-branch-name`.
 8. Submit a pull request to the `main` branch of the original project's repository.
 
+## Testing
+
+The project has two layers of tests:
+
+- **Unit and component tests** ([`vitest`](https://vitest.dev/)): run them with `pnpm test` (or `pnpm test:watch` while developing, `pnpm test:coverage` for a coverage report). These do not need Obsidian.
+- **End-to-end tests** ([`wdio`](https://webdriver.io/) + [`wdio-obsidian-service`][wdio-obsidian-service]): these actually launch Obsidian, load the built plugin, and drive it. They require a build first, so always run `pnpm build` before them.
+
+The end-to-end tests come in two flavors:
+
+- **Smoke tests** (`pnpm test:e2e:smoke`) only need Obsidian and cover core, vault-only features (plugin loading, commands, conflict detection).
+- **Full tests** (`pnpm test:e2e`, or just the Syncthing spec with `pnpm test:e2e:syncthing`) additionally talk to a real Syncthing instance through its REST API.
+
+To run the full suite locally, start a disposable Syncthing container and point the tests at it:
+
+```bash
+pnpm build          # the e2e tests load the build/ output
+pnpm syncthing:up   # start Syncthing (docker compose) with a fixed test API key
+pnpm test:e2e       # run all e2e specs
+pnpm syncthing:down # stop and clean up
+```
+
+The tests read the Syncthing connection from the `SYNCTHING_URL` (default `http://127.0.0.1:8384`) and `SYNCTHING_API_KEY` (default `test-api-key`) environment variables, which match the values in `docker-compose.yml`.
+
+Both flavors also run automatically in CI (see [`.github/workflows/e2e.yml`](workflows/e2e.yml)): a `smoke` job runs the smoke spec, then an `e2e` job spins up a Syncthing container and runs the full suite.
+
+### Keeping `minAppVersion` accurate
+
+`manifest.json`'s `minAppVersion` is the oldest Obsidian version the plugin supports. It is shown to users, and `version-bump.mjs` records it for every release in `versions.json`. Keeping it honest matters, so it is enforced by the e2e tests:
+
+- The **PR gate** (`.github/workflows/e2e.yml`) always tests the declared `minAppVersion` together with the latest Obsidian. If the plugin regresses on its declared floor, the build fails.
+- The **Compatibility sweep** (`.github/workflows/compat.yml`) runs the smoke suite against one Obsidian version per minor release, from the oldest testable version up to the latest. Run it manually (`workflow_dispatch`) or wait for the weekly schedule, then look at the results: the lowest version that passes is the real floor.
+- `minAppVersion` must be at least `1.0.3` (the oldest version `wdio-obsidian-service` can test). If it is lower, the e2e config falls back to `1.0.3` and prints a warning.
+
+When you start using an Obsidian API that requires a newer version, raise `minAppVersion` in `manifest.json` and run the sweep to confirm the new floor. Never edit past entries in `versions.json` by hand; only the current release's entry is written by `version-bump.mjs`.
+
 ## Code Style
 
 <!-- TODO: add the code style guidelines of the project. -->
@@ -44,3 +79,4 @@ Thank you for your interest in contributing to Obsidian's Syncthing Integration 
 
 [husky]: https://typicode.github.io/husky
 [husky_install]: https://typicode.github.io/husky/getting-started.html
+[wdio-obsidian-service]: https://github.com/jesse-r-s-hines/wdio-obsidian-service
