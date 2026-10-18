@@ -174,7 +174,7 @@
 						new Notice(`This device ID: ${result.myID}`);
 					})
 					.catch((error) => {
-						new Notice(error.message);
+						new Notice((error as Error).message);
 					});
 			}}
 		>
@@ -199,7 +199,7 @@
 						);
 					})
 					.catch((error) => {
-						new Notice(error.message);
+						new Notice((error as Error).message);
 					});
 			}}
 		>
