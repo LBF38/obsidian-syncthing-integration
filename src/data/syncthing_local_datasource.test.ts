@@ -3,7 +3,6 @@ import type * as UtilModule from "node:util";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Platform } from "obsidian";
 import { CliFailure } from "src/models/failures";
-import { SyncthingConfigurationModel } from "../models/models";
 import { readFixture } from "../../test/helpers/fixtures";
 import { SyncthingFromCLI } from "./syncthing_local_datasource";
 
@@ -118,10 +117,22 @@ describe("SyncthingFromCLI.getConfiguration", () => {
 
 		const config = await cli.getConfiguration();
 
-		expect(config).toBeInstanceOf(SyncthingConfigurationModel);
-		expect(config.version).toBe("37");
+		expect(config.version).toBe(37);
 		expect(config.folders).toHaveLength(2);
+		expect(config.devices).toHaveLength(2);
 		expect(lastCommand).toBe("syncthing cli config dump-json");
+	});
+
+	it("throws a CliFailure when the CLI returns invalid JSON", async () => {
+		stdout = "not json";
+
+		await expect(cli.getConfiguration()).rejects.toBeInstanceOf(CliFailure);
+	});
+
+	it("throws a CliFailure when the JSON does not match the schema", async () => {
+		stdout = readFixture("config.missing-folders.json");
+
+		await expect(cli.getConfiguration()).rejects.toBeInstanceOf(CliFailure);
 	});
 });
 

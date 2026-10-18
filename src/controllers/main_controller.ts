@@ -10,6 +10,7 @@ import {
 	type ConflictFilename,
 } from "src/models/entities";
 import { CliFailure, Failure, RestFailure } from "src/models/failures";
+import { type Output } from "valibot";
 import {
 	isConflictFilename,
 	parseConflictFilename,
@@ -255,11 +256,13 @@ export class SyncthingController {
 	/**
 	 * Gets the Syncthing configuration.
 	 */
-	async getConfiguration(): Promise<SyncthingConfiguration | Failure> {
+	async getConfiguration(): Promise<
+		Output<typeof SyncthingConfiguration> | Failure
+	> {
 		if (!(await this.isRunning()))
 			return new Failure("Syncthing is not running.");
 		try {
-			const config = await this.syncthingFromREST.getConfiguration();
+			const config = await this.syncthingFromREST.config.all();
 			return config;
 		} catch (error) {
 			if (Platform.isMobileApp) {
@@ -274,14 +277,14 @@ export class SyncthingController {
 	/**
 	 * Gets the Syncthing devices.
 	 */
-	async getDevices(): Promise<SyncthingDevice[]> {
+	async getDevices(): Promise<Output<typeof SyncthingDevice>[]> {
 		return await this.syncthingFromREST.getDevices();
 	}
 
 	/**
 	 * Gets the Syncthing folders.
 	 */
-	async getFolders(): Promise<SyncthingFolder[]> {
+	async getFolders(): Promise<Output<typeof SyncthingFolder>[]> {
 		return await this.syncthingFromREST.getAllFolders();
 	}
 
@@ -297,5 +300,12 @@ export class SyncthingController {
 	 */
 	async stopSyncthing(): Promise<boolean> {
 		return this.syncthingFromCLI.stopSyncthing();
+	}
+
+	/**
+	 * Get the Syncthing system status.
+	 */
+	getSystemStatus() {
+		return this.syncthingFromREST.getSystemStatus();
 	}
 }
