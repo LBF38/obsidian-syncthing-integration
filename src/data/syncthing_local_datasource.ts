@@ -54,7 +54,13 @@ export class SyncthingFromCLI {
 		if (response instanceof Error) {
 			throw new CliFailure(response.message);
 		}
-		const result = safeParse(SyncthingConfiguration, response);
+		let parsed: unknown;
+		try {
+			parsed = JSON.parse(response);
+		} catch {
+			throw new CliFailure("Invalid JSON returned by the Syncthing CLI.");
+		}
+		const result = safeParse(SyncthingConfiguration, parsed);
 		if (!result.success) {
 			console.error("getConfiguration ERROR: ", result.issues);
 			throw new CliFailure(
