@@ -1,22 +1,17 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { TFile } from "obsidian";
+import { safeParse, string } from "valibot";
 import { Failure } from "src/models/failures";
 import { makeConflictFile, makeFile } from "../../test/helpers/files";
-import type { SyncthingController } from "./main_controller";
 import {
+	dateSchema,
 	formatBytes,
-	isArrayOf,
+	iso,
 	isConflictFilename,
-	isNumberArray,
-	isStringArray,
-	logErrorIfNotValidJson,
 	parseConflictFilename,
 	sortByConflictDate,
 	sortFilesBy,
-	validateJsonField,
 } from "./utils";
-
-const CONTROLLER = undefined as unknown as SyncthingController;
 
 describe("isConflictFilename", () => {
 	it("returns true for a well-formed conflict filename", () => {
@@ -113,65 +108,55 @@ describe("formatBytes", () => {
 	});
 });
 
-describe("type guards", () => {
-	const isNumber = (value: unknown): value is number =>
-		typeof value === "number";
+describe("iso", () => {
+	const isoString = string([iso({ date: true, time: true })]);
 
-	it("isArrayOf validates each item", () => {
-		expect(isArrayOf([1, 2, 3], isNumber)).toBe(true);
-		expect(isArrayOf([1, "2"], isNumber)).toBe(false);
-		expect(isArrayOf("not an array", isNumber)).toBe(false);
-		expect(isArrayOf([], isNumber)).toBe(true);
+	it("accepts a valid ISO date-time", () => {
+		expect(safeParse(isoString, "2024-01-01T12:30:00Z").success).toBe(true);
 	});
 
-	it("isStringArray", () => {
-		expect(isStringArray(["a", "b"])).toBe(true);
-		expect(isStringArray(["a", 1])).toBe(false);
-		expect(isStringArray({})).toBe(false);
+	it("accepts fractional seconds and an explicit offset", () => {
+		expect(
+			safeParse(isoString, "2024-01-01T12:30:00.123456789+02:00").success,
+		).toBe(true);
 	});
 
-	it("isNumberArray", () => {
-		expect(isNumberArray([1, 2])).toBe(true);
-		expect(isNumberArray([1, "2"])).toBe(false);
-		expect(isNumberArray(null)).toBe(false);
-	});
-});
-
-describe("validateJsonField", () => {
-	it("returns true when the field exists with the right type", () => {
-		expect(validateJsonField({ name: "value" }, "name", "string")).toBe(
-			true,
-		);
-		expect(validateJsonField({ count: 3 }, "count", "number")).toBe(true);
+	it("rejects an invalid calendar date", () => {
+		expect(safeParse(isoString, "2024-13-01T00:00:00Z").success).toBe(false);
+		expect(safeParse(isoString, "2023-02-29T00:00:00Z").success).toBe(false);
 	});
 
-	it("returns false when the field is missing or of the wrong type", () => {
-		expect(validateJsonField({ name: "value" }, "other", "string")).toBe(
-			false,
-		);
-		expect(validateJsonField({ name: 3 }, "name", "string")).toBe(false);
-	});
-
-	it("returns false for non-object values", () => {
-		expect(validateJsonField(null, "name", "string")).toBe(false);
-		expect(validateJsonField("string", "name", "string")).toBe(false);
+	it("rejects a non-ISO string", () => {
+		expect(safeParse(isoString, "not-a-date").success).toBe(false);
 	});
 });
 
-describe("logErrorIfNotValidJson", () => {
-	it("does not log when the field is valid", () => {
-		const spy = vi.spyOn(console, "error").mockImplementation(() => {});
-		logErrorIfNotValidJson({ name: "value" }, "name", "string");
-		expect(spy).not.toHaveBeenCalled();
-		spy.mockRestore();
+describe("dateSchema", () => {
+	it("transforms an ISO string into a Date", () => {
+		const result = safeParse(dateSchema, "2024-01-01T00:00:00Z");
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+		expect(result.output).toBeInstanceOf(Date);
 	});
 
-	it("logs an error when the field is invalid", () => {
-		const spy = vi.spyOn(console, "error").mockImplementation(() => {});
-		logErrorIfNotValidJson({ name: 3 }, "name", "string");
-		expect(spy).toHaveBeenCalledTimes(1);
-		expect(spy.mock.calls[0][0]).toContain("name");
-		spy.mockRestore();
+	it("transforms a UNIX timestamp into a Date", () => {
+		const result = safeParse(dateSchema, 0);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+		expect(result.output).toBeInstanceOf(Date);
+	});
+
+	it("passes an existing Date through", () => {
+		const date = new Date();
+		const result = safeParse(dateSchema, date);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+		expect(result.output.getTime()).toBe(date.getTime());
+	});
+
+	it("rejects a negative timestamp and an invalid string", () => {
+		expect(safeParse(dateSchema, -1).success).toBe(false);
+		expect(safeParse(dateSchema, "yesterday").success).toBe(false);
 	});
 });
 
@@ -218,13 +203,15 @@ describe("sortFilesBy", () => {
 	}
 
 	it("sorts by most recent conflict", () => {
-		expect([...sortFilesBy(makeMap(), "recent", CONTROLLER).keys()]).toEqual(
-			["C", "B", "A"],
-		);
+		expect([...sortFilesBy(makeMap(), "recent").keys()]).toEqual([
+			"C",
+			"B",
+			"A",
+		]);
 	});
 
 	it("sorts by least recent conflict", () => {
-		expect([...sortFilesBy(makeMap(), "old", CONTROLLER).keys()]).toEqual([
+		expect([...sortFilesBy(makeMap(), "old").keys()]).toEqual([
 			"A",
 			"B",
 			"C",
@@ -232,14 +219,18 @@ describe("sortFilesBy", () => {
 	});
 
 	it("sorts alphabetically", () => {
-		expect(
-			[...sortFilesBy(makeMap(), "a-to-z", CONTROLLER).keys()],
-		).toEqual(["A", "B", "C"]);
+		expect([...sortFilesBy(makeMap(), "a-to-z").keys()]).toEqual([
+			"A",
+			"B",
+			"C",
+		]);
 	});
 
 	it("sorts in reverse alphabetical order", () => {
-		expect(
-			[...sortFilesBy(makeMap(), "z-to-a", CONTROLLER).keys()],
-		).toEqual(["C", "B", "A"]);
+		expect([...sortFilesBy(makeMap(), "z-to-a").keys()]).toEqual([
+			"C",
+			"B",
+			"A",
+		]);
 	});
 });

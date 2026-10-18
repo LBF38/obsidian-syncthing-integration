@@ -14,10 +14,10 @@ export interface FakePluginSettings {
 	api_key?: string;
 	gui_username?: string;
 	gui_password?: string;
-	configuration?: {
-		url?: SyncthingURL;
-	};
+	url?: SyncthingURL;
+	configuration?: unknown;
 	devMode?: boolean;
+	embedSyncthingGUI?: boolean;
 }
 
 /** A vault whose methods are Vitest mocks. */
@@ -74,8 +74,9 @@ export function makePlugin(
 		vault,
 		settings: {
 			api_key: "",
-			configuration: { url: { ...DEFAULT_URL } },
+			url: { ...DEFAULT_URL },
 			devMode: false,
+			embedSyncthingGUI: false,
 			...settings,
 		},
 		saveSettings: vi.fn(async () => undefined),

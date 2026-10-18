@@ -1,5 +1,5 @@
 {
-	"version": "37",
+	"version": 37,
 	"folders": [
 		{
 			"id": "default",
@@ -54,5 +54,106 @@
 			"ignoredFolders": ["work"],
 			"name": "remote-device"
 		}
-	]
+	],
+	"gui": {
+		"enabled": true,
+		"address": "127.0.0.1:8384",
+		"unixSocketPermissions": "",
+		"user": "",
+		"password": "",
+		"authMode": "static",
+		"useTLS": false,
+		"apiKey": "test-api-key",
+		"insecureAdminAccess": false,
+		"theme": "default",
+		"debugging": false,
+		"insecureSkipHostcheck": false,
+		"insecureAllowFrameLoading": false
+	},
+	"ldap": {
+		"address": "",
+		"bindDN": "",
+		"transport": "plain",
+		"insecureSkipVerify": false,
+		"searchBaseDN": "",
+		"searchFilter": ""
+	},
+	"options": {
+		"listenAddresses": ["default"],
+		"globalAnnounceServers": ["default"],
+		"globalAnnounceEnabled": true,
+		"localAnnounceEnabled": true,
+		"localAnnouncePort": 21027,
+		"localAnnounceMCAddr": "[ff12::8384]:21027",
+		"maxSendKbps": 0,
+		"maxRecvKbps": 0,
+		"reconnectionIntervalS": 60,
+		"relaysEnabled": true,
+		"relayReconnectIntervalM": 10,
+		"startBrowser": true,
+		"natEnabled": true,
+		"natLeaseMinutes": 60,
+		"natRenewalMinutes": 30,
+		"natTimeoutSeconds": 10,
+		"urAccepted": -1,
+		"urSeen": 3,
+		"urUniqueId": "",
+		"urURL": "https://data.syncthing.net/newdata",
+		"urPostInsecurely": false,
+		"urInitialDelayS": 1800,
+		"autoUpgradeIntervalH": 12,
+		"upgradeToPreReleases": false,
+		"keepTemporariesH": 24,
+		"cacheIgnoredFiles": false,
+		"progressUpdateIntervalS": 5,
+		"limitBandwidthInLan": false,
+		"minHomeDiskFree": {
+			"value": 1,
+			"unit": "%"
+		},
+		"releasesURL": "https://upgrades.syncthing.net/meta.json",
+		"alwaysLocalNets": [],
+		"overwriteRemoteDeviceNamesOnConnect": false,
+		"tempIndexMinBlocks": 10,
+		"unackedNotificationIDs": [],
+		"trafficClass": 0,
+		"setLowPriority": true,
+		"maxFolderConcurrency": 0,
+		"crURL": "https://crash.syncthing.net/newcrash",
+		"crashReportingEnabled": true,
+		"stunKeepaliveStartS": 180,
+		"stunKeepaliveMinS": 20,
+		"stunServers": ["default"],
+		"databaseTuning": "auto",
+		"maxConcurrentIncomingRequestKiB": 0,
+		"announceLANAddresses": true,
+		"sendFullIndexOnUpgrade": false,
+		"featureFlags": [],
+		"connectionLimitEnough": 0,
+		"connectionLimitMax": 0,
+		"insecureAllowOldTLSVersions": false
+	},
+	"remoteIgnoredDevices": [],
+	"defaults": {
+		"folder": {
+			"id": "",
+			"label": "",
+			"path": "",
+			"filesystemType": "basic",
+			"type": "sendreceive",
+			"devices": [],
+			"maxConflicts": 10
+		},
+		"device": {
+			"deviceID": "",
+			"introducedBy": "",
+			"addresses": ["dynamic"],
+			"paused": false,
+			"ignoredFolders": [],
+			"name": ""
+		},
+		"ignores": {
+			"lines": []
+		}
+	}
 }
