@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.4.0...2.4.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#258](https://github.com/LBF38/obsidian-syncthing-integration/issues/258)) ([1faa1d3](https://github.com/LBF38/obsidian-syncthing-integration/commit/1faa1d308bc6157f0ab45d2f1069f0b82f3b3438))
+
 # [2.4.0](https://github.com/LBF38/obsidian-syncthing-integration/compare/2.3.0...2.4.0) (2026-03-15)
 
 
