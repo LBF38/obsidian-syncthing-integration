@@ -45,6 +45,7 @@
 		<div class="callout-content">
 			<p>{message}</p>
 		</div>
+		<slot />
 	</div>
 {/if}
 

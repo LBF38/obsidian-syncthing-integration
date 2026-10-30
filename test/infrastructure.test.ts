@@ -29,7 +29,7 @@ describe("test infrastructure", () => {
 	});
 
 	it("loads JSON fixtures", () => {
-		const config = readFixtureJson<{ version: string }>("config.json");
-		expect(config.version).toBe("37");
+		const config = readFixtureJson<{ version: number }>("config.json");
+		expect(config.version).toBe(37);
 	});
 });

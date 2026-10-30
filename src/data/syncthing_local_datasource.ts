@@ -1,6 +1,7 @@
-import { SyncthingConfigurationModel } from "../models/models";
-import { CliFailure } from "src/models/failures";
 import { Platform } from "obsidian";
+import { SyncthingConfiguration } from "src/models/entities";
+import { CliFailure } from "src/models/failures";
+import { type Output, safeParse } from "valibot";
 
 /**
  * CLI of Syncthing.
@@ -47,13 +48,26 @@ export class SyncthingFromCLI {
 	/**
 	 * Get the configuration of Syncthing installation using the CLI.
 	 */
-	async getConfiguration(): Promise<SyncthingConfigurationModel> {
+	async getConfiguration(): Promise<Output<typeof SyncthingConfiguration>> {
 		const commandToGetConfig = "syncthing cli config dump-json";
 		const response = await this.runSyncthingCommand(commandToGetConfig);
 		if (response instanceof Error) {
 			throw new CliFailure(response.message);
 		}
-		return SyncthingConfigurationModel.fromJSON(response);
+		let parsed: unknown;
+		try {
+			parsed = JSON.parse(response);
+		} catch {
+			throw new CliFailure("Invalid JSON returned by the Syncthing CLI.");
+		}
+		const result = safeParse(SyncthingConfiguration, parsed);
+		if (!result.success) {
+			console.error("getConfiguration ERROR: ", result.issues);
+			throw new CliFailure(
+				result.issues.map((issue) => issue.message).join("\n")
+			);
+		}
+		return result.output;
 	}
 
 	/**

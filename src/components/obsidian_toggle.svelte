@@ -3,10 +3,11 @@
 	import { onMount } from "svelte";
 
 	export let callback: (value: boolean) => unknown;
+	export let initialValue = false;
 
 	let element: HTMLDivElement;
 	onMount(() => {
-		new ToggleComponent(element).onChange(callback);
+		new ToggleComponent(element).setValue(initialValue).onChange(callback);
 	});
 </script>
 

@@ -5,8 +5,9 @@ import type { SyncthingFromAndroid } from "src/data/syncthing_android_datasource
 import type { SyncthingFromCLI } from "src/data/syncthing_local_datasource";
 import type { SyncthingFromREST } from "src/data/syncthing_remote_datasource";
 import type SyncthingPlugin from "src/main";
-import type { SyncthingConfiguration } from "src/models/entities";
+import { type SyncthingConfiguration } from "src/models/entities";
 import { CliFailure, Failure, RestFailure } from "src/models/failures";
+import type { Output } from "valibot";
 import { makeConflictFile, makeFile } from "../../test/helpers/files";
 import {
 	asPlugin,
@@ -26,7 +27,7 @@ interface ControllerHarness {
 	};
 	rest: {
 		ping: Mock;
-		getConfiguration: Mock;
+		config: { all: Mock };
 		getDevices: Mock;
 		getAllFolders: Mock;
 	};
@@ -44,7 +45,7 @@ function makeHarness(files: TFile[] = [], settings = {}): ControllerHarness {
 	};
 	const rest = {
 		ping: vi.fn(),
-		getConfiguration: vi.fn(),
+		config: { all: vi.fn() },
 		getDevices: vi.fn(),
 		getAllFolders: vi.fn(),
 	};
@@ -60,11 +61,10 @@ function makeHarness(files: TFile[] = [], settings = {}): ControllerHarness {
 }
 
 const CONFIG = {
-	version: "37",
+	version: 37,
 	folders: [],
 	devices: [],
-	url: { protocol: "http", ip_address: "localhost", port: 8384 },
-} as unknown as SyncthingConfiguration;
+} as unknown as Output<typeof SyncthingConfiguration>;
 
 beforeEach(() => {
 	vi.spyOn(console, "log").mockImplementation(() => {});
@@ -344,7 +344,7 @@ describe("SyncthingController.getConfiguration", () => {
 	it("returns the REST configuration when available", async () => {
 		const { controller, rest } = makeHarness();
 		rest.ping.mockResolvedValue("pong");
-		rest.getConfiguration.mockResolvedValue(CONFIG);
+		rest.config.all.mockResolvedValue(CONFIG);
 
 		await expect(controller.getConfiguration()).resolves.toBe(CONFIG);
 	});
@@ -352,7 +352,7 @@ describe("SyncthingController.getConfiguration", () => {
 	it("falls back to the CLI when the REST call fails on desktop", async () => {
 		const { controller, rest, cli } = makeHarness();
 		rest.ping.mockResolvedValue("pong");
-		rest.getConfiguration.mockRejectedValue(new Error("rest error"));
+		rest.config.all.mockRejectedValue(new Error("rest error"));
 		cli.getConfiguration.mockResolvedValue(CONFIG);
 
 		await expect(controller.getConfiguration()).resolves.toBe(CONFIG);
@@ -363,7 +363,7 @@ describe("SyncthingController.getConfiguration", () => {
 		Platform.isMobileApp = true;
 		const { controller, rest, cli } = makeHarness();
 		rest.ping.mockResolvedValue("pong");
-		rest.getConfiguration.mockRejectedValue(new Error("rest error"));
+		rest.config.all.mockRejectedValue(new Error("rest error"));
 
 		const result = await controller.getConfiguration();
 
