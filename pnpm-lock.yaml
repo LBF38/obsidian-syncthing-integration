@@ -9,18 +9,18 @@ importers:
   .:
     dependencies:
       style-mod:
-        specifier: ^4.1.4
-        version: 4.1.4
+        specifier: ^4.1.5
+        version: 4.1.5
     devDependencies:
       '@codemirror/merge':
-        specifier: ^6.12.3
-        version: 6.12.3
+        specifier: ^6.13.0
+        version: 6.13.0
       '@codemirror/state':
         specifier: ^6.7.6
         version: 6.7.6
       '@codemirror/view':
-        specifier: ^6.43.15
-        version: 6.43.15
+        specifier: ^6.44.2
+        version: 6.44.2
       '@commitlint/config-conventional':
         specifier: ^18.6.3
         version: 18.6.3
@@ -110,7 +110,7 @@ importers:
         version: 11.2.0
       obsidian:
         specifier: ^1.14.4
-        version: 1.14.4(@codemirror/state@6.7.6)(@codemirror/view@6.43.15)
+        version: 1.14.4(@codemirror/state@6.7.6)(@codemirror/view@6.44.2)
       sass:
         specifier: ^1.107.1
         version: 1.107.1
@@ -182,8 +182,8 @@ packages:
   '@codemirror/lint@6.9.5':
     resolution: {integrity: sha512-GElsbU9G7QT9xXhpUg1zWGmftA/7jamh+7+ydKRuT0ORpWS3wOSP0yT1FOlIZa7mIJjpVPipErsyvVqB9cfTFA==}
 
-  '@codemirror/merge@6.12.3':
-    resolution: {integrity: sha512-Wq9wXrp41cW/nIpi1CQPyNwD+36kg8KIX676ym0Hyfn3Dpr+XQHNAIsZYVNlaivuVB4SAASbreG3V0VXinbqZA==}
+  '@codemirror/merge@6.13.0':
+    resolution: {integrity: sha512-JiGYUH7C3o+dDNdc3k8Rcn3aCkczWn3RgonF7n8Psy2S5YRlPFx60NRgcCoO69SVP9lxqDiedqHWt9dNP1dUWw==}
 
   '@codemirror/search@6.6.0':
     resolution: {integrity: sha512-koFuNXcDvyyotWcgOnZGmY7LZqEOXZaaxD/j6n18TCLx2/9HieZJ5H6hs1g8FiRxBD0DNfs0nXn17g872RmYdw==}
@@ -193,6 +193,9 @@ packages:
 
   '@codemirror/view@6.43.15':
     resolution: {integrity: sha512-HHsfpqFeHyXLs983pSRe38Xajs0vFWZQ2BuX0m7Ki8w3jZ5iD8cuR3lBz2/5/X53Dhf32SBHKh6rtSTB6tKeGw==}
+
+  '@codemirror/view@6.44.2':
+    resolution: {integrity: sha512-7yxTh7+iCbxIV9QCJAVlkYjWV/TCHD0zmLIaIR3NOb47YpCWwVUuFUnHwkRC3z+8cXNgeJzrCy4QtlR3fVt5kg==}
 
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -3032,8 +3035,8 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
 
-  style-mod@4.1.4:
-    resolution: {integrity: sha512-XXWIQt633/EpAFx8aZDOTjBzrCaGmhvEQlQo6MVPfa2OzO2cWo+4hV9h+6UkHYlXGfy+ODXKUdP7Pthmcu5ATw==}
+  style-mod@4.1.5:
+    resolution: {integrity: sha512-WQ2llCZa9sZSkJA+aOwpg5DkfbAXFKGh//t3MRTBeruFiSBC+GXUmbBzrw3bXyboCWAbtCW9InDfBsXrRD/rAg==}
 
   stylehacks@5.1.1:
     resolution: {integrity: sha512-sBpcd5Hx7G6seo7b1LkpttvTz7ikD0LlH5RmdcBNb6fFR0Fl7LQwHDFr300q4cwUqi+IYrFGmsIHieMBfnN/Bw==}
@@ -3430,14 +3433,14 @@ snapshots:
     dependencies:
       '@codemirror/language': 6.12.2
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.43.15
+      '@codemirror/view': 6.44.2
       '@lezer/common': 1.5.1
 
   '@codemirror/commands@6.10.3':
     dependencies:
       '@codemirror/language': 6.12.2
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.43.15
+      '@codemirror/view': 6.44.2
       '@lezer/common': 1.5.1
 
   '@codemirror/language@6.12.2':
@@ -3447,26 +3450,26 @@ snapshots:
       '@lezer/common': 1.5.1
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.8
-      style-mod: 4.1.4
+      style-mod: 4.1.5
 
   '@codemirror/lint@6.9.5':
     dependencies:
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.43.15
+      '@codemirror/view': 6.44.2
       crelt: 1.0.6
 
-  '@codemirror/merge@6.12.3':
+  '@codemirror/merge@6.13.0':
     dependencies:
       '@codemirror/language': 6.12.2
       '@codemirror/state': 6.7.6
       '@codemirror/view': 6.43.15
       '@lezer/highlight': 1.2.3
-      style-mod: 4.1.4
+      style-mod: 4.1.5
 
   '@codemirror/search@6.6.0':
     dependencies:
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.43.15
+      '@codemirror/view': 6.44.2
       crelt: 1.0.6
 
   '@codemirror/state@6.7.6':
@@ -3477,7 +3480,14 @@ snapshots:
     dependencies:
       '@codemirror/state': 6.7.6
       crelt: 1.0.6
-      style-mod: 4.1.4
+      style-mod: 4.1.5
+      w3c-keyname: 2.2.8
+
+  '@codemirror/view@6.44.2':
+    dependencies:
+      '@codemirror/state': 6.7.6
+      crelt: 1.0.6
+      style-mod: 4.1.5
       w3c-keyname: 2.2.8
 
   '@colors/colors@1.5.0':
@@ -4494,7 +4504,7 @@ snapshots:
       '@codemirror/lint': 6.9.5
       '@codemirror/search': 6.6.0
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.43.15
+      '@codemirror/view': 6.44.2
 
   color-convert@1.9.3:
     dependencies:
@@ -5584,10 +5594,10 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
-  obsidian@1.14.4(@codemirror/state@6.7.6)(@codemirror/view@6.43.15):
+  obsidian@1.14.4(@codemirror/state@6.7.6)(@codemirror/view@6.44.2):
     dependencies:
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.43.15
+      '@codemirror/view': 6.44.2
       '@types/codemirror': 5.60.8
       moment: 2.31.0
 
@@ -6195,7 +6205,7 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  style-mod@4.1.4: {}
+  style-mod@4.1.5: {}
 
   stylehacks@5.1.1(postcss@8.5.8):
     dependencies:
